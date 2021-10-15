@@ -1,0 +1,201 @@
+
+spring:
+  profiles:
+    active: local
+---
+spring:
+  profiles: local
+#  batch:
+#    job:
+#      names: ${job.name:NONE}
+#      names: somJob
+path:
+  rootPath: C:/dev/edc-batch/
+  storePath: C:/dev/hdata/
+  resourcePath: C:/dev/edc-batch/resources/
+  configPath: C:/dev/edc-batch/config/
+  logPath: C:/dev/log/
+---
+spring:
+  profiles: dev
+  batch:
+    job:
+      names: ${job.name:NONE}
+path:
+  rootPath: /data/edc-batch/dev/
+  storePath: /data/edc-batch/dev/hdata/
+  resourcePath: /data/edc-batch/dev/resources/
+  configPath: /data/edc-batch/dev/config/
+  logPath: /data/edc-batch/dev/log/
+---
+spring:
+  profiles: prod
+  batch:
+    job:
+      names: ${job.name:NONE}
+path:
+  rootPath: /data/edc-batch/prod/
+  storePath: /hdata/
+  resourcePath: /data/edc-batch/prod/resources/
+  configPath: /data/edc-batch/prod/config/
+  logPath: /data/edc-batch/prod/log/
+---
+spring:
+  datasource:
+    hikari: jdbc-url= jdbc:h2:mem:edcb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+---
+# Job Scheduler
+scheduler:
+  cron:
+    som: "* 59 16 * * ?"
+    uct:
+---
+# Open Api Information
+api:
+  jobs:
+    biz001m:
+      baseUrl: https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do
+      param:
+        crtfcKey: k9mn7X
+        dataType: json
+    big:
+      header:
+        accessKey: 309367ce-8103-4749-bdf7-2555f2e1471f
+    big001m:
+      baseUrl: http://tools.kinds.or.kr:8888/search/news
+    big002m:
+      baseUrl: http://tools.kinds.or.kr:8888/issue_ranking
+    big003m:
+      baseUrl: http://tools.kinds.or.kr:8888/word_cloud
+    big004m:
+      baseUrl: http://tools.kinds.or.kr:8888/time_line
+    big005m:
+      baseUrl: http://tools.kinds.or.kr:8888/query_rank
+    som001m:
+      baseUrl: http://qt.some.co.kr/TrendMap/JSON/ServiceHandler
+      param:
+        command: GetTopKeywords
+        lang: ko
+        topN: 1000
+        categorySetName: SM
+        "[categoryList[]]": 1/1/0,1/2/0,1/3/0,1/4/0,1/5/0,2/1/0,2/2/0,2/3/0,2/4/0,2/5/0,2/6/0,2/7/0,3/1/0,3/2/0,3/3/0,3/4/0,3/5/0,3/6/0,3/7/0,3/8/0,3/9/0,3/10/0,3/11/0,3/12/0,3/13/0,3/14/0,3/17/0,5/1/0,5/2/0,5/3/0,5/4/0,5/5/0,5/6/0,5/7/0,5/8/0,5/9/0,5/10/0,5/11/0,5/12/0,5/13/0,5/14/0,5/15/0,5/16/0,5/18/0,5/19/0,5/20/0,5/21/0,5/22/0,5/23/0,5/24/0,5/25/0,5/26/0,5/27/0,5/28/0,5/29/0,5/30/0,5/31/0,5/32/0,5/33/0,5/35/0,5/36/0,5/37/0,5/38/0,5/39/0,5/40/0,5/41/0,5/42/0,5/43/0,5/44/0,5/45/0,5/46/0,5/47/0,5/48/0,5/49/0,5/50/0,6/1/0,6/2/0,6/3/0,6/4/0,6/5/0,6/6/0,6/7/0,7/1/0,7/2/0,7/3/0,7/4/0,7/5/0,7/7/0
+        "[patternExcList[]]": 오늘,시간,하루,*뉴스*,*기자*,*사진*,한국,제공,경제,오전,오후,시,지역,관계자
+        startDate:
+        endDate:
+        source:
+    som002m:
+      baseUrl: http://qt.some.co.kr/TrendMap/JSON/ServiceHandler
+      param:
+        command: GetKeywordDocuments
+        lang: ko
+        rowPerPage: 100
+        pageNum: 1
+        orderType: 0
+        "[keywordsExcFilterList[]]": 안녕,상담,카톡,대출,중고,계약
+        startDate:
+        endDate:
+        source:
+        keyword:
+    som003m:
+      baseUrl: http://qt.some.co.kr/TrendMap/JSON/ServiceHandler
+      param:
+        command: GetKeywordAssociation
+        lang: ko
+        topN: 100
+        cutOffFrequencyMin: 0
+        cutOffFrequencyMax: 0
+        outputOption: freq
+        categorySetName: SM
+        categoryExclusive: true
+        "[categoryList[]]":  123/0/0,125/0/0,126/0/0,127/0/0
+        "[keywordsExcFilterList[]]": -안녕,-상담,-카톡,-대출,-중고
+        source:
+        startDate:
+        endDate:
+        keyword:
+    som004m:
+      baseUrl: http://qt.some.co.kr/TrendMap/JSON/ServiceHandler
+      param:
+        command: GetKeywordAssociation
+        lang: ko
+        topN: 100
+        cutOffFrequencyMin: 0
+        cutOffFrequencyMax: 0
+        outputOption: freq
+        categorySetName: SM
+        categoryExclusive: false
+        "[categoryList[]]": 123/3/0,123/9/0,123/4/0,123/10/0,123/5/0,123/8/0
+        "[keywordsExcFilterList[]]": -안녕,-상담,-카톡,-대출,-중고
+        source:
+        startDate:
+        endDate:
+        keyword:
+    som005m:
+      baseUrl: http://qt.some.co.kr/TrendMap/JSON/ServiceHandler
+      param:
+        command: GetIssueKeyword
+        lang: ko
+        topN: 0
+        cutOffFrequencyMin: 0
+        cutOffFrequencyMax: 0
+        categorySetName: SM
+        categoryExclusive: true
+        "[categoryList[]]": 123/0/0,125/0/0,126/0/0,127/0/0
+        "[keywordFilter[]]": -안녕,-상담,-카톡,-대출,-중고
+        topNForIssue: 100
+        issueStartDate:
+        issueEndDate:
+        source:
+        keyword:
+    saf:
+      header:
+        AuthKey: 2a596c2a-262e-4bd3-9bd4-b8304ba9eb71
+    saf001m:
+      baseUrl: http://www.safetykorea.kr/openapi/api/cert/certificationList.json
+      param:
+        conditionKey: certDate
+        conditionValue:
+    saf001l:
+      baseUrl: http://www.safetykorea.kr/openapi/api/cert/certificationDetail.json
+      param:
+        certNum:
+    uct001m:
+      baseUrl: https://comtrade.un.org/api/get
+      param:
+        px: HS
+        rg: 2
+        cc: AG6
+        type: C
+        freq: A
+        token: HiZBCArZTyP14zXhbVDSFRUIok/dgjGPT13+SHJBFZzBS3CePgTojBGu0Ju0qcHI7Xqozwka6CWJfiP3nwWsjmWH3rhVXfitPcM9R9bJdeJW4rgv8qp2vo/PD8CPnQInw7HvEF3E8YYbw1R8us4UBQ==
+        r:
+        p:
+        ps:
+    opd001m:
+      baseUrl: https://opendart.fss.or.kr/api/list.json
+    kot001m:
+      baseUrl: http://apis.data.go.kr/B410001/ovseaMrktNewsService/ovseaMrktNews
+      param:
+        serviceKey: 39AV7BHhz62j2L4GUFjSk%2FuwDQT9SZvJ1fcNGfiYXDdnMMb%2FE%2FhGqu%2FYF5qtfXwvBLc9UZjfbyn8aRMIUcS9RQ%3D%3D
+        type: json
+        pageNo: 1
+        numOfRows: 50
+        search4:
+    nav001m:
+      baseUrl: https://dev.apis.naver.com/customs-service/shopping-product-api/getOverseasProducts
+    nav002m:
+      baseUrl: https://dev.apis.naver.com/customs-service/shopping-product-api/getOverseasProducts
+    nav003m:
+      baseUrl: https://tmr21th210.cafe24.com
+    nav004m:
+      baseUrl:
+#    eba:
+#      baseUrl: https://svcs.ebay.com/services/search/FindingService/v1
+#      param:
+#      result:
+#        resultType:
+#        objName:
+
