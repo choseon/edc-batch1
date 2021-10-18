@@ -23,13 +23,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class UctConfiguration {
+public class UctJobConfig {
+
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -38,7 +38,7 @@ public class UctConfiguration {
     private int GRID_SIZE = 10;
     private int POOL_SIZE = 10;
 
-//    @Scheduled(cron = "${scheduler.cron.uct}")
+    //    @Scheduled(cron = "${scheduler.cron.uct}")
     public void launcher() throws Exception {
         log.info("UctConfiguration launcher...");
 
@@ -51,12 +51,12 @@ public class UctConfiguration {
         jobLauncher.run(uctJob(), jobParameters);
     }
 
-    @Bean
+//    @Bean
     public Job uctJob() {
 
         return jobBuilderFactory.get("uctJob")
                 .start(uct001mStepManager(null))
-                .next(uctFileMergeStep(null))
+//                .next(cmmnMergeFileStep(null))
                 .build();
     }
 
@@ -114,10 +114,7 @@ public class UctConfiguration {
     @StepScope
     public CmmnMergeFile uctFileMergeTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
 
-        List<String> mergeJobList = new ArrayList<>();
-        mergeJobList.add(JobConstant.JOB_ID_UCT001M);
-
-        return new CmmnMergeFile(mergeJobList);
+        return new CmmnMergeFile(JobConstant.JOB_ID_UCT001M);
     }
 
     @Bean

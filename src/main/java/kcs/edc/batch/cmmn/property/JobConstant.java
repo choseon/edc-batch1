@@ -26,11 +26,15 @@ public class JobConstant {
 
     public static final String JOB_ID_UCT001M = "uct001m";
 
-    public static final String PREFIX_JOB = "job";
-    public static final String PREFIX_STEP = "step";
+    public static final String PREFIX_JOB = "Job";
+    public static final String PREFIX_STEP = "Step";
+    public static final String PREFIX_PARTITION_STEP = "PartitionStep";
+    public static final String PREFIX_FLOW = "Flow";
+    public static final String PREFIX_FILE_STEP = "FileStep";
     public static final String PREFIX_MANAGER = "manager";
 
-    public static final int GRID_SIZE = 10;
+    public static final int JOB_GRID_SIZE = 10;
+    public static final int JOB_POOL_SIZE = 10;
 
     public static final int MAKE_FILE_SUCCESS = 0;
     public static final int MAKE_FILE_FAIL = 1;

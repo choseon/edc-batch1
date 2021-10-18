@@ -5,7 +5,10 @@ import kcs.edc.batch.cmmn.util.DateUtils;
 import kcs.edc.batch.jobs.som.som001m.vo.Som001mVO;
 import kcs.edc.batch.jobs.som.som002m.vo.Som002mVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -21,13 +24,18 @@ import java.util.Objects;
  * SomeTrend 문서 목록 수집 Tasklet
  */
 @Slf4j
-public class Som002mTasklet extends CmmnTask implements Tasklet {
+public class Som002mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
 
     @Value("#{stepExecutionContext[threadNum]}")
     protected String threadNum;
 
     @Value("#{stepExecutionContext[partitionList]}")
     protected List<Som001mVO> partitionList;
+
+    @Override
+    public void beforeStep(StepExecution stepExecution) {
+
+    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -77,5 +85,12 @@ public class Som002mTasklet extends CmmnTask implements Tasklet {
         writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
+    }
+
+    @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+
+        jobExecutionContext.put("jobId", getJobId());
+        return ExitStatus.COMPLETED;
     }
 }
