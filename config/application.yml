@@ -5,10 +5,9 @@ spring:
 ---
 spring:
   profiles: local
-#  batch:
-#    job:
-#      names: ${job.name:NONE}
-#      names: somJob
+  batch:
+    job:
+      names: ${job.name:NONE}
 path:
   rootPath: C:/dev/edc-batch/
   storePath: C:/dev/hdata/
@@ -50,8 +49,15 @@ spring:
 # Job Scheduler
 scheduler:
   cron:
+    biz:
+    big:
     som: "* 59 16 * * ?"
-    uct:
+    saf:
+    eba:
+    nav:
+    kot:
+    opd:
+    uct: "* 59 16 * * ?"
 ---
 # Open Api Information
 api:

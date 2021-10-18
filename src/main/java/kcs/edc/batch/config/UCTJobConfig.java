@@ -2,6 +2,7 @@ package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.jobs.CmmnMergeFile;
 import kcs.edc.batch.cmmn.property.JobConstant;
+import kcs.edc.batch.cmmn.util.DateUtils;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mPartitioner;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +22,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class UctJobConfig {
+public class UCTJobConfig {
 
 
     private final JobBuilderFactory jobBuilderFactory;
@@ -38,54 +37,57 @@ public class UctJobConfig {
     private int GRID_SIZE = 10;
     private int POOL_SIZE = 10;
 
-    //    @Scheduled(cron = "${scheduler.cron.uct}")
+//    @Scheduled(cron = "${scheduler.cron.uct}")
     public void launcher() throws Exception {
         log.info("UctConfiguration launcher...");
 
-        String cletDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String cletDt = DateUtils.getToday("yyyyMMdd"); // 수집일
+        String baseDt = DateUtils.getOffsetDate(cletDt, -1, "yyyyMMdd"); // 기준일
+
+//        String cletDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("cletDt", cletDt)
+                .addString("baseDt", baseDt)
                 .addLong("time",System.currentTimeMillis())
                 .toJobParameters();
 
         jobLauncher.run(uctJob(), jobParameters);
     }
 
-//    @Bean
+    @Bean
     public Job uctJob() {
 
-        return jobBuilderFactory.get("uctJob")
-                .start(uct001mStepManager(null))
-//                .next(cmmnMergeFileStep(null))
+        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_UCT + JobConstant.PREFIX_JOB)
+                .start(uct001mPartitionStep())
+                .next(uctFileMergeStep())
                 .build();
     }
 
     @Bean
-    @JobScope
-    public Step uct001mStepManager(
-            @Value("#{jobParameters[cletDt]}") String cletDt) {
+//    @JobScope
+    public Step uct001mPartitionStep() {
 
-        return stepBuilderFactory.get(JobConfig.JOB_ID_UCT001M + "Manager")
-                .partitioner("uct002mStep", uct001mPartitioner(cletDt))
+        return stepBuilderFactory.get(JobConstant.JOB_ID_UCT001M + JobConstant.PREFIX_PARTITION_STEP)
+//                .partitioner("uct002mStep", uct001mPartitioner(cletDt))
+                .partitioner("uct002mStep", new Uct001mPartitioner())
                 .gridSize(GRID_SIZE)
                 .taskExecutor(uctExecutor())
                 .step(uct001mStep())
                 .build();
     }
 
-    @Bean
-    @JobScope
-    public Uct001mPartitioner uct001mPartitioner(
-            @Value("#{jobParameters[cletDt]}") String cletDt) {
-
-        return new Uct001mPartitioner();
-    }
-
-    @Bean
+//    @Bean
 //    @JobScope
+//    public Uct001mPartitioner uct001mPartitioner(
+//            @Value("#{jobParameters[cletDt]}") String cletDt) {
+//
+//        return new Uct001mPartitioner();
+//    }
+
+    @Bean
     public Step uct001mStep() {
 
-        return stepBuilderFactory.get(JobConfig.JOB_ID_UCT001M + JobConfig.PREFIX_STEP)
+        return stepBuilderFactory.get(JobConstant.JOB_ID_UCT001M + JobConstant.PREFIX_STEP)
                 .tasklet(uct001mTasklet(null, null, null))
                 .build();
     }
@@ -101,21 +103,21 @@ public class UctJobConfig {
     }
 
     @Bean
-    @JobScope
-    public Step uctFileMergeStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt) {
+//    @JobScope
+    public Step uctFileMergeStep() {
 
         return stepBuilderFactory.get("uctFileMergeStep")
-                .tasklet(uctFileMergeTasklet(cletDt))
+//                .tasklet(uctFileMergeTasklet(cletDt))
+                .tasklet(new CmmnMergeFile(JobConstant.JOB_ID_UCT001M))
                 .build();
     }
 
-    @Bean
-    @StepScope
-    public CmmnMergeFile uctFileMergeTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
-
-        return new CmmnMergeFile(JobConstant.JOB_ID_UCT001M);
-    }
+//    @Bean
+//    @StepScope
+//    public CmmnMergeFile uctFileMergeTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+//
+//        return new CmmnMergeFile(JobConstant.JOB_ID_UCT001M);
+//    }
 
     @Bean
     public TaskExecutor uctExecutor() {

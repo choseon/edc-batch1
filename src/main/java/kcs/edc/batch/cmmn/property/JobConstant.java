@@ -2,10 +2,29 @@ package kcs.edc.batch.cmmn.property;
 
 public class JobConstant {
 
+    /**************************************************************
+     * JOB GROUP ID
+     **************************************************************/
+    public static final String JOB_GRP_ID_BIZ = "biz";
+    public static final String JOB_GRP_ID_BIG = "big";
+    public static final String JOB_GRP_ID_SOM = "som";
+    public static final String JOB_GRP_ID_SAF = "saf";
+    public static final String JOB_GRP_ID_EBA = "eag";
+    public static final String JOB_GRP_ID_NAV = "nav";
+    public static final String JOB_GRP_ID_OPD = "opd";
+    public static final String JOB_GRP_ID_KOT = "kot";
+    public static final String JOB_GRP_ID_UCT = "uct";
+
+
+    /**************************************************************
+     * JOB ID
+     **************************************************************/
     public static final String JOB_ID_BIZ001M = "biz001m";
 
-    public static final String JOB_ID_KOT001M = "kot001m";
-    public static final String JOB_ID_KOT002M = "kot002m";
+    public static final String JOB_ID_BIG001M = "big001m";
+    public static final String JOB_ID_BIG002M = "big002m";
+    public static final String JOB_ID_BIG003M = "big003m";
+    public static final String JOB_ID_BIG004M = "big004m";
 
     public static final String JOB_ID_SOM001M = "som001m";
     public static final String JOB_ID_SOM002M = "som002m";
@@ -19,12 +38,22 @@ public class JobConstant {
     public static final String JOB_ID_SAF003L = "saf003l";
     public static final String JOB_ID_SAF004L = "saf004l";
 
-    public static final String JOB_ID_BIG001M = "big001m";
-    public static final String JOB_ID_BIG002M = "big002m";
-    public static final String JOB_ID_BIG003M = "big003m";
-    public static final String JOB_ID_BIG004M = "big004m";
+    public static final String JOB_ID_EBA001M = "eba001m";
+
+    public static final String JOB_ID_NAV001M = "nav001m";
+    public static final String JOB_ID_NAV021M = "nav002m";
+    public static final String JOB_ID_NAV003M = "nav003m";
+    public static final String JOB_ID_NAV004M = "nav004m";
+
+    public static final String JOB_ID_OPD001M = "opd001m";
+    public static final String JOB_ID_OPD002M = "opd002m";
+    public static final String JOB_ID_OPD003M = "opd003m";
+
+    public static final String JOB_ID_KOT001M = "kot001m";
+    public static final String JOB_ID_KOT002M = "kot002m";
 
     public static final String JOB_ID_UCT001M = "uct001m";
+
 
     public static final String PREFIX_JOB = "Job";
     public static final String PREFIX_STEP = "Step";

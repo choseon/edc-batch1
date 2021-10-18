@@ -1,4 +1,4 @@
-package kcs.edc.batch.jobs.nav.nav003m;
+package kcs.edc.batch.jobs.nav.nav004m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.FileUtil;
@@ -15,16 +15,16 @@ import java.util.List;
 
 @Slf4j
 @StepScope
-public class Nav003mTasklet extends CmmnTask implements Tasklet {
+public class Nav004mTasklet extends CmmnTask implements Tasklet {
 
     private String host = "210.114.22.185";
     private String user = "root";
     private String password = "grunet2013!";
     private int port = 16001;
 
-    private String remotePath = "/opt/merge/HT_NAV003M/";
-    private String fileName = "HT_NAV003M";
-    private String downloadPath = "C:\\dev\\hdata\\ht_nav003m\\temp\\";
+    private String remotePath = "/opt/merge/HT_NAV004M/";
+    private String fileName = "HT_NAV004M";
+    private String downloadPath = "C:\\dev\\hdata\\ht_nav004m\\temp\\";
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
@@ -44,6 +44,4 @@ public class Nav003mTasklet extends CmmnTask implements Tasklet {
 
         return RepeatStatus.FINISHED;
     }
-
-
 }

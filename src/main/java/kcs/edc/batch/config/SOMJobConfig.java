@@ -21,6 +21,7 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +36,7 @@ import java.util.List;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class SomJobConfig {
+public class SOMJobConfig {
 
 
     private final JobBuilderFactory jobBuilderFactory;
@@ -44,6 +45,8 @@ public class SomJobConfig {
 
     private int GRID_SIZE = 10;
     private int POOL_SIZE = 10;
+
+    private String currentJobId;
 
     @Scheduled(cron = "${scheduler.cron.som}")
     public void launcher() throws Exception {
@@ -58,32 +61,15 @@ public class SomJobConfig {
         jobLauncher.run(somJob(), jobParameters);
     }
 
-//    @Bean
-/*    public Job somJob() {
-
-        return jobBuilderFactory.get("somJob")
-                .start(som001mStep(null))
-                .next(som002mStepManager(null, null))
-//                .next(cmmnMergeFileStep(JobConstant.JOB_ID_SOM002M))
-                .next(som003mStepManager(null, null))
-//                .next(cmmnMergeFileStep(JobConstant.JOB_ID_SOM003M))
-                .next(som004mStepManager(null, null))
-//                .next(cmmnMergeFileStep(JobConstant.JOB_ID_SOM004M))
-                .next(som005mStepManager(null, null))
-//                .next(cmmnMergeFileStep(JobConstant.JOB_ID_SOM002M))
-                .build();
-    }*/
-
     @Bean
     public Job somJob() {
 
-        return jobBuilderFactory.get("somJob")
-//                .start(somFileMergeStep(null, null))
+        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_SOM + JobConstant.PREFIX_JOB)
                 .start(som001mFlow())
                 .next(som002mFlow())
-//                .next(som003mFlow())
-//                .next(som004mFlow())
-//                .next(som005mFlow())
+                .next(som003mFlow())
+                .next(som004mFlow())
+                .next(som005mFlow())
                 .end()
                 .build();
     }
@@ -108,7 +94,7 @@ public class SomJobConfig {
     @Bean
     @JobScope
     public Step som001mStep(@Value("#{jobParameters[cletDt]}") String cletDt) {
-        return stepBuilderFactory.get(JobConfig.JOB_ID_SOM001M + JobConfig.PREFIX_STEP)
+        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM001M + JobConstant.PREFIX_STEP)
                 .tasklet(som001mTasklet(cletDt))
                 .build();
     }
@@ -126,10 +112,11 @@ public class SomJobConfig {
     @Bean
     @JobScope
     public Flow som002mFlow() {
+        currentJobId = JobConstant.JOB_ID_SOM002M;
         return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM002M + JobConstant.PREFIX_FLOW)
                 .start(som002mPartitionStep(null, null))// som002mPatitionStep 실행
                 .on("COMPLETED") // 성공이면
-                .to(somFileMergeStep(null, null)) // fileMergeStep 실행
+                .to(somFileMergeStep()) // fileMergeStep 실행
                 .build();
     }
 
@@ -168,11 +155,11 @@ public class SomJobConfig {
     @Bean
     @JobScope
     public Flow som003mFlow() {
-
+        currentJobId = JobConstant.JOB_ID_SOM003M;
         return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM003M + JobConstant.PREFIX_FLOW)
                 .start(som003mPartitionStep(null, null))
                 .on("COMPLETED")
-                .to(somFileMergeStep(null, JobConstant.JOB_ID_SOM003M))
+                .to(somFileMergeStep())
                 .build();
     }
 
@@ -215,11 +202,11 @@ public class SomJobConfig {
     @Bean
     @JobScope
     public Flow som004mFlow() {
+        currentJobId = JobConstant.JOB_ID_SOM004M;
         return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM004M + JobConstant.PREFIX_FLOW)
                 .start(som004mPartitionStep(null, null))
-//                .on("*")
-//                .to(somFileMergeStep(JobConstant.JOB_ID_SOM004M))
-                .next(somFileMergeStep(null, JobConstant.JOB_ID_SOM004M))
+                .on("COMPLETED")
+                .to(somFileMergeStep())
                 .build();
 
 
@@ -258,11 +245,11 @@ public class SomJobConfig {
     @Bean
     @JobScope
     public Flow som005mFlow() {
-
+        currentJobId = JobConstant.JOB_ID_SOM005M;
         return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM005M + JobConstant.PREFIX_FLOW)
                 .start(som005mPartitionStep(null, null))
                 .on("COMPLETED")
-                .to(somFileMergeStep(null, JobConstant.JOB_ID_SOM005M))
+                .to(somFileMergeStep())
                 .build();
     }
 
@@ -299,23 +286,18 @@ public class SomJobConfig {
      **************************************************************************************************/
 
     @Bean
-    @JobScope
-    public Step somFileMergeStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
-            @Value("#{jobExecutionContext[jobId]}") String jobId) {
+//    @JobScope
+    public Step somFileMergeStep() {
 
-        log.info("cletDT {}, jobId {}", cletDt, jobId);
-        return stepBuilderFactory.get(jobId + JobConstant.PREFIX_FILE_STEP)
-                .tasklet(somMergeFileTasklet(null, jobId))
+        return stepBuilderFactory.get("som" + JobConstant.PREFIX_FILE_STEP)
+                .tasklet(somMergeFileTasklet(null))
                 .build();
     }
 
     @Bean
     @StepScope
-    public CmmnMergeFile somMergeFileTasklet(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
-            String jobId) {
-        return new CmmnMergeFile(jobId);
+    public CmmnMergeFile somMergeFileTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+        return new CmmnMergeFile(currentJobId);
     }
 
 /*    @Bean

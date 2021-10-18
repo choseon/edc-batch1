@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -165,6 +166,38 @@ public class FileUtil {
             osw.close();
         }
 
+    }
+
+    public static List<Object[]> getCsvToList(String filePath) {
+//        List<List<String>> csvList = new ArrayList<List<String>>();
+        List<Object[]> rows = new ArrayList<>();
+        File csv = new File(filePath);
+        BufferedReader br = null;
+        String line = "";
+
+        try {
+            br = new BufferedReader(new FileReader(csv));
+            while ((line = br.readLine()) != null) { // readLine()은 파일에서 개행된 한 줄의 데이터를 읽어온다.
+                List<String> aLine = new ArrayList<String>();
+                String[] lineArr = line.split(","); // 파일의 한 줄을 ,로 나누어 배열에 저장 후 리스트로 변환한다.
+//                aLine = Arrays.asList(lineArr);
+//                csvList.add(aLine);
+                rows.add(lineArr);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (br != null) {
+                    br.close(); // 사용 후 BufferedReader를 닫아준다.
+                }
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return rows;
     }
 
     /**

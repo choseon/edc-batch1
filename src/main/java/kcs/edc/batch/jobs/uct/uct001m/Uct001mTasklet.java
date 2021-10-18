@@ -68,7 +68,7 @@ public class Uct001mTasklet extends CmmnTask implements Tasklet {
 
                 if (r.equals(p)) continue;
 
-                log.info("threadNum {}, r {}, p {}", threadNum, r, p);
+                log.info("threadNum {}, r {}, p {}, ps", threadNum, r, p, "2015");
 
                 UriComponentsBuilder builder = getUriComponetsBuilder();
                 builder.replaceQueryParam("r", r);

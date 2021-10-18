@@ -24,18 +24,13 @@ import java.util.Objects;
  * SomeTrend 문서 목록 수집 Tasklet
  */
 @Slf4j
-public class Som002mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Som002mTasklet extends CmmnTask implements Tasklet {
 
     @Value("#{stepExecutionContext[threadNum]}")
     protected String threadNum;
 
     @Value("#{stepExecutionContext[partitionList]}")
     protected List<Som001mVO> partitionList;
-
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-
-    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -85,12 +80,5 @@ public class Som002mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
         writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
-    }
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-
-        jobExecutionContext.put("jobId", getJobId());
-        return ExitStatus.COMPLETED;
     }
 }

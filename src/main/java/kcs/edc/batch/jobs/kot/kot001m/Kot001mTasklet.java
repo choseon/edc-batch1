@@ -41,9 +41,6 @@ public class Kot001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
             e.printStackTrace();
         }
 
-//        ResponseEntity<Kot001mVO> forEntity = new RestTemplate().getForEntity(uri, Kot001mVO.class);
-//        Kot001mVO resultVO = forEntity.getBody();
-
         Kot001mVO resultVO = sendApiForEntity(uri, Kot001mVO.class);
         if(Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
 
