@@ -7,7 +7,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 
 import java.util.List;
 
-public class CmmnMergeFile extends CmmnTask implements Tasklet {
+public class CmmnMergeFile implements Tasklet {
 
     private List<String> mergeJobList;
 
@@ -24,6 +24,7 @@ public class CmmnMergeFile extends CmmnTask implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
+/*
         writeCmmnLogStart();
 
         // partitioner의 thread를 적용한 경우 분할하여 생성된 파일을 병합한다.
@@ -45,6 +46,7 @@ public class CmmnMergeFile extends CmmnTask implements Tasklet {
         }
 
         writeCmmnLogEnd();
+*/
 
         return RepeatStatus.FINISHED;
     }

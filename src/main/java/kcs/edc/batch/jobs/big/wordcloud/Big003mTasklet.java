@@ -1,7 +1,7 @@
 package kcs.edc.batch.jobs.big.wordcloud;
 
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
-import kcs.edc.batch.cmmn.util.DateUtils;
+import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.wordcloud.vo.Big003mVO;
 import kcs.edc.batch.jobs.big.wordcloud.vo.WCQueryVO;
 import lombok.SneakyThrows;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * WordCloud(워드클라우드)
  */
 @Slf4j
-public class Big003mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Big003mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
 
     @Value("#{jobExecutionContext[keywordList]}")
     private List<String> keywordList;
@@ -40,8 +40,8 @@ public class Big003mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
         jobProp = apiProperty.getJobProp(getJobGrpName());
         accessKey = jobProp.getHeader().get("accessKey");
 
-        from = DateUtils.getOffsetDate(DateUtils.getFormatDate(cletDt), -1, "yyyy-MM-dd");
-        until = DateUtils.getOffsetDate(DateUtils.getFormatDate(cletDt), -0, "yyyy-MM-dd");
+        from = DateUtil.getOffsetDate(DateUtil.getFormatDate(cletDt), -1, "yyyy-MM-dd");
+        until = DateUtil.getOffsetDate(DateUtil.getFormatDate(cletDt), -0, "yyyy-MM-dd");
     }
 
     @Override
@@ -74,8 +74,8 @@ public class Big003mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
                 item.setArtcPblsDt(until);
                 item.setSrchQuesWordNm(keyword);
                 item.setKcsRgrsYn(kcsRgrsYn);
-                item.setFrstRgsrDtlDttm(DateUtils.getCurrentTime2());
-                item.setLastChngDtlDttm(DateUtils.getCurrentTime2());
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
 
                 resultList.add(item);
             }

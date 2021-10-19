@@ -1,7 +1,7 @@
 package kcs.edc.batch.jobs.som.som004m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
-import kcs.edc.batch.cmmn.util.DateUtils;
+import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.som.som001m.vo.Som001mVO;
 import kcs.edc.batch.jobs.som.som004m.vo.Som004mVO;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.util.Objects;
  * SomeTrend 연관어(감성) 수집 Tasklet
  */
 @Slf4j
-public class Som004mTasklet extends CmmnTask implements Tasklet {
+public class Som004mTasklet extends CmmnJobs implements Tasklet {
 
     @Value("#{stepExecutionContext[threadNum]}")
     protected String threadNum;
@@ -60,8 +60,8 @@ public class Som004mTasklet extends CmmnTask implements Tasklet {
                 String sensWordClsfNm = convertPoNeNtOt(getCategories(), polarity);
                 item.setSensWordClsfNm(sensWordClsfNm);
 
-                item.setFrstRgsrDtlDttm(DateUtils.getCurrentTime());
-                item.setLastChngDtlDttm(DateUtils.getCurrentTime());
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
                 resultList.add(item);
             }

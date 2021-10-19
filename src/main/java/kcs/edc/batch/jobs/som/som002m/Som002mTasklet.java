@@ -1,14 +1,11 @@
 package kcs.edc.batch.jobs.som.som002m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
-import kcs.edc.batch.cmmn.util.DateUtils;
+import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.som.som001m.vo.Som001mVO;
 import kcs.edc.batch.jobs.som.som002m.vo.Som002mVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -24,7 +21,7 @@ import java.util.Objects;
  * SomeTrend 문서 목록 수집 Tasklet
  */
 @Slf4j
-public class Som002mTasklet extends CmmnTask implements Tasklet {
+public class Som002mTasklet extends CmmnJobs implements Tasklet {
 
     @Value("#{stepExecutionContext[threadNum]}")
     protected String threadNum;
@@ -67,8 +64,8 @@ public class Som002mTasklet extends CmmnTask implements Tasklet {
                 item.setDocumentDate(targetDate);
 
                 item.setRegistYn(som001mVO.getRegistYn());
-                item.setFrstRgsrDtlDttm(DateUtils.getCurrentTime());
-                item.setLastChngDtlDttm(DateUtils.getCurrentTime());
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
                 resultList.add(item);
             }

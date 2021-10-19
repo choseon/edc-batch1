@@ -1,12 +1,22 @@
-package kcs.edc.batch.cmmn.vo;
+package kcs.edc.batch.cmmn.service;
 
+import kcs.edc.batch.cmmn.property.ApiProperty;
+import kcs.edc.batch.cmmn.property.FileProperty;
 import kcs.edc.batch.cmmn.util.DateUtil;
-import lombok.Data;
-import lombok.Getter;
+import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Data
-@Getter
-public class FileVO {
+@Component
+@Service
+public class FileService {
+
+    @Autowired
+    protected FileProperty fileProperty;
+
+    @Autowired
+    protected ApiProperty apiProperty;
 
     private String PREFIX_TABLE_NAME = "ht_";
     private String LOG_TABLE_NAME = "ht_log001m";
@@ -16,12 +26,8 @@ public class FileVO {
     private String jobId;
 
     private String cletDt;
+    private ApiProperty.JobProp jobProp;
 
-    public FileVO(String rootPath, String jobId, String cletDt) {
-        this.rootPath = rootPath;
-        this.jobId = jobId;
-        this.cletDt = cletDt;
-    }
 
     /**
      * 테이블명 조회 ex) nav001m -> ht_nav001m

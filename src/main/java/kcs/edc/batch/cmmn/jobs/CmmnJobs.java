@@ -3,10 +3,10 @@ package kcs.edc.batch.cmmn.jobs;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.*;
-import io.micrometer.core.lang.Nullable;
 import kcs.edc.batch.cmmn.property.ApiProperty;
 import kcs.edc.batch.cmmn.property.FileProperty;
-import kcs.edc.batch.cmmn.util.DateUtils;
+import kcs.edc.batch.cmmn.service.FileService;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.cmmn.vo.FileVO;
 import kcs.edc.batch.cmmn.vo.Log001mVO;
@@ -17,19 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.*;
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
 @Slf4j
 @StepScope
-public class CmmnTask {
+public class CmmnJobs {
 
     @Autowired
     protected ApiProperty apiProperty; // OpenApi information (all)
@@ -46,7 +44,7 @@ public class CmmnTask {
     protected String from;
     protected String until;
 
-    private String startTime = DateUtils.getCurrentTime();
+    private String startTime = DateUtil.getCurrentTime();
     private String endTime;
 
     protected URI uri;
@@ -58,7 +56,8 @@ public class CmmnTask {
 
     protected String accessKey;
 
-    protected ChannelSftp channelSftp;
+    @Autowired
+    protected FileService fileService;
 
     /**
      * OpenApiProp에서 url과 parameter를 조회하여 url 생성
@@ -215,7 +214,7 @@ public class CmmnTask {
         logVO.setParamYmd(cletDt);
         logVO.setTableName(fileVO.getTableName());
         logVO.setStartTime(startTime);
-        logVO.setEndTime(DateUtils.getCurrentTime());
+        logVO.setEndTime(DateUtil.getCurrentTime());
         logVO.setJobStat("Success");
         logVO.setTargSuccessRows(list.size());
 
@@ -277,116 +276,12 @@ public class CmmnTask {
             String tempFilePath = fileVO.getTempFilePath();
             String dataFilePath = fileVO.getDataFilePath();
             String dataFileName = fileVO.getDataFileName();
-            FileUtil.mergeFile(tempFilePath,dataFilePath,dataFileName);
+            FileUtil.mergeFile(tempFilePath, dataFilePath, dataFileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    protected ChannelSftp connectSFTP(String host, int port, String user, String password ) {
-        JSch jSch = new JSch();
-        Session session = null;
-        Channel channel = null;
-        try {
-            session = jSch.getSession(user, host, port);
-            session.setPassword(password);
 
-            Properties properties = new Properties();
-            properties.put("StrictHostKeyChecking", "no");
-            session.setConfig(properties);
-
-            session.connect();
-
-            channel = session.openChannel("sftp");
-            channel.connect();
-
-            log.info("Sftp Connection Successed");
-
-        } catch (JSchException e) {
-            log.info(e.getMessage());
-        }
-        return (ChannelSftp) channel;
-    }
-
-    /**
-     *
-     * @param remotePath
-     * @param fileName
-     * @param downloadPath
-     * @return
-     */
-    protected File download(String remotePath, String fileName, String downloadPath) {
-
-        BufferedInputStream bis = null;
-        FileOutputStream fos = null;
-        BufferedOutputStream bos = null;
-        File file = null;
-
-        try {
-
-//            GregorianCalendar calendar = new GregorianCalendar();
-//            calendar.add(Calendar.DATE, -4);
-//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-//            String strDate = sdf.format(calendar.getTime());
-
-            String strDate = null;
-            try {
-                strDate = DateUtils.getOffsetDate(cletDt, -4, "yyyyMMdd");
-            } catch (Exception e) {
-                log.info(e.getMessage());
-            }
-
-            String fullFileName = fileName + "_" + strDate + ".csv";
-            log.info("fullFilePath : {}", remotePath + fullFileName);
-
-            InputStream inputStream = null;
-            try {
-                channelSftp.cd(remotePath.replaceAll("\\\\", "/"));
-                inputStream = channelSftp.get(fullFileName);
-            } catch (SftpException e) {
-                log.info(e.getMessage());
-            }
-
-            bis = new BufferedInputStream(inputStream);
-
-            File dir = new File(downloadPath);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            file = new File(downloadPath + fullFileName.toLowerCase());
-            try {
-                fos = new FileOutputStream(file);
-            } catch (FileNotFoundException e) {
-                log.info(e.getMessage());
-            }
-            bos = new BufferedOutputStream(fos);
-
-            byte[] buffer = new byte[1024];
-            int readCount = 0;
-
-            try {
-                while ((readCount = bis.read(buffer)) > 0) {
-                    bos.write(buffer, 0, readCount);
-                }
-            } catch (IOException e) {
-                log.info(e.getMessage());
-            }
-
-        } finally {
-            try {
-                bis.close();
-            } catch (IOException e) {
-                log.info(e.getMessage());
-            }
-            try {
-                fos.close();
-            } catch (IOException e) {
-                log.info(e.getMessage());
-            }
-        }
-//        log.info("Complete File Download : {}", file.getPath());
-        return file;
-    }
 }

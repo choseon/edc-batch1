@@ -1,7 +1,7 @@
 package kcs.edc.batch.jobs.big.news;
 
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
-import kcs.edc.batch.cmmn.util.DateUtils;
+import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.news.code.NewNationWideComCode;
 import kcs.edc.batch.jobs.big.news.vo.Big001mVO;
 import kcs.edc.batch.jobs.big.news.vo.NewsQueryVO;
@@ -23,7 +23,7 @@ import java.util.Objects;
  * News Search(뉴스검색)
  */
 @Slf4j
-public class Big001mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Big001mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
 
     @Value("#{jobExecutionContext[keywordList]}")
     private List<String> keywordList;
@@ -44,8 +44,8 @@ public class Big001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
         jobProp = apiProperty.getJobProp(getJobGrpName());
         accessKey = jobProp.getHeader().get("accessKey");
 
-        from = DateUtils.getOffsetDate(DateUtils.getFormatDate(cletDt), -1, "yyyy-MM-dd");
-        until = DateUtils.getOffsetDate(DateUtils.getFormatDate(cletDt), -0, "yyyy-MM-dd");
+        from = DateUtil.getOffsetDate(DateUtil.getFormatDate(cletDt), -1, "yyyy-MM-dd");
+        until = DateUtil.getOffsetDate(DateUtil.getFormatDate(cletDt), -0, "yyyy-MM-dd");
     }
 
     @Override
@@ -80,8 +80,8 @@ public class Big001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
                 item.setOxprClsfNm(code.getNewsNationName(item.getOxprNm()));
                 item.setIssueSrwrYn(issueSrwrYn);
                 item.setKcsRgrsYn(kcsRgrsYn);
-                item.setFrstRgsrDtlDttm(DateUtils.getCurrentTime2());
-                item.setLastChngDtlDttm(DateUtils.getCurrentTime2());
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
 
                 resultList.add(item);
             }
@@ -107,8 +107,8 @@ public class Big001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
                     item.setOxprClsfNm(code.getNewsNationName(item.getOxprNm()));
                     item.setIssueSrwrYn(issueSrwrYn);
                     item.setKcsRgrsYn(kcsRgrsYn);
-                    item.setFrstRgsrDtlDttm(DateUtils.getCurrentTime2());
-                    item.setLastChngDtlDttm(DateUtils.getCurrentTime2());
+                    item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
+                    item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
 
                     resultList.add(item);
                 }

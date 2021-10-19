@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
+import kcs.edc.batch.cmmn.jobs.CmmnJobs;
 import kcs.edc.batch.cmmn.property.JobConstant;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.uct.uct001m.vo.Uct001mVO;
@@ -19,7 +19,6 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -34,7 +33,7 @@ import java.util.Objects;
  */
 @Slf4j
 @StepScope
-public class Uct001mTasklet extends CmmnTask implements Tasklet {
+public class Uct001mTasklet extends CmmnJobs implements Tasklet {
 
     @Value("#{stepExecutionContext[threadNum]}")
     protected String threadNum;

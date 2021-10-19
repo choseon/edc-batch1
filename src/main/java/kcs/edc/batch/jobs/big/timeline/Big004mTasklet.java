@@ -1,8 +1,8 @@
 package kcs.edc.batch.jobs.big.timeline;
 
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
+import kcs.edc.batch.cmmn.jobs.CmmnJobs;
 import kcs.edc.batch.cmmn.property.JobConstant;
-import kcs.edc.batch.cmmn.util.DateUtils;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.big.timeline.vo.Big004mVO;
 import kcs.edc.batch.jobs.big.timeline.vo.TimelineQueryVO;
@@ -24,7 +24,7 @@ import java.util.Objects;
  * News TimeLine (뉴스 타임라인)
  */
 @Slf4j
-public class Big004mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Big004mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
 
     private List<String> kcsKeywordList;
     private String kcsRgrsYn = "Y";
@@ -39,8 +39,8 @@ public class Big004mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
         jobProp = apiProperty.getJobProp(getJobGrpName());
         accessKey = jobProp.getHeader().get("accessKey");
 
-        from = DateUtils.getOffsetDate(DateUtils.getFormatDate(cletDt), -1, "yyyy-MM-dd");
-        until = DateUtils.getOffsetDate(DateUtils.getFormatDate(cletDt), -0, "yyyy-MM-dd");
+        from = DateUtil.getOffsetDate(DateUtil.getFormatDate(cletDt), -1, "yyyy-MM-dd");
+        until = DateUtil.getOffsetDate(DateUtil.getFormatDate(cletDt), -0, "yyyy-MM-dd");
 
         try {
             String resourcePath = fileProperty.getResourcePath();
@@ -83,8 +83,8 @@ public class Big004mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
             for (Big004mVO.TimeLineItem item : time_line) {
                 item.setSrchQuesWordNm(keyword);
                 item.setKcsRgrsYn(kcsRgrsYn);
-                item.setFrstRgsrDtlDttm(DateUtils.getCurrentTime2());
-                item.setLastChngDtlDttm(DateUtils.getCurrentTime2());
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
 
                 resultList.add(item);
             }

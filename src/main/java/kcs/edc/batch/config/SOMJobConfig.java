@@ -10,10 +10,7 @@ import kcs.edc.batch.jobs.som.som004m.Som004mTasklet;
 import kcs.edc.batch.jobs.som.som005m.Som005mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -21,13 +18,16 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,7 +37,6 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class SOMJobConfig {
-
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -49,16 +48,27 @@ public class SOMJobConfig {
     private String currentJobId;
 
     @Scheduled(cron = "${scheduler.cron.som}")
-    public void launcher() throws Exception {
+    public void launcher() {
         log.info("SomConfiguration launcher...");
 
-        String cletDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("cletDt", cletDt)
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters();
+        try {
+            String cletDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            JobParameters jobParameters = new JobParametersBuilder()
+                    .addString("cletDt", cletDt)
+                    .addLong("time", System.currentTimeMillis())
+                    .toJobParameters();
 
-        jobLauncher.run(somJob(), jobParameters);
+            jobLauncher.run(somJob(), jobParameters);
+
+        } catch (JobExecutionAlreadyRunningException e) {
+            e.printStackTrace();
+        } catch (JobRestartException e) {
+            e.printStackTrace();
+        } catch (JobInstanceAlreadyCompleteException e) {
+            e.printStackTrace();
+        } catch (JobParametersInvalidException e) {
+            e.printStackTrace();
+        }
     }
 
     @Bean
@@ -82,15 +92,11 @@ public class SOMJobConfig {
     @Bean
     @JobScope
     public Flow som001mFlow() {
-        return new FlowBuilder<Flow>("som001mFlow")
+        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM001M + JobConstant.PREFIX_FLOW)
                 .start(som001mStep(null))
                 .build();
     }
 
-    /**
-     * @param cletDt
-     * @return
-     */
     @Bean
     @JobScope
     public Step som001mStep(@Value("#{jobParameters[cletDt]}") String cletDt) {
@@ -129,7 +135,7 @@ public class SOMJobConfig {
         return stepBuilderFactory.get(JobConstant.JOB_ID_SOM002M + JobConstant.PREFIX_PARTITION_STEP)
                 .partitioner("som002mStep", cmmnPartitioner(cletDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
-                .taskExecutor(executor()) // multi thread
+                .taskExecutor(somExecutor()) // multi thread
                 .step(som002mStep())
                 .build();
     }
@@ -177,7 +183,7 @@ public class SOMJobConfig {
         return stepBuilderFactory.get(JobConstant.JOB_ID_SOM003M + JobConstant.PREFIX_PARTITION_STEP)
                 .partitioner("som003mStep", cmmnPartitioner(cletDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
-                .taskExecutor(executor()) // multi thread
+                .taskExecutor(somExecutor()) // multi thread
                 .step(som003mStep())
                 .build();
     }
@@ -220,7 +226,7 @@ public class SOMJobConfig {
         return stepBuilderFactory.get(JobConstant.JOB_ID_SOM004M + JobConstant.PREFIX_PARTITION_STEP)
                 .partitioner("som004mStep", cmmnPartitioner(cletDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
-                .taskExecutor(executor()) // multi thread
+                .taskExecutor(somExecutor()) // multi thread
                 .step(som004mStep())
                 .build();
     }
@@ -262,7 +268,7 @@ public class SOMJobConfig {
         return stepBuilderFactory.get(JobConstant.JOB_ID_SOM005M + JobConstant.PREFIX_PARTITION_STEP)
                 .partitioner("som005mStep", cmmnPartitioner(cletDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
-                .taskExecutor(executor()) // multi thread
+                .taskExecutor(somExecutor()) // multi thread
                 .step(som005mStep())
                 .build();
     }
@@ -289,16 +295,18 @@ public class SOMJobConfig {
 //    @JobScope
     public Step somFileMergeStep() {
 
-        return stepBuilderFactory.get("som" + JobConstant.PREFIX_FILE_STEP)
-                .tasklet(somMergeFileTasklet(null))
+
+        if(ObjectUtils.isEmpty(currentJobId)) return null;
+        return stepBuilderFactory.get(JobConstant.JOB_GRP_ID_SOM + JobConstant.PREFIX_FILE_STEP)
+                .tasklet(new CmmnMergeFile(currentJobId))
                 .build();
     }
 
-    @Bean
-    @StepScope
-    public CmmnMergeFile somMergeFileTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
-        return new CmmnMergeFile(currentJobId);
-    }
+//    @Bean
+//    @StepScope
+//    public CmmnMergeFile somMergeFileTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+//        return new CmmnMergeFile(currentJobId);
+//    }
 
 /*    @Bean
     @StepScope
@@ -314,7 +322,7 @@ public class SOMJobConfig {
     }*/
 
     @Bean
-    public TaskExecutor executor() {
+    public TaskExecutor somExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(POOL_SIZE);
         executor.setMaxPoolSize(POOL_SIZE);

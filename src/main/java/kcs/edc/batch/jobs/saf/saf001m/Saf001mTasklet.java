@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.saf.saf001m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
+import kcs.edc.batch.cmmn.jobs.CmmnJobs;
 import kcs.edc.batch.jobs.saf.saf001m.vo.Saf001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -26,7 +26,7 @@ import java.util.Objects;
  */
 @Slf4j
 @StepScope
-public class Saf001mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Saf001mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
 
     private List<String> certNumList = new ArrayList<>();
     private String authKey;

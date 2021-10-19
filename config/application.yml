@@ -11,6 +11,10 @@ spring:
 path:
   rootPath: C:/dev/edc-batch/
   storePath: C:/dev/hdata/
+#    hive: C:/dev/hdata/
+#    nas:
+#      opd: C:/dev/data_nas/anl_data/BA204/opendart/
+#      kot: C:/dev/data_nas/anl_data/BA201/kotra/
   resourcePath: C:/dev/edc-batch/resources/
   configPath: C:/dev/edc-batch/config/
   logPath: C:/dev/log/

@@ -1,7 +1,7 @@
 package kcs.edc.batch.jobs.big.ranking;
 
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
-import kcs.edc.batch.cmmn.util.DateUtils;
+import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.ranking.vo.Big005mVO;
 import kcs.edc.batch.jobs.big.ranking.vo.RankingQueryVO;
 import lombok.SneakyThrows;
@@ -21,7 +21,7 @@ import java.util.Objects;
  * Query Ranking (인기검색어)
  */
 @Slf4j
-public class Big005mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Big005mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
 
     private String kcsRgrsYn = "Y";
     private String issueSrwrYn = "N";
@@ -33,8 +33,8 @@ public class Big005mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
         jobProp = apiProperty.getJobProp(getJobGrpName());
         accessKey = jobProp.getHeader().get("accessKey");
 
-        from = DateUtils.getOffsetDate(DateUtils.getFormatDate(cletDt), -1, "yyyy-MM-dd");
-        until = DateUtils.getOffsetDate(DateUtils.getFormatDate(cletDt), -0, "yyyy-MM-dd");
+        from = DateUtil.getOffsetDate(DateUtil.getFormatDate(cletDt), -1, "yyyy-MM-dd");
+        until = DateUtil.getOffsetDate(DateUtil.getFormatDate(cletDt), -0, "yyyy-MM-dd");
     }
 
     @Override
@@ -62,8 +62,8 @@ public class Big005mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
         List<Big005mVO.QueryItem> queries = resultVO.getReturn_object().getQueries();
         for (Big005mVO.QueryItem item : queries) {
             item.setKcsRgrsYn(kcsRgrsYn);
-            item.setFrstRgsrDtlDttm(DateUtils.getCurrentTime2());
-            item.setLastChngDtlDttm(DateUtils.getCurrentTime2());
+            item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
+            item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
 
             resultList.add(item);
         }

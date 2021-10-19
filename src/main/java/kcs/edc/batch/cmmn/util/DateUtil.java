@@ -10,7 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Slf4j
-public class DateUtils {
+public class DateUtil {
 
 	/**
 	 *  지정된 날짜에서 원하는 일수 만큼 이동된 날짜를 반환한다.(디폴트형식 yyyyMMdd)
@@ -32,9 +32,14 @@ public class DateUtils {
 	 * @param offset 이동할 일수( -2147483648 ~ 2147483647 )
 	 * @return 변경된 날짜
 	 */
-	public static String getOffsetDate(String strDate, int offset, String pFormat) throws Exception {
+	public static String getOffsetDate(String strDate, int offset, String pFormat) {
 		SimpleDateFormat fmt = new SimpleDateFormat(pFormat);
-		Date date = fmt.parse(strDate);
+		Date date = null;
+		try {
+			date = fmt.parse(strDate);
+		} catch (ParseException e) {
+			log.error(e.getMessage());
+		}
 		return getOffsetDate(date, offset, pFormat);
 	}
 
@@ -46,7 +51,7 @@ public class DateUtils {
 	 * @param pFormat 날짜형식
 	 * @return 변경된 날짜
 	 */
-	public static String getOffsetDate(Date pDate, int offset, String pFormat) throws Exception {
+	public static String getOffsetDate(Date pDate, int offset, String pFormat) {
 		SimpleDateFormat fmt = new SimpleDateFormat(pFormat);
 		Calendar c = Calendar.getInstance();
 		String ret = "";

@@ -1,7 +1,10 @@
 package kcs.edc.batch.jobs.nav.nav004m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
+import com.jcraft.jsch.ChannelSftp;
+import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
+import kcs.edc.batch.cmmn.util.SftpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -15,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @StepScope
-public class Nav004mTasklet extends CmmnTask implements Tasklet {
+public class Nav004mTasklet extends CmmnJobs implements Tasklet {
 
     private String host = "210.114.22.185";
     private String user = "root";
@@ -31,8 +34,14 @@ public class Nav004mTasklet extends CmmnTask implements Tasklet {
 
         writeCmmnLogStart();
 
-        this.channelSftp = this.connectSFTP(host, port, user, password);
-        File file = this.download(remotePath, fileName, downloadPath);
+        ChannelSftp channelSftp = null;
+        channelSftp = SftpUtil.connectSFTP(host, port, user, password);
+
+        // fullFileName : HT_NAVV004M.20211018.csv (D-4)
+        String strDate = DateUtil.getOffsetDate(cletDt, -4, "yyyyMMdd");
+        fileName = fileName + "_" + strDate + ".csv";
+
+        File file = SftpUtil.download(channelSftp, remotePath, fileName, downloadPath);
 
         List<Object[]> csvToList = FileUtil.getCsvToList(file.getPath());
         if(ObjectUtils.isEmpty(csvToList)) return RepeatStatus.FINISHED;

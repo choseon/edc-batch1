@@ -45,7 +45,7 @@ public class KOTJobConfig {
         jobLauncher.run(kotJob(), jobParameters);
     }
 
-//    @Bean
+    @Bean
     public Job kotJob() {
 
         return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_KOT + JobConstant.PREFIX_JOB)

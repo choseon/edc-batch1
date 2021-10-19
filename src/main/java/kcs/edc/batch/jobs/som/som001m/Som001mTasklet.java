@@ -1,8 +1,8 @@
 package kcs.edc.batch.jobs.som.som001m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
+import kcs.edc.batch.cmmn.jobs.CmmnJobs;
 import kcs.edc.batch.cmmn.property.JobConstant;
-import kcs.edc.batch.cmmn.util.DateUtils;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.som.som001m.vo.KCSFrequencyVO;
 import kcs.edc.batch.jobs.som.som001m.vo.Som001mVO;
@@ -25,7 +25,7 @@ import java.util.Objects;
  * SomeTrend 키워드 빈도 수집 Tasklet
  */
 @Slf4j
-public class Som001mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Som001mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
 
     private final String SOM_SOURCES[] = {"news", "twitter", "blog"};
 
@@ -88,8 +88,8 @@ public class Som001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
             item.setDate(cletDt);
             item.setSource(source);
             item.setRegistYn(KCS_KEYWORD_N);
-            item.setFrstRgsrDtlDttm(DateUtils.getCurrentTime());
-            item.setLastChngDtlDttm(DateUtils.getCurrentTime());
+            item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+            item.setLastChngDtlDttm(DateUtil.getCurrentTime());
             resultList.add(item);
 
             log.info("[{} {}] >> source :: {} | keyword :: {} | kcsKeywordYn :: {}",
@@ -153,8 +153,8 @@ public class Som001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
                 item.setKeyword(keyword);
                 item.setFrequency(frequency);
                 item.setRegistYn(KCS_KEYWORD_Y);
-                item.setFrstRgsrDtlDttm(DateUtils.getCurrentTime());
-                item.setLastChngDtlDttm(DateUtils.getCurrentTime());
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                 resultList.add(item);
 
                 log.info("[{} {}] >> source :: {} | keyword :: {} | kcsKeywordYn :: {}",
