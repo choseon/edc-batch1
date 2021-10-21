@@ -1,16 +1,16 @@
 package kcs.edc.batch.jobs.nav.nav004m;
 
 import com.jcraft.jsch.ChannelSftp;
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
-import kcs.edc.batch.cmmn.util.DateUtil;
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
+import kcs.edc.batch.cmmn.service.SftpService;
 import kcs.edc.batch.cmmn.util.FileUtil;
-import kcs.edc.batch.cmmn.util.SftpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 
 import java.io.File;
@@ -18,36 +18,43 @@ import java.util.List;
 
 @Slf4j
 @StepScope
-public class Nav004mTasklet extends CmmnJobs implements Tasklet {
+public class Nav004mTasklet extends CmmnJob implements Tasklet {
 
-    private String host = "210.114.22.185";
-    private String user = "root";
-    private String password = "grunet2013!";
-    private int port = 16001;
+    @Autowired
+    SftpService sftpService;
 
-    private String remotePath = "/opt/merge/HT_NAV004M/";
-    private String fileName = "HT_NAV004M";
-    private String downloadPath = "C:\\dev\\hdata\\ht_nav004m\\temp\\";
+    private String fileNamePattern = "HT_%s_%s.csv";
+
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
 
-        writeCmmnLogStart();
+        this.writeCmmnLogStart();
 
-        ChannelSftp channelSftp = null;
-        channelSftp = SftpUtil.connectSFTP(host, port, user, password);
+        // set JobId
+        this.sftpService.setJobId(getCurrentJobId());
 
-        // fullFileName : HT_NAVV004M.20211018.csv (D-4)
-        String strDate = DateUtil.getOffsetDate(cletDt, -4, "yyyyMMdd");
-        fileName = fileName + "_" + strDate + ".csv";
+        // SFTP Connection
+        ChannelSftp channelSftp = this.sftpService.connectSFTP();
+        if (ObjectUtils.isEmpty(channelSftp)) return RepeatStatus.FINISHED;
 
-        File file = SftpUtil.download(channelSftp, remotePath, fileName, downloadPath);
+        // File Download
+        String fileName = String.format(this.fileNamePattern, this.getCurrentJobId().toUpperCase(), this.cletDt);
+        log.info("fileName: {}", fileName);
 
-        List<Object[]> csvToList = FileUtil.getCsvToList(file.getPath());
-        if(ObjectUtils.isEmpty(csvToList)) return RepeatStatus.FINISHED;
-        csvToList.remove(0); // header 삭제
+        File downloadFile = this.sftpService.download(channelSftp, fileName);
+        if (ObjectUtils.isEmpty(downloadFile)) return RepeatStatus.FINISHED;
 
-        this.makeFile(getJobId(), csvToList);
+        // CSV -> List Conversion
+        List<Object[]> csvToList = FileUtil.getCsvToList(downloadFile.getPath());
+        if (ObjectUtils.isEmpty(csvToList)) return RepeatStatus.FINISHED;
+
+        // header 삭제
+        csvToList.remove(0);
+
+        // Make TSV File
+        log.info("this.fileService.getJobId(): {} ", this.fileService.getJobId());
+        this.fileService.makeFile(csvToList);
 
         this.writeCmmnLogEnd();
 

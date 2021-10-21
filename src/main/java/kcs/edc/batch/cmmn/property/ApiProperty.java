@@ -30,7 +30,6 @@ public class ApiProperty {
 
     @Getter
     @Setter
-    @ToString
     public static class JobProp {
 
         /**

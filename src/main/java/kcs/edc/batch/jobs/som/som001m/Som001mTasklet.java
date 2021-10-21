@@ -1,6 +1,7 @@
 package kcs.edc.batch.jobs.som.som001m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.property.JobConstant;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
@@ -25,7 +26,7 @@ import java.util.Objects;
  * SomeTrend 키워드 빈도 수집 Tasklet
  */
 @Slf4j
-public class Som001mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
+public class Som001mTasklet extends CmmnJob implements Tasklet {
 
     private final String SOM_SOURCES[] = {"news", "twitter", "blog"};
 
@@ -34,33 +35,34 @@ public class Som001mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
 
     private int index = 0;
 
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-        jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-    }
+//    @Override
+//    public void beforeStep(StepExecution stepExecution) {
+//        jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
+//    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        writeCmmnLogStart();
+        this.writeCmmnLogStart();
 
         List<Som001mVO> resultVO = new ArrayList<>();
-        for (String source : SOM_SOURCES) {
+        for (String source : this.SOM_SOURCES) {
 
             // 썸트랜드 키워드 목록 조회
             resultVO = getSomtrendKeywordList(source);
-            resultList.addAll(resultVO);
+            this.resultList.addAll(resultVO);
 
             // 관세청 키워드 목록 조회
             resultVO = getKCSKeywordList(source);
-            resultList.addAll(resultVO);
+            this.resultList.addAll(resultVO);
         }
 
-        if(resultList.size() == 0) return RepeatStatus.FINISHED;
+        if(this.resultList.size() == 0) return RepeatStatus.FINISHED;
 
         // 파일 생성
-        makeFile(getJobId(), resultList);
-        writeCmmnLogEnd();
+        this.fileService.makeFile(this.resultList);
+
+        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }
@@ -75,25 +77,25 @@ public class Som001mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
     private List<Som001mVO> getSomtrendKeywordList(String source) {
 
         List<Som001mVO> resultList = new ArrayList<>();
-        UriComponentsBuilder builder = getUriComponetsBuilder();
+        UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
         builder.replaceQueryParam("source", source);
-        builder.replaceQueryParam("startDate", cletDt);
-        builder.replaceQueryParam("endDate", cletDt);
+        builder.replaceQueryParam("startDate", this.cletDt);
+        builder.replaceQueryParam("endDate", this.cletDt);
         uri = builder.build().toUri();
 
-        Som001mVO[] resultVO = sendApiForEntity(uri, Som001mVO[].class);
+        Som001mVO[] resultVO = this.apiService.sendApiForEntity(uri, Som001mVO[].class);
         if (Objects.isNull(resultVO)) return null;
 
         for (Som001mVO item : resultVO) {
-            item.setDate(cletDt);
+            item.setDate(this.cletDt);
             item.setSource(source);
-            item.setRegistYn(KCS_KEYWORD_N);
+            item.setRegistYn(this.KCS_KEYWORD_N);
             item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
             item.setLastChngDtlDttm(DateUtil.getCurrentTime());
             resultList.add(item);
 
             log.info("[{} {}] >> source :: {} | keyword :: {} | kcsKeywordYn :: {}",
-                    getJobId(), index++, source, item.getKeyword(), KCS_KEYWORD_N);
+                    getCurrentJobId(), index++, source, item.getKeyword(), this.KCS_KEYWORD_N);
         }
         return resultList;
     }
@@ -110,7 +112,8 @@ public class Som001mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
         List<String> keywordList = new ArrayList<>();
         try {
             // kcs_keyword_for_somtrend.txt list
-            String resourcePath = fileProperty.getResourcePath();
+//            String resourcePath = fileProperty.getResourcePath();
+            String resourcePath = this.fileService.getResourcePath();
             String filePath = resourcePath + JobConstant.RESOURCE_FILE_NAME_SOM_KCS_KEWORD;
             keywordList = FileUtil.readTextFile(filePath);
             if (keywordList == null || keywordList.size() == 0) {
@@ -124,11 +127,11 @@ public class Som001mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
         List<Som001mVO> resultList = new ArrayList<>();
         for (String keywordLine : keywordList) {
 
-            UriComponentsBuilder builder = getUriComponetsBuilder();
+            UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
             builder.replaceQueryParam("command", "GetKeywordTransitions");
             builder.replaceQueryParam("source", source);
-            builder.replaceQueryParam("startDate", cletDt);
-            builder.replaceQueryParam("endDate", cletDt);
+            builder.replaceQueryParam("startDate", this.cletDt);
+            builder.replaceQueryParam("endDate", this.cletDt);
 
             String[] split = keywordLine.split("\\|"); // split
             for (String keyword : split) {
@@ -136,7 +139,7 @@ public class Som001mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
             }
             uri = builder.build().toUri();
 
-            KCSFrequencyVO resultVO = sendApiForEntity(uri, KCSFrequencyVO.class);
+            KCSFrequencyVO resultVO = this.apiService.sendApiForEntity(uri, KCSFrequencyVO.class);
             if (Objects.isNull(resultVO)) continue;
 
 
@@ -148,17 +151,17 @@ public class Som001mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
                 if (frequency < 1) continue;
 
                 Som001mVO item = new Som001mVO();
-                item.setDate(cletDt);
+                item.setDate(this.cletDt);
                 item.setSource(source);
                 item.setKeyword(keyword);
                 item.setFrequency(frequency);
-                item.setRegistYn(KCS_KEYWORD_Y);
+                item.setRegistYn(this.KCS_KEYWORD_Y);
                 item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                 resultList.add(item);
 
                 log.info("[{} {}] >> source :: {} | keyword :: {} | kcsKeywordYn :: {}",
-                        getJobId(), index++, source, keyword, KCS_KEYWORD_Y);
+                        getCurrentJobId(), index++, source, keyword, this.KCS_KEYWORD_Y);
             }
         }
         return resultList;
@@ -167,7 +170,7 @@ public class Som001mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        jobExecutionContext.put("list", resultList);
-        return (resultList.size() == 0) ? ExitStatus.FAILED : ExitStatus.COMPLETED;
+        this.jobExecutionContext.put("list", this.resultList);
+        return (this.resultList.size() == 0) ? ExitStatus.FAILED : ExitStatus.COMPLETED;
     }
 }

@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.big.wordcloud;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.wordcloud.vo.Big003mVO;
 import kcs.edc.batch.jobs.big.wordcloud.vo.WCQueryVO;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * WordCloud(워드클라우드)
  */
 @Slf4j
-public class Big003mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
+public class Big003mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
 
     @Value("#{jobExecutionContext[keywordList]}")
     private List<String> keywordList;
@@ -81,7 +81,7 @@ public class Big003mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
             }
         }
         // 파일생성
-        makeFile(getJobId(), resultList);
+        makeFile(getCurrentJobId(), resultList);
         writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;

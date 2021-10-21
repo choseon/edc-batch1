@@ -1,6 +1,7 @@
 package kcs.edc.batch.jobs.som.som005m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.som.som001m.vo.Som001mVO;
 import kcs.edc.batch.jobs.som.som005m.vo.Som005mVO;
@@ -19,34 +20,33 @@ import java.util.Objects;
  * SomeTrend 이슈키워드 수집 Tasklet
  */
 @Slf4j
-public class Som005mTasklet extends CmmnJobs implements Tasklet {
+public class Som005mTasklet extends CmmnJob implements Tasklet {
 
     @Value("#{stepExecutionContext[threadNum]}")
-    protected String threadNum;
+    private String threadNum;
 
     @Value("#{stepExecutionContext[partitionList]}")
-    protected List<Som001mVO> partitionList;
+    private List<Som001mVO> partitionList;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        writeCmmnLogStart();
-        log.info("thread Num :: {}, partitionList.size() :: {}", threadNum, partitionList.size());
+        this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
 
         for (Som001mVO som001mVO : partitionList) {
 
-            UriComponentsBuilder builder = getUriComponetsBuilder();
+            UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
             builder.replaceQueryParam("issueStartDate", som001mVO.getDate());
             builder.replaceQueryParam("issueEndDate", som001mVO.getDate());
             builder.replaceQueryParam("source", som001mVO.getSource());
             builder.replaceQueryParam("keyword", som001mVO.getKeyword());
-            uri = builder.build().toUri();
+            this.uri = builder.build().toUri();
 
-            Som005mVO resultVO = sendApiForEntity(uri, Som005mVO.class);
+            Som005mVO resultVO = this.apiService.sendApiForEntity(this.uri, Som005mVO.class);
             if(Objects.isNull(resultVO)) continue;
 
             log.info("[{}] >> source :: {} | keyword :: {} | kcsKeywordYn :: {} | size :: {}",
-                    getJobId(), som001mVO.getSource(), som001mVO.getKeyword(), som001mVO.getRegistYn(), resultVO.getChildList().size());
+                    getCurrentJobId(), som001mVO.getSource(), som001mVO.getKeyword(), som001mVO.getRegistYn(), resultVO.getChildList().size());
 
             for (Som005mVO.Item item : resultVO.getChildList()) {
                 item.setDate(som001mVO.getDate());
@@ -56,14 +56,13 @@ public class Som005mTasklet extends CmmnJobs implements Tasklet {
                 item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
-                resultList.add(item);
+                this.resultList.add(item);
             }
         }
 
-        makeTempFile(getJobId(), resultList);
+        this.fileService.makeTempFile(this.resultList);
 
-        log.info("End thread Num : {}", threadNum);
-        writeCmmnLogEnd();
+        this.writeCmmnLogEnd(this.threadNum);
 
         return RepeatStatus.FINISHED;
     }

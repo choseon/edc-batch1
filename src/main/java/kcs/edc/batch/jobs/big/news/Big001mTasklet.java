@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.big.news;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.news.code.NewNationWideComCode;
 import kcs.edc.batch.jobs.big.news.vo.Big001mVO;
@@ -23,7 +23,7 @@ import java.util.Objects;
  * News Search(뉴스검색)
  */
 @Slf4j
-public class Big001mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
+public class Big001mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
 
     @Value("#{jobExecutionContext[keywordList]}")
     private List<String> keywordList;
@@ -115,7 +115,7 @@ public class Big001mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
             }
         }
         // 파일생성
-        makeFile(getJobId(), resultList);
+        makeFile(getCurrentJobId(), resultList);
         writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;

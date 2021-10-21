@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.kot.kot002m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Kot001mVO;
 import kcs.edc.batch.jobs.kot.kot002m.vo.Kot002mVO;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @StepScope
-public class Kot002mTasklet extends CmmnJobs implements Tasklet {
+public class Kot002mTasklet extends CmmnTask implements Tasklet {
 
     @Value("#{jobExecutionContext[resultList]}")
     List<Kot001mVO.Item> resultList;
@@ -44,7 +44,7 @@ public class Kot002mTasklet extends CmmnJobs implements Tasklet {
             }
         }
 
-        makeFile(getJobId(), items);
+        makeFile(getCurrentJobId(), items);
 
         writeCmmnLogEnd();
         return RepeatStatus.FINISHED;

@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.saf.saf001l;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.property.JobConstant;
 import kcs.edc.batch.jobs.saf.saf001l.vo.Saf001lVO;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public class Saf001lTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
+public class Saf001lTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
 
     @Value("#{jobExecutionContext[certNumList]}")
     private List<String> certNumList;

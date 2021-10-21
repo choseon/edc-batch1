@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.big.ranking;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.ranking.vo.Big005mVO;
 import kcs.edc.batch.jobs.big.ranking.vo.RankingQueryVO;
@@ -21,7 +21,7 @@ import java.util.Objects;
  * Query Ranking (인기검색어)
  */
 @Slf4j
-public class Big005mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
+public class Big005mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
 
     private String kcsRgrsYn = "Y";
     private String issueSrwrYn = "N";

@@ -1,6 +1,7 @@
 package kcs.edc.batch.jobs.som.som002m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.som.som001m.vo.Som001mVO;
 import kcs.edc.batch.jobs.som.som002m.vo.Som002mVO;
@@ -21,7 +22,7 @@ import java.util.Objects;
  * SomeTrend 문서 목록 수집 Tasklet
  */
 @Slf4j
-public class Som002mTasklet extends CmmnJobs implements Tasklet {
+public class Som002mTasklet extends CmmnJob implements Tasklet {
 
     @Value("#{stepExecutionContext[threadNum]}")
     protected String threadNum;
@@ -36,12 +37,13 @@ public class Som002mTasklet extends CmmnJobs implements Tasklet {
 
         for (Som001mVO som001mVO : partitionList) {
 
-            UriComponentsBuilder builder = getUriComponetsBuilder();
+            UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
             builder.replaceQueryParam("startDate", som001mVO.getDate());
             builder.replaceQueryParam("endDate", som001mVO.getDate());
             builder.replaceQueryParam("source", som001mVO.getSource());
 
-            List<String> keywordsExcFilterList = jobProp.getParam().get("keywordsExcFilterList[]");
+//            List<String> keywordsExcFilterList = jobProp.getParam().get("keywordsExcFilterList[]");
+            List<String> keywordsExcFilterList = this.apiService.getjobPropParam("keywordsExcFilterList[]");
             for (String filter : keywordsExcFilterList) {
                 String keyword = "(" + som001mVO.getKeyword() + ")&&~(" + filter + ")";
                 builder.queryParam("keyword", keyword);
@@ -49,11 +51,11 @@ public class Som002mTasklet extends CmmnJobs implements Tasklet {
             builder.replaceQueryParam("keywordsExcFilterList[]", "");
             uri = builder.build().toUri();
 
-            Som002mVO resultVO = sendApiForEntity(uri, Som002mVO.class);
+            Som002mVO resultVO = this.apiService.sendApiForEntity(uri, Som002mVO.class);
             if(Objects.isNull(resultVO)) continue;
 
             log.info("[{} #{}] >> source :: {} | keyword :: {} | kcsKeywordYn :: {} | size :: {}",
-                    getJobId(), threadNum, som001mVO.getSource(), som001mVO.getKeyword(), som001mVO.getRegistYn(), resultVO.getDocumentList().size());
+                    getCurrentJobId(), threadNum, som001mVO.getSource(), som001mVO.getKeyword(), som001mVO.getRegistYn(), resultVO.getDocumentList().size());
 
             for (Som002mVO.Item item : resultVO.getDocumentList()) {
                 item.setDate(som001mVO.getDate());
@@ -71,10 +73,9 @@ public class Som002mTasklet extends CmmnJobs implements Tasklet {
             }
         }
 
-        makeTempFile(getJobId(), resultList);
+        this.fileService.makeTempFile(resultList);
 
-        log.info("End thread Num : {}", threadNum);
-        writeCmmnLogEnd();
+        this.writeCmmnLogEnd(threadNum);
 
         return RepeatStatus.FINISHED;
     }

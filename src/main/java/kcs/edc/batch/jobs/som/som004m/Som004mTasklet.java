@@ -1,6 +1,7 @@
 package kcs.edc.batch.jobs.som.som004m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.som.som001m.vo.Som001mVO;
 import kcs.edc.batch.jobs.som.som004m.vo.Som004mVO;
@@ -16,11 +17,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- *
  * SomeTrend 연관어(감성) 수집 Tasklet
  */
 @Slf4j
-public class Som004mTasklet extends CmmnJobs implements Tasklet {
+public class Som004mTasklet extends CmmnJob implements Tasklet {
 
     @Value("#{stepExecutionContext[threadNum]}")
     protected String threadNum;
@@ -31,23 +31,22 @@ public class Som004mTasklet extends CmmnJobs implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        writeCmmnLogStart();
-        log.info("thread Num :: {}, partitionList.size() :: {}", threadNum, partitionList.size());
+        this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
 
-        for (Som001mVO som001mVO : partitionList) {
+        for (Som001mVO som001mVO : this.partitionList) {
 
-            UriComponentsBuilder builder = getUriComponetsBuilder();
+            UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
             builder.replaceQueryParam("startDate", som001mVO.getDate());
             builder.replaceQueryParam("endDate", som001mVO.getDate());
             builder.replaceQueryParam("source", som001mVO.getSource());
             builder.replaceQueryParam("keyword", som001mVO.getKeyword());
-            uri = builder.build().toUri();
+            this.uri = builder.build().toUri();
 
-            Som004mVO resultVO = sendApiForEntity(uri, Som004mVO.class);
-            if(Objects.isNull(resultVO)) continue;
+            Som004mVO resultVO = this.apiService.sendApiForEntity(this.uri, Som004mVO.class);
+            if (Objects.isNull(resultVO)) continue;
 
             log.info("[{}] >> source :: {} | keyword :: {} | kcsKeywordYn :: {} | size :: {}",
-                    getJobId(), som001mVO.getSource(), som001mVO.getKeyword(), som001mVO.getRegistYn(), resultVO.getChildList().size());
+                    getCurrentJobId(), som001mVO.getSource(), som001mVO.getKeyword(), som001mVO.getRegistYn(), resultVO.getChildList().size());
 
             for (Som004mVO.Item item : resultVO.getChildList()) {
 
@@ -57,28 +56,28 @@ public class Som004mTasklet extends CmmnJobs implements Tasklet {
                 item.setKeyword(som001mVO.getKeyword());
 
                 String polarity = item.getCategoryList().get(0).substring(0, 6) + "0";
-                String sensWordClsfNm = convertPoNeNtOt(getCategories(), polarity);
+                List<String> categoryList = this.apiService.getjobPropParam("categoryList[]");
+                String sensWordClsfNm = convertPoNeNtOt(categoryList, polarity);
                 item.setSensWordClsfNm(sensWordClsfNm);
 
                 item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
-                resultList.add(item);
+                this.resultList.add(item);
             }
         }
 
-        makeTempFile(getJobId(), resultList);
+        this.fileService.makeTempFile(this.resultList);
 
-        log.info("End thread Num : {}", threadNum);
-        writeCmmnLogEnd();
+        this.writeCmmnLogEnd(this.threadNum);
 
         return RepeatStatus.FINISHED;
     }
 
-    private String convertPoNeNtOt(List<String> caregoryList, String polarity) {
-        List<String> positiveCode = caregoryList.subList(0, 2);
-        List<String> negativeCode = caregoryList.subList(2, 4);
-        List<String> neutralCode = caregoryList.subList(4, 5);
+    private String convertPoNeNtOt(List<String> categoryList, String polarity) {
+        List<String> positiveCode = categoryList.subList(0, 2);
+        List<String> negativeCode = categoryList.subList(2, 4);
+        List<String> neutralCode = categoryList.subList(4, 5);
         if (positiveCode.contains(polarity)) {
             return "po";
         } else if (negativeCode.contains(polarity)) {
@@ -88,7 +87,4 @@ public class Som004mTasklet extends CmmnJobs implements Tasklet {
         }
     }
 
-    private List<String> getCategories() {
-        return jobProp.getParam().get("categoryList[]");
-    }
 }

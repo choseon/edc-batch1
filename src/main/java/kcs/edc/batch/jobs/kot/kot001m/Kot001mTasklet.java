@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.kot.kot001m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Kot001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 @Slf4j
 @StepScope
-public class Kot001mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
+public class Kot001mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
@@ -53,7 +53,7 @@ public class Kot001mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
         }
 
         // kot001m 파일 생성
-        makeFile(getJobId(), resultList);
+        makeFile(getCurrentJobId(), resultList);
         writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;

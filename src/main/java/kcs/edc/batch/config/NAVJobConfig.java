@@ -10,6 +10,7 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -34,7 +35,10 @@ public class NAVJobConfig {
     public void launcher() throws Exception {
         log.info("NAVJobConfig launcher...");
 
-        String cletDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        // D-4일 기준
+        String cletDt = LocalDateTime.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        cletDt = "20210711";
+
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("cletDt", cletDt)
                 .addLong("time", System.currentTimeMillis())
@@ -45,14 +49,14 @@ public class NAVJobConfig {
 
     @Bean
     public Job navJob() {
-        return jobBuilderFactory.get("navJob")
+        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_NAV + JobConstant.PREFIX_JOB)
                 .start(nav003mStep())
                 .next(nav004mStep())
                 .build();
     }
 
     @Bean
-//    @JobScope
+    @JobScope
     public Step nav003mStep() {
         return stepBuilderFactory.get(JobConstant.JOB_ID_NAV003M + JobConstant.PREFIX_STEP)
                 .tasklet(nav003mTasklet(null))
@@ -66,7 +70,7 @@ public class NAVJobConfig {
     }
 
     @Bean
-//    @JobScope
+    @JobScope
     public Step nav004mStep() {
         return stepBuilderFactory.get(JobConstant.JOB_ID_NAV004M + JobConstant.PREFIX_STEP)
                 .tasklet(nav004mTasklet(null))

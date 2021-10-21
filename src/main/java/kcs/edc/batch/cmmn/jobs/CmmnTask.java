@@ -2,7 +2,6 @@ package kcs.edc.batch.cmmn.jobs;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jcraft.jsch.*;
 import kcs.edc.batch.cmmn.property.ApiProperty;
 import kcs.edc.batch.cmmn.property.FileProperty;
 import kcs.edc.batch.cmmn.service.FileService;
@@ -27,7 +26,7 @@ import java.util.*;
 
 @Slf4j
 @StepScope
-public class CmmnJobs {
+public class CmmnTask {
 
     @Autowired
     protected ApiProperty apiProperty; // OpenApi information (all)
@@ -69,7 +68,7 @@ public class CmmnJobs {
     public UriComponentsBuilder getUriComponetsBuilder() {
 
         // property loading
-        jobProp = apiProperty.getJobProp(getJobId());
+        jobProp = apiProperty.getJobProp(getCurrentJobId());
 
         // baseUrl setting
         String baseUrl = jobProp.getBaseUrl();
@@ -127,7 +126,7 @@ public class CmmnJobs {
      *
      * @return jobId 배치잡ID
      */
-    protected String getJobId() {
+    protected String getCurrentJobId() {
 
         String className = this.getClass().getSimpleName();
         String jobId = null;
@@ -239,7 +238,7 @@ public class CmmnJobs {
 
     public void writeCmmnLogStart() {
         log.info("####################################################");
-        log.info("START JOB :::: {}", getJobId());
+        log.info("START JOB :::: {}", getCurrentJobId());
         log.info("####################################################");
         log.info("Collect Date : {}", cletDt);
 //        log.info("##### START JOB :::: {} ########################################", getJobId());
@@ -252,7 +251,7 @@ public class CmmnJobs {
 
     public void writeCmmnLogEnd() {
         log.info("####################################################");
-        log.info("END JOB :::: {}", getJobId());
+        log.info("END JOB :::: {}", getCurrentJobId());
         log.info("####################################################");
     }
 

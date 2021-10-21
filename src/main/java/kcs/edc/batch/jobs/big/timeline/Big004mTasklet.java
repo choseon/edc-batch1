@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.big.timeline;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.property.JobConstant;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
@@ -24,7 +24,7 @@ import java.util.Objects;
  * News TimeLine (뉴스 타임라인)
  */
 @Slf4j
-public class Big004mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
+public class Big004mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
 
     private List<String> kcsKeywordList;
     private String kcsRgrsYn = "Y";
@@ -90,7 +90,7 @@ public class Big004mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
             }
         }
         // 파일생성
-        makeFile(getJobId(), resultList);
+        makeFile(getCurrentJobId(), resultList);
         writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;

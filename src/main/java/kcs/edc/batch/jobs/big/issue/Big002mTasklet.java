@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.big.issue;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.issue.vo.Big002mVO;
 import kcs.edc.batch.jobs.big.issue.vo.IssueRankQueryVO;
@@ -22,7 +22,7 @@ import java.util.Objects;
  * Issue Ranking (이슈랭킹)
  */
 @Slf4j
-public class Big002mTasklet extends CmmnJobs implements Tasklet, StepExecutionListener {
+public class Big002mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
 
     private String kcsRgrsYn = "N";
     private String issueSrwrYn = "N";
@@ -76,7 +76,7 @@ public class Big002mTasklet extends CmmnJobs implements Tasklet, StepExecutionLi
             resultList.add(item);
         }
         // 파일생성
-        makeFile(getJobId(), resultList);
+        makeFile(getCurrentJobId(), resultList);
         writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;

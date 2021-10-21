@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.biz.biz001m;
 
-import kcs.edc.batch.cmmn.jobs.CmmnJobs;
+import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.jobs.biz.biz001m.vo.Biz001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @StepScope
-public class Biz001mTasklet extends CmmnJobs implements Tasklet {
+public class Biz001mTasklet extends CmmnTask implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -37,7 +37,7 @@ public class Biz001mTasklet extends CmmnJobs implements Tasklet {
         }
 
         // 파일 생성
-        makeFile(getJobId(), resultList);
+        makeFile(getCurrentJobId(), resultList);
         writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
