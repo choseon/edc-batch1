@@ -15,12 +15,12 @@ public class FileVO {
 
     private String jobId;
 
-    private String cletDt;
+    private String baseDt;
 
-    public FileVO(String rootPath, String jobId, String cletDt) {
+    public FileVO(String rootPath, String jobId, String baseDt) {
         this.rootPath = rootPath;
         this.jobId = jobId;
-        this.cletDt = cletDt;
+        this.baseDt = baseDt;
     }
 
     /**
@@ -47,7 +47,7 @@ public class FileVO {
      * @return dataFileName 수집파일명
      */
     public String getDataFileName() {
-        return getTableName() + "_" + cletDt + ".txt";
+        return getTableName() + "_" + baseDt + ".txt";
     }
 
     public String getDataFileFullPath() {

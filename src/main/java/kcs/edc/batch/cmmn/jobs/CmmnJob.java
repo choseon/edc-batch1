@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @StepScope
@@ -25,15 +26,34 @@ public class CmmnJob implements StepExecutionListener {
     @Autowired
     protected FileService fileService;
 
-    @Value("#{jobParameters[cletDt]}")
-    protected String cletDt; // 수집일
+    @Value("#{jobParameters[baseDt]}")
+    protected String baseDt; // 수집일
 
     protected URI uri;
-    //    protected RestTemplate restTemplate = new RestTemplate();
-//    protected ObjectMapper objectMapper = new ObjectMapper();
     protected List<Object> resultList = new ArrayList<>();
 
     protected ExecutionContext jobExecutionContext;
+
+
+    @Override
+    public void beforeStep(StepExecution stepExecution) {
+
+        if(Objects.isNull(this.baseDt)) {
+            log.info("baseDt is null");
+        }
+
+        this.apiService.setJobId(getCurrentJobId());
+        this.fileService.init(getCurrentJobId(), this.baseDt);
+
+        // step간 파라미터 넘겨주기 위해 jobExcutionContext 설정
+        // afterStep에서 넘겨줄 값 셋팅
+        this.jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
+    }
+
+    @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+        return null;
+    }
 
 
     /**
@@ -75,7 +95,7 @@ public class CmmnJob implements StepExecutionListener {
         log.info("####################################################");
         log.info("START JOB :::: {} ", getCurrentJobId());
         log.info("####################################################");
-        log.info("Collect Date : {}", cletDt);
+        log.info("baseDt : {}", baseDt);
 //        log.info("##### START JOB :::: {} ########################################", getJobId());
     }
 
@@ -96,7 +116,7 @@ public class CmmnJob implements StepExecutionListener {
      */
     public void writeCmmnLogStart(String threadNum, int listSize) {
         log.info("####################################################");
-        log.info("threadNum : #{}, cletDt : {}, list size : {}", threadNum, cletDt, listSize);
+        log.info("threadNum : #{}, baseDt : {}, list size : {}", threadNum, this.baseDt, listSize);
     }
 
     /**
@@ -108,21 +128,6 @@ public class CmmnJob implements StepExecutionListener {
         log.info("####################################################");
         log.info("END JOB :::: {} #{}", getCurrentJobId(), threadNum);
         log.info("####################################################");
-    }
-
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-        log.info("this.apiService: {} ", this.apiService.toString());
-        log.info("this.fileService: {}", this.fileService.toString());
-        this.apiService.setJobId(getCurrentJobId());
-        this.fileService.init(getCurrentJobId(), this.cletDt);
-
-        this.jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-    }
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-        return null;
     }
 
 }

@@ -17,7 +17,6 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,9 +35,9 @@ public class KOTJobConfig {
     public void launcher() throws Exception {
         log.info("KotJobConfig launcher...");
 
-        String cletDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         JobParameters jobParameters = new JobParametersBuilder()
-                .addString("cletDt", cletDt)
+                .addString("baseDt", baseDt)
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
@@ -48,7 +47,7 @@ public class KOTJobConfig {
     @Bean
     public Job kotJob() {
 
-        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_KOT + JobConstant.PREFIX_JOB)
+        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_KOT + JobConstant.POST_FIX_JOB)
                 .start(kot001mStep(null))
                 .next(kot002mStep(null, null))
                 .build();
@@ -59,9 +58,9 @@ public class KOTJobConfig {
      */
     @Bean
     @JobScope
-    public Step kot001mStep(@Value("#{jobParameters[cletDt]}") String cletDt) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_KOT001M + JobConstant.PREFIX_STEP)
-                .tasklet(kot001mTasklet(cletDt))
+    public Step kot001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
+        return stepBuilderFactory.get(JobConstant.JOB_ID_KOT001M + JobConstant.POST_FIX_STEP)
+                .tasklet(kot001mTasklet(baseDt))
                 .build();
     }
 
@@ -70,24 +69,24 @@ public class KOTJobConfig {
      */
     @Bean
     @StepScope
-    public Kot001mTasklet kot001mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Kot001mTasklet kot001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Kot001mTasklet();
     }
 
     @Bean
     @JobScope
     public Step kot002mStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[resultList]}") List<Object> resultList) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_KOT002M + JobConstant.PREFIX_STEP)
-                .tasklet(kot002mTasklet(cletDt, resultList))
+        return stepBuilderFactory.get(JobConstant.JOB_ID_KOT002M + JobConstant.POST_FIX_STEP)
+                .tasklet(kot002mTasklet(baseDt, resultList))
                 .build();
     }
 
     @Bean
     @StepScope
     public Kot002mTasklet kot002mTasklet(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[resultList]}") List<Object> resultList) {
         return new Kot002mTasklet();
     }

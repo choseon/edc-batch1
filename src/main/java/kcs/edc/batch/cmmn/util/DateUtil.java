@@ -86,6 +86,10 @@ public class DateUtil {
 		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 	}
 
+	public static String getCurrentDate() {
+		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+	}
+
 	public static String getFormatDate(String strDate) throws Exception {
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
 		Date date = fmt.parse(strDate);

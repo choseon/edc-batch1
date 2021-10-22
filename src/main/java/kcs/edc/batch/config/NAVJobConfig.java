@@ -36,11 +36,11 @@ public class NAVJobConfig {
         log.info("NAVJobConfig launcher...");
 
         // D-4일 기준
-        String cletDt = LocalDateTime.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        cletDt = "20210711";
+        String baseDt = LocalDateTime.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        baseDt = "20210711";
 
         JobParameters jobParameters = new JobParametersBuilder()
-                .addString("cletDt", cletDt)
+                .addString("baseDt", baseDt)
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
@@ -49,7 +49,7 @@ public class NAVJobConfig {
 
     @Bean
     public Job navJob() {
-        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_NAV + JobConstant.PREFIX_JOB)
+        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_NAV + JobConstant.POST_FIX_JOB)
                 .start(nav003mStep())
                 .next(nav004mStep())
                 .build();
@@ -58,28 +58,28 @@ public class NAVJobConfig {
     @Bean
     @JobScope
     public Step nav003mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_NAV003M + JobConstant.PREFIX_STEP)
+        return stepBuilderFactory.get(JobConstant.JOB_ID_NAV003M + JobConstant.POST_FIX_STEP)
                 .tasklet(nav003mTasklet(null))
                 .build();
     }
 
     @Bean
     @StepScope
-    public Tasklet nav003mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Tasklet nav003mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Nav003mTasklet();
     }
 
     @Bean
     @JobScope
     public Step nav004mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_NAV004M + JobConstant.PREFIX_STEP)
+        return stepBuilderFactory.get(JobConstant.JOB_ID_NAV004M + JobConstant.POST_FIX_STEP)
                 .tasklet(nav004mTasklet(null))
                 .build();
     }
 
     @Bean
     @StepScope
-    public Tasklet nav004mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Tasklet nav004mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Nav004mTasklet();
     }
 }

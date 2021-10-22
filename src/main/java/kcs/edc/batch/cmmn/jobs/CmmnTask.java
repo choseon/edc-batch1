@@ -38,8 +38,8 @@ public class CmmnTask {
     @Value("${path.storePath}")
     protected String storePath;
 
-    @Value("#{jobParameters[cletDt]}")
-    protected String cletDt; // 수집일자
+    @Value("#{jobParameters[baseDt]}")
+    protected String baseDt; // 수집일자
     protected String from;
     protected String until;
 
@@ -139,7 +139,7 @@ public class CmmnTask {
     }
 
     protected FileVO getFileVO(String jobId) {
-        return new FileVO(storePath, jobId, cletDt);
+        return new FileVO(storePath, jobId, baseDt);
     }
 
     protected <T> void makeFile(String jobId, List<T> list) {
@@ -210,7 +210,7 @@ public class CmmnTask {
         log.info("[{}] Log file make start", fileVO.getTableName());
 
         Log001mVO logVO = new Log001mVO();
-        logVO.setParamYmd(cletDt);
+        logVO.setParamYmd(baseDt);
         logVO.setTableName(fileVO.getTableName());
         logVO.setStartTime(startTime);
         logVO.setEndTime(DateUtil.getCurrentTime());
@@ -240,13 +240,13 @@ public class CmmnTask {
         log.info("####################################################");
         log.info("START JOB :::: {}", getCurrentJobId());
         log.info("####################################################");
-        log.info("Collect Date : {}", cletDt);
+        log.info("baseDt : {}", baseDt);
 //        log.info("##### START JOB :::: {} ########################################", getJobId());
     }
 
     public void writeCmmnLogStart(String threadNum, int listSize) {
         log.info("####################################################");
-        log.info("threadNum : {}, cletDt : {}, list size : {}", threadNum, cletDt, listSize);
+        log.info("threadNum : {}, baseDt : {}, list size : {}", threadNum, baseDt, listSize);
     }
 
     public void writeCmmnLogEnd() {

@@ -75,7 +75,7 @@ public class SftpUtil {
 
 //            String strDate = null;
 //            try {
-//                strDate = DateUtils.getOffsetDate(cletDt, -4, "yyyyMMdd");
+//                strDate = DateUtils.getOffsetDate(baseDt, -4, "yyyyMMdd");
 //            } catch (Exception e) {
 //                log.info(e.getMessage());
 //            }

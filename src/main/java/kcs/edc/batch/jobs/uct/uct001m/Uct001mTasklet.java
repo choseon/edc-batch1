@@ -9,13 +9,13 @@ import com.google.gson.JsonObject;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.FileProperty;
 import kcs.edc.batch.cmmn.property.JobConstant;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.uct.uct001m.vo.Uct001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -28,31 +28,24 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * UN Comtrade HS6 단위코드 기준의 각국 수출데이터 수집
  */
 @Slf4j
-@StepScope
 public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
-    @Autowired
-    protected FileProperty fileProperty;
-
     @Value("#{stepExecutionContext[threadNum]}")
-    protected String threadNum;
+    private String threadNum;
 
     @Value("#{stepExecutionContext[partitionList]}")
-    protected List<String> partitionList;
-
+    private List<String> partitionList;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        this.writeCmmnLogStart(threadNum, partitionList.size());
+        this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
 
         this.apiService.setRestTemplate(getRestTemplate());
         List<String> areaList = getAreaList();
@@ -63,17 +56,17 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                 if (r.equals(p)) continue;
 
-                log.info("threadNum {}, r {}, p {}, ps", threadNum, r, p, "2015");
-
                 UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
                 builder.replaceQueryParam("r", r);
                 builder.replaceQueryParam("p", p);
-                builder.replaceQueryParam("ps", "2015");
-                URI uri = builder.build().encode().toUri();
+                builder.replaceQueryParam("ps", this.baseDt);
+                this.uri = builder.build().encode().toUri();
 
                 Uct001mVO resultVO = null;
                 try {
+
                     resultVO = this.apiService.sendApiForEntity(uri, Uct001mVO.class);
+                    log.info("threadNum {}, r {}, p {}, ps {}", this.threadNum, r, p, this.baseDt);
 
                     if (Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
                     if (resultVO.getValidation() == null) continue;
@@ -82,7 +75,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                     List<Uct001mVO.Item> dataset = resultVO.getDataset();
                     for (Uct001mVO.Item item : dataset) {
-                        item.setCletDt(this.cletDt);
+                        item.setCletFileCtrnDt(DateUtil.getCurrentDate());
                         this.resultList.add(item);
                     }
 
@@ -91,11 +84,12 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                         log.info(e.getMessage());
                     }
                 }
-            }
 
-            if (this.resultList.size() > 0) {
-                this.fileService.makeTempFile(this.resultList);
-                this.resultList = new ArrayList<>();
+                if (this.resultList.size() > 0) {
+                    String fileName = r + "_" + p;
+                    this.fileService.makeTempFile(this.resultList, fileName);
+                    this.resultList = new ArrayList<>();
+                }
             }
         }
 
@@ -105,7 +99,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     }
 
     /**
-     * http 호출을 위한 RestTemplate 기본값 셋팅하여 return
+     * RestTemplate Custom settings
      *
      * @return
      */
@@ -129,17 +123,18 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     }
 
     /**
-     * 리소스 파일을 읽어 국가목록 조회
+     * ISO 3166-1 국가 리스트
+     *
      * @return
      */
     private List<String> getAreaList() {
-        //        String resourcePath = "C:/dev/edc-batch/resources/";
+//                String resourcePath = "C:/dev/edc-batch/resources/";
 //        String resourcePath = fileProperty.getResourcePath();
         String resourcePath = this.fileService.getResourcePath();
-        String filePath = resourcePath + JobConstant.RESOURCE_FILE_NAME_UCT_AREA;
+        String filePath = resourcePath + "/" + JobConstant.RESOURCE_FILE_NAME_UCT_AREA;
 
         List<String> pList = new ArrayList<>();
-        // ISO 3166-1 국가 리스트
+
         JsonArray jsonArray = null;
         try {
             jsonArray = FileUtil.readJsonFile(filePath, "results");
@@ -149,6 +144,8 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 String id = jsonObject.get("id").getAsString();
                 if (id.equals("all")) continue;
                 pList.add(id);
+
+                if(pList.size() == 10) break;
             }
         } catch (FileNotFoundException e) {
             log.info(e.getMessage());

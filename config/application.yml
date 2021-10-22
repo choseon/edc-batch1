@@ -9,15 +9,15 @@ spring:
     job:
       names: ${job.name:NONE}
 path:
-  rootPath: C:/dev/edc-batch/
-  storePath: C:/dev/hdata/
+  rootPath: C:/dev/edc-batch
+  storePath: C:/dev/hdata
 #    hive: C:/dev/hdata/
 #    nas:
 #      opd: C:/dev/data_nas/anl_data/BA204/opendart/
 #      kot: C:/dev/data_nas/anl_data/BA201/kotra/
-  resourcePath: C:/dev/edc-batch/resources/
-  configPath: C:/dev/edc-batch/config/
-  logPath: C:/dev/log/
+  resourcePath: C:/dev/edc-batch/resources
+  configPath: C:/dev/edc-batch/config
+  logPath: C:/dev/log
 ---
 spring:
   profiles: dev
@@ -25,11 +25,11 @@ spring:
     job:
       names: ${job.name:NONE}
 path:
-  rootPath: /data/edc-batch/dev/
-  storePath: /data/edc-batch/dev/hdata/
-  resourcePath: /data/edc-batch/dev/resources/
-  configPath: /data/edc-batch/dev/config/
-  logPath: /data/edc-batch/dev/log/
+  rootPath: /data/edc-batch/dev
+  storePath: /data/edc-batch/dev/hdata
+  resourcePath: /data/edc-batch/dev/resources
+  configPath: /data/edc-batch/dev/config
+  logPath: /data/edc-batch/dev/log
 ---
 spring:
   profiles: prod
@@ -37,11 +37,11 @@ spring:
     job:
       names: ${job.name:NONE}
 path:
-  rootPath: /data/edc-batch/prod/
-  storePath: /hdata/
-  resourcePath: /data/edc-batch/prod/resources/
-  configPath: /data/edc-batch/prod/config/
-  logPath: /data/edc-batch/prod/log/
+  rootPath: /data/edc-batch/prod
+  storePath: /hdata
+  resourcePath: /data/edc-batch/prod/resources
+  configPath: /data/edc-batch/prod/config
+  logPath: /data/edc-batch/prod/log
 ---
 spring:
   datasource:
@@ -227,4 +227,11 @@ sftp:
       remoteFilePath: /opt/merge/HT_NAV004M/
       remoteFileName: HT_NAV004M
       downloadFilePath: hdata/ht_nav004m/temp/
+---
+resource:
+  jobs:
+    opd:
+      storePath: /data_nas/anl_data/BA204/opendart
+    kot:
+      storePath: /data_nas/anl_data/BA201/kotra
 

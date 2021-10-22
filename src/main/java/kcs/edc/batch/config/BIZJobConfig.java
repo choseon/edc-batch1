@@ -16,7 +16,6 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,9 +33,9 @@ public class BIZJobConfig {
     public void launcher() throws Exception {
         log.info("BIZJobConfig launcher...");
 
-        String cletDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         JobParameters jobParameters = new JobParametersBuilder()
-                .addString("cletDt", cletDt)
+                .addString("baseDt", baseDt)
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
@@ -46,7 +45,7 @@ public class BIZJobConfig {
 //    @Bean
     public Job bizJob() {
 
-        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_BIZ + JobConstant.PREFIX_JOB)
+        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_BIZ + JobConstant.POST_FIX_JOB)
                 .start(biz001mStep(null))
                 .build();
     }
@@ -56,9 +55,9 @@ public class BIZJobConfig {
      */
     @Bean
     @JobScope
-    public Step biz001mStep(@Value("#{jobParameters[cletDt]}") String cletDt) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_BIZ001M + JobConstant.PREFIX_STEP)
-                .tasklet(biz001mTasklet(cletDt))
+    public Step biz001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
+        return stepBuilderFactory.get(JobConstant.JOB_ID_BIZ001M + JobConstant.POST_FIX_STEP)
+                .tasklet(biz001mTasklet(baseDt))
                 .build();
     }
 
@@ -67,7 +66,7 @@ public class BIZJobConfig {
      */
     @Bean
     @StepScope
-    public Biz001mTasklet biz001mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Biz001mTasklet biz001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Biz001mTasklet();
     }
 

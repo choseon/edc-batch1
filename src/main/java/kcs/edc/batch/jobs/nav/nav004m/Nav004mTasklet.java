@@ -39,14 +39,14 @@ public class Nav004mTasklet extends CmmnJob implements Tasklet {
         if (ObjectUtils.isEmpty(channelSftp)) return RepeatStatus.FINISHED;
 
         // File Download
-        String fileName = String.format(this.fileNamePattern, this.getCurrentJobId().toUpperCase(), this.cletDt);
+        String fileName = String.format(this.fileNamePattern, this.getCurrentJobId().toUpperCase(), this.baseDt);
         log.info("fileName: {}", fileName);
 
         File downloadFile = this.sftpService.download(channelSftp, fileName);
         if (ObjectUtils.isEmpty(downloadFile)) return RepeatStatus.FINISHED;
 
         // CSV -> List Conversion
-        List<Object[]> csvToList = FileUtil.getCsvToList(downloadFile.getPath());
+        List<Object[]> csvToList = FileUtil.readCsvFile(downloadFile.getPath());
         if (ObjectUtils.isEmpty(csvToList)) return RepeatStatus.FINISHED;
 
         // header 삭제

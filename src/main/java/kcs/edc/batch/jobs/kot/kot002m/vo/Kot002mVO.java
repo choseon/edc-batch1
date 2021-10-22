@@ -20,5 +20,5 @@ public class Kot002mVO {
     private String kwrd; // 키워드
 
 //    @JsonProperty("Clet_DT")
-    private String cletDT; // 수집일자
+    private String CletFileCtrnDttm; // 수집일자
 }

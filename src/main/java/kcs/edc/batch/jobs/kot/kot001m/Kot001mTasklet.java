@@ -48,6 +48,7 @@ public class Kot001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
         for (Kot001mVO.Item item : resultVO.getItems()) {
             String htmlPath = item.getBbstxSn() + ".html";
             item.setNewsBdt(htmlPath);
+            item.setCletFileCtrnDttm(this.baseDt);
 
             resultList.add(item);
         }

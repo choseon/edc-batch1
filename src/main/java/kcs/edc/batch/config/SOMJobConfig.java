@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -52,9 +51,9 @@ public class SOMJobConfig {
         log.info("SomConfiguration launcher...");
 
         try {
-            String cletDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             JobParameters jobParameters = new JobParametersBuilder()
-                    .addString("cletDt", cletDt)
+                    .addString("baseDt", baseDt)
                     .addLong("time", System.currentTimeMillis())
                     .toJobParameters();
 
@@ -74,7 +73,7 @@ public class SOMJobConfig {
     @Bean
     public Job somJob() {
 
-        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_SOM + JobConstant.PREFIX_JOB)
+        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_SOM + JobConstant.POST_FIX_JOB)
                 .start(som001mFlow())
                 .next(som002mFlow())
                 .next(som003mFlow())
@@ -92,22 +91,22 @@ public class SOMJobConfig {
     @Bean
     @JobScope
     public Flow som001mFlow() {
-        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM001M + JobConstant.PREFIX_FLOW)
+        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM001M + JobConstant.POST_FIX_FLOW)
                 .start(som001mStep(null))
                 .build();
     }
 
     @Bean
     @JobScope
-    public Step som001mStep(@Value("#{jobParameters[cletDt]}") String cletDt) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM001M + JobConstant.PREFIX_STEP)
-                .tasklet(som001mTasklet(cletDt))
+    public Step som001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
+        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM001M + JobConstant.POST_FIX_STEP)
+                .tasklet(som001mTasklet(null))
                 .build();
     }
 
     @Bean
     @StepScope
-    public Som001mTasklet som001mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Som001mTasklet som001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Som001mTasklet();
     }
 
@@ -119,7 +118,7 @@ public class SOMJobConfig {
     @JobScope
     public Flow som002mFlow() {
         currentJobId = JobConstant.JOB_ID_SOM002M;
-        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM002M + JobConstant.PREFIX_FLOW)
+        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM002M + JobConstant.POST_FIX_FLOW)
                 .start(som002mPartitionStep(null, null))// som002mPatitionStep 실행
                 .on("COMPLETED") // 성공이면
                 .to(somFileMergeStep()) // fileMergeStep 실행
@@ -129,11 +128,11 @@ public class SOMJobConfig {
     @Bean
     @JobScope
     public Step som002mPartitionStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[list]}") List<Object> list) {
 
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM002M + JobConstant.PREFIX_PARTITION_STEP)
-                .partitioner("som002mStep", cmmnPartitioner(cletDt, list)) // partitioning
+        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM002M + JobConstant.POST_FIX_PARTITION_STEP)
+                .partitioner("som002mStep", cmmnPartitioner(baseDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
                 .taskExecutor(somExecutor()) // multi thread
                 .step(som002mStep())
@@ -142,15 +141,14 @@ public class SOMJobConfig {
 
     @Bean
     public Step som002mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM002M + JobConstant.PREFIX_STEP)
+        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM002M + JobConstant.POST_FIX_STEP)
                 .tasklet(som002mTasklet(null))
                 .build();
     }
 
     @Bean
     @StepScope
-    public Som002mTasklet som002mTasklet(
-            @Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Som002mTasklet som002mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Som002mTasklet();
     }
 
@@ -162,7 +160,7 @@ public class SOMJobConfig {
     @JobScope
     public Flow som003mFlow() {
         currentJobId = JobConstant.JOB_ID_SOM003M;
-        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM003M + JobConstant.PREFIX_FLOW)
+        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM003M + JobConstant.POST_FIX_FLOW)
                 .start(som003mPartitionStep(null, null))
                 .on("COMPLETED")
                 .to(somFileMergeStep())
@@ -170,18 +168,18 @@ public class SOMJobConfig {
     }
 
     /**
-     * @param cletDt
+     * @param baseDt
      * @param list
      * @return
      */
     @Bean
     @JobScope
     public Step som003mPartitionStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[list]}") List<Object> list) {
 
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM003M + JobConstant.PREFIX_PARTITION_STEP)
-                .partitioner("som003mStep", cmmnPartitioner(cletDt, list)) // partitioning
+        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM003M + JobConstant.POST_FIX_PARTITION_STEP)
+                .partitioner("som003mStep", cmmnPartitioner(baseDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
                 .taskExecutor(somExecutor()) // multi thread
                 .step(som003mStep())
@@ -190,14 +188,14 @@ public class SOMJobConfig {
 
     @Bean
     public Step som003mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM003M + JobConstant.PREFIX_STEP)
+        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM003M + JobConstant.POST_FIX_STEP)
                 .tasklet(som003mTasklet(null))
                 .build();
     }
 
     @Bean
     @StepScope
-    public Som003mTasklet som003mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Som003mTasklet som003mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Som003mTasklet();
     }
 
@@ -209,7 +207,7 @@ public class SOMJobConfig {
     @JobScope
     public Flow som004mFlow() {
         currentJobId = JobConstant.JOB_ID_SOM004M;
-        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM004M + JobConstant.PREFIX_FLOW)
+        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM004M + JobConstant.POST_FIX_FLOW)
                 .start(som004mPartitionStep(null, null))
                 .on("COMPLETED")
                 .to(somFileMergeStep())
@@ -221,10 +219,10 @@ public class SOMJobConfig {
     @Bean
     @JobScope
     public Step som004mPartitionStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[list]}") List<Object> list) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM004M + JobConstant.PREFIX_PARTITION_STEP)
-                .partitioner("som004mStep", cmmnPartitioner(cletDt, list)) // partitioning
+        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM004M + JobConstant.POST_FIX_PARTITION_STEP)
+                .partitioner("som004mStep", cmmnPartitioner(baseDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
                 .taskExecutor(somExecutor()) // multi thread
                 .step(som004mStep())
@@ -233,14 +231,14 @@ public class SOMJobConfig {
 
     @Bean
     public Step som004mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM004M + JobConstant.PREFIX_STEP)
+        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM004M + JobConstant.POST_FIX_STEP)
                 .tasklet(som004mTasklet(null))
                 .build();
     }
 
     @Bean
     @StepScope
-    public Som004mTasklet som004mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Som004mTasklet som004mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Som004mTasklet();
     }
 
@@ -252,7 +250,7 @@ public class SOMJobConfig {
     @JobScope
     public Flow som005mFlow() {
         currentJobId = JobConstant.JOB_ID_SOM005M;
-        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM005M + JobConstant.PREFIX_FLOW)
+        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM005M + JobConstant.POST_FIX_FLOW)
                 .start(som005mPartitionStep(null, null))
                 .on("COMPLETED")
                 .to(somFileMergeStep())
@@ -262,11 +260,11 @@ public class SOMJobConfig {
     @Bean
     @JobScope
     public Step som005mPartitionStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[list]}") List<Object> list) {
 
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM005M + JobConstant.PREFIX_PARTITION_STEP)
-                .partitioner("som005mStep", cmmnPartitioner(cletDt, list)) // partitioning
+        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM005M + JobConstant.POST_FIX_PARTITION_STEP)
+                .partitioner("som005mStep", cmmnPartitioner(baseDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
                 .taskExecutor(somExecutor()) // multi thread
                 .step(som005mStep())
@@ -275,14 +273,14 @@ public class SOMJobConfig {
 
     @Bean
     public Step som005mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM005M + JobConstant.PREFIX_STEP)
+        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM005M + JobConstant.POST_FIX_STEP)
                 .tasklet(som005mTasklet(null))
                 .build();
     }
 
     @Bean
     @StepScope
-    public Som005mTasklet som005mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Som005mTasklet som005mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Som005mTasklet();
     }
 
@@ -296,21 +294,21 @@ public class SOMJobConfig {
     public Step somFileMergeStep() {
 
 
-        if(ObjectUtils.isEmpty(currentJobId)) return null;
-        return stepBuilderFactory.get(JobConstant.JOB_GRP_ID_SOM + JobConstant.PREFIX_FILE_STEP)
+//        if(Objects.isNull(currentJobId)) return null;
+        return stepBuilderFactory.get(JobConstant.JOB_GRP_ID_SOM + JobConstant.POST_FIX_FILE_STEP)
                 .tasklet(new CmmnMergeFile(currentJobId))
                 .build();
     }
 
 //    @Bean
 //    @StepScope
-//    public CmmnMergeFile somMergeFileTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+//    public CmmnMergeFile somMergeFileTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
 //        return new CmmnMergeFile(currentJobId);
 //    }
 
 /*    @Bean
     @StepScope
-    public CmmnMergeFile somMergeFileTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public CmmnMergeFile somMergeFileTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
 
         List<String> mergeJobList = new ArrayList<>();
         mergeJobList.add(JobConstant.JOB_ID_SOM002M);
@@ -335,7 +333,7 @@ public class SOMJobConfig {
     @Bean
     @JobScope
     public CmmnPartitioner cmmnPartitioner(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[list]}") List<Object> resultList) {
         return new CmmnPartitioner();
     }

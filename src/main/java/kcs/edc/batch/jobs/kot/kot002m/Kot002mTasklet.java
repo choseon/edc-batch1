@@ -34,12 +34,12 @@ public class Kot002mTasklet extends CmmnTask implements Tasklet {
         for (Kot001mVO.Item item : resultList) {
             String[] split = item.getKwrd().split(",");
             keywordList.addAll(Arrays.asList(split));
-            for (String s : keywordList) {
+            for (String keyword : keywordList) {
                 Kot002mVO vo = new Kot002mVO();
                 vo.setBbstxSn(item.getBbstxSn());
-                vo.setKwrd(s);
+                vo.setKwrd(keyword);
                 vo.setNewsWrtDt(item.getNewsWrtDt());
-                vo.setCletDT(item.getCletDT());
+                vo.setCletFileCtrnDttm(item.getCletFileCtrnDttm());
                 items.add(vo);
             }
         }

@@ -12,6 +12,7 @@ import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -50,11 +51,15 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
 
             // 썸트랜드 키워드 목록 조회
             resultVO = getSomtrendKeywordList(source);
-            this.resultList.addAll(resultVO);
+            if(Objects.nonNull(resultVO)) {
+                this.resultList.addAll(resultVO);
+            }
 
             // 관세청 키워드 목록 조회
             resultVO = getKCSKeywordList(source);
-            this.resultList.addAll(resultVO);
+            if(Objects.nonNull(resultVO)) {
+                this.resultList.addAll(resultVO);
+            }
         }
 
         if(this.resultList.size() == 0) return RepeatStatus.FINISHED;
@@ -79,15 +84,15 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
         List<Som001mVO> resultList = new ArrayList<>();
         UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
         builder.replaceQueryParam("source", source);
-        builder.replaceQueryParam("startDate", this.cletDt);
-        builder.replaceQueryParam("endDate", this.cletDt);
-        uri = builder.build().toUri();
+        builder.replaceQueryParam("startDate", this.baseDt);
+        builder.replaceQueryParam("endDate", this.baseDt);
+        this.uri = builder.build().toUri();
 
-        Som001mVO[] resultVO = this.apiService.sendApiForEntity(uri, Som001mVO[].class);
+        Som001mVO[] resultVO = this.apiService.sendApiForEntity(this.uri, Som001mVO[].class);
         if (Objects.isNull(resultVO)) return null;
 
         for (Som001mVO item : resultVO) {
-            item.setDate(this.cletDt);
+            item.setDate(this.baseDt);
             item.setSource(source);
             item.setRegistYn(this.KCS_KEYWORD_N);
             item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
@@ -130,8 +135,8 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
             UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
             builder.replaceQueryParam("command", "GetKeywordTransitions");
             builder.replaceQueryParam("source", source);
-            builder.replaceQueryParam("startDate", this.cletDt);
-            builder.replaceQueryParam("endDate", this.cletDt);
+            builder.replaceQueryParam("startDate", this.baseDt);
+            builder.replaceQueryParam("endDate", this.baseDt);
 
             String[] split = keywordLine.split("\\|"); // split
             for (String keyword : split) {
@@ -151,7 +156,7 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
                 if (frequency < 1) continue;
 
                 Som001mVO item = new Som001mVO();
-                item.setDate(this.cletDt);
+                item.setDate(this.baseDt);
                 item.setSource(source);
                 item.setKeyword(keyword);
                 item.setFrequency(frequency);

@@ -15,6 +15,8 @@ import java.util.*;
 @Slf4j
 public class Uct001mPartitioner extends CmmnPartitioner {
 
+
+
     @Override
     public Map<String, ExecutionContext> partition(int gridSize) {
 
@@ -35,7 +37,7 @@ public class Uct001mPartitioner extends CmmnPartitioner {
                 if (id.equals("all")) continue;
                 list.add(id);
 
-                if(list.size() == 128) break; // TEST
+                if(list.size() == 10) break; // TEST
             }
             log.info("arealist.size() >> " + list.size());
 

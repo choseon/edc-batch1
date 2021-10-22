@@ -35,9 +35,9 @@ public class SAFJobConfig {
     public void launcher() throws Exception {
         log.info("KotJobConfig launcher...");
 
-        String cletDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         JobParameters jobParameters = new JobParametersBuilder()
-                .addString("cletDt", cletDt)
+                .addString("baseDt", baseDt)
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
@@ -60,9 +60,9 @@ public class SAFJobConfig {
     @Bean
     @JobScope
     public Step saf001mStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt) {
+            @Value("#{jobParameters[baseDt]}") String baseDt) {
         return stepBuilderFactory.get("saf001mStep")
-                .tasklet(saf001mTasklet(cletDt))
+                .tasklet(saf001mTasklet(baseDt))
                 .build();
     }
 
@@ -71,7 +71,7 @@ public class SAFJobConfig {
      */
     @Bean
     @StepScope
-    public Saf001mTasklet saf001mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Saf001mTasklet saf001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Saf001mTasklet();
     }
 
@@ -81,10 +81,10 @@ public class SAFJobConfig {
     @Bean
     @JobScope
     public Step saf001lStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[certNumList]}") List<String> certNumList) {
         return stepBuilderFactory.get("saf001lStep")
-                .tasklet(saf001lTasklet(cletDt, certNumList))
+                .tasklet(saf001lTasklet(baseDt, certNumList))
                 .build();
     }
 
@@ -94,7 +94,7 @@ public class SAFJobConfig {
     @Bean
     @StepScope
     public Saf001lTasklet saf001lTasklet(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[certNumList]}") List<String> certNumList) {
         return new Saf001lTasklet();
     }

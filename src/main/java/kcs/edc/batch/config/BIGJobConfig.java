@@ -35,7 +35,7 @@ public class BIGJobConfig {
 
     //    @Scheduled(cron = "*/5 * * * * ?") // 5초마다
     public void scheduler() throws Exception {
-//        JobParameters jobParameters = new JobParametersBuilder().addString("cletDt", LocalDateTime.now().toString()).toJobParameters();
+//        JobParameters jobParameters = new JobParametersBuilder().addString("baseDt", LocalDateTime.now().toString()).toJobParameters();
 //        jobLauncher.run(bigJob(),jobParameters);
     }
 
@@ -73,7 +73,7 @@ public class BIGJobConfig {
     @Bean
     @JobScope
     public Step big001mStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[keywordList]}") List<Object> keywordList,
             @Value("#{jobExecutionContext[kcsRgrsYn]}") List<Object> kcsRgrsYn,
             @Value("#{jobExecutionContext[issueSrwrYn]}") List<Object> issueSrwrYn,
@@ -87,7 +87,7 @@ public class BIGJobConfig {
     @Bean
     @StepScope
     public Big001mTasklet big001mTasklet(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[keywordList]}") List<Object> keywordList,
             @Value("#{jobExecutionContext[kcsRgrsYn]}") List<Object> kcsRgrsYn,
             @Value("#{jobExecutionContext[issueSrwrYn]}") List<Object> issueSrwrYn) {
@@ -97,7 +97,7 @@ public class BIGJobConfig {
     @Bean
     @JobScope
     public Step big002mStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt) {
+            @Value("#{jobParameters[baseDt]}") String baseDt) {
 
         return stepBuilderFactory.get("big002mStep")
                 .tasklet(big002mTasklet(null))
@@ -107,14 +107,14 @@ public class BIGJobConfig {
     @Bean
     @StepScope
     public Big002mTasklet big002mTasklet(
-            @Value("#{jobParameters[cletDt]}") String cletDt) {
+            @Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Big002mTasklet();
     }
 
     @Bean
     @JobScope
     public Step big003mStep(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[keywordList]}") List<Object> keywordList,
             @Value("#{jobExecutionContext[kcsRgrsYn]}") List<Object> kcsRgrsYn,
             @Value("#{jobExecutionContext[issueSrwrYn]}") List<Object> issueSrwrYn) {
@@ -129,7 +129,7 @@ public class BIGJobConfig {
     @Bean
     @StepScope
     public Big003mTasklet big003mTasklet(
-            @Value("#{jobParameters[cletDt]}") String cletDt,
+            @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[keywordList]}") List<Object> keywordList,
             @Value("#{jobExecutionContext[kcsRgrsYn]}") List<Object> kcsRgrsYn,
             @Value("#{jobExecutionContext[issueSrwrYn]}") List<Object> issueSrwrYn) {
@@ -141,9 +141,9 @@ public class BIGJobConfig {
      */
     @Bean
     @JobScope
-    public Step big004mStep(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Step big004mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return stepBuilderFactory.get("big004mStep")
-                .tasklet(big004mTasklet(cletDt))
+                .tasklet(big004mTasklet(baseDt))
                 .build();
     }
 
@@ -152,7 +152,7 @@ public class BIGJobConfig {
      */
     @Bean
     @StepScope
-    public Big004mTasklet big004mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Big004mTasklet big004mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Big004mTasklet();
     }
 
@@ -161,9 +161,9 @@ public class BIGJobConfig {
      */
     @Bean
     @JobScope
-    public Step big005mStep(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Step big005mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return stepBuilderFactory.get("big005mStep")
-                .tasklet(big005mTasklet(cletDt))
+                .tasklet(big005mTasklet(baseDt))
                 .build();
     }
 
@@ -172,7 +172,7 @@ public class BIGJobConfig {
      */
     @Bean
     @StepScope
-    public Big005mTasklet big005mTasklet(@Value("#{jobParameters[cletDt]}") String cletDt) {
+    public Big005mTasklet big005mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Big005mTasklet();
     }
 }

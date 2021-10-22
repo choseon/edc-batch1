@@ -73,7 +73,7 @@ public class FileUtil {
                 for (int i = 0; i < fields.length; i++) {
 
                     // som004mVO의 categoryList 항목은 제외
-                   if(fileName.contains("som004m") && fields[i].getName().equals("categoryList")) continue;
+                    if (fileName.contains("som004m") && fields[i].getName().equals("categoryList")) continue;
 
                     fields[i].setAccessible(true);
                     fieldArr[i] = fields[i].get(t);
@@ -109,66 +109,13 @@ public class FileUtil {
         return list;
     }*/
 
-
-
     /**
+     * csv 파일을 리스트로 변환
      *
      * @param filePath
      * @return
-     * @throws IOException
      */
-    public static StringBuffer readTsvFile(String filePath) throws IOException {
-
-        File dir = new File(filePath);
-        if(dir == null) return null;
-        File[] files = dir.listFiles();
-        if(files == null || files.length == 0) return null;
-
-        String line = "";
-        StringBuffer sb = new StringBuffer();
-        FileInputStream fis;
-        BufferedReader inFiles = null;
-        for (File file : files) {
-
-            fis = new FileInputStream(file.getPath());
-            inFiles = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
-            while((line = inFiles.readLine()) != null) {
-                if(line.trim().length() > 0) {
-//                    sb += line + "\n";
-                    sb.append(line + "\r\n");
-                }
-            }
-        }
-        if(inFiles != null) {
-            inFiles.close();
-        }
-
-        log.info("sb {}", sb);
-        return sb;
-    }
-
-    public static void mergeFile(String filePath, String targetPath, String fileName) throws IOException {
-//        Files.readAllBytes(filePath);
-
-        StringBuffer sb = readTsvFile(filePath);
-        deleteFiles(filePath);
-
-        BufferedWriter bw = new BufferedWriter(new FileWriter(targetPath + fileName));
-        bw.write(sb.toString());
-//        bw.flush();
-//        bw.close();
-
-        FileOutputStream fos = new FileOutputStream(targetPath + fileName);
-        try (OutputStreamWriter osw = new OutputStreamWriter(fos)) {
-
-            osw.write(sb.toString());
-            osw.flush();
-            osw.close();
-        }
-
-    }
-
-    public static List<Object[]> getCsvToList(String filePath) {
+    public static List<Object[]> readCsvFile(String filePath) {
 //        List<List<String>> csvList = new ArrayList<List<String>>();
         List<Object[]> rows = new ArrayList<>();
         File csv = new File(filePath);
@@ -193,15 +140,117 @@ public class FileUtil {
                 if (br != null) {
                     br.close(); // 사용 후 BufferedReader를 닫아준다.
                 }
-            } catch(IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         return rows;
     }
 
+
+    /**
+     * @param filePath
+     * @return
+     * @throws IOException
+     */
+    public static StringBuffer readTsvFile(String filePath) throws IOException {
+
+        File dir = new File(filePath);
+        if (dir == null) return null;
+        File[] files = dir.listFiles();
+        if (files == null || files.length == 0) return null;
+
+        String line = "";
+        StringBuffer sb = new StringBuffer();
+        FileInputStream fis;
+        BufferedReader inFiles = null;
+        for (File file : files) {
+
+            fis = new FileInputStream(file.getPath());
+            inFiles = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
+            while ((line = inFiles.readLine()) != null) {
+                if (line.trim().length() > 0) {
+//                    sb += line + "\n";
+                    sb.append(line + "\r\n");
+                }
+            }
+        }
+        if (inFiles != null) {
+            inFiles.close();
+        }
+
+        log.info("sb {}", sb);
+        return sb;
+    }
+
+
+    /**
+     * 파일 병합
+     *
+     * @param sourceFilePath
+     * @param targetPath
+     * @param targetFileName
+     */
+    public static void mergeFile(String sourceFilePath, String targetPath, String targetFileName) {
+
+        File dir = new File(sourceFilePath);
+        if (dir == null) return;
+        File[] files = dir.listFiles();
+        if (files == null || files.length == 0) return;
+
+
+        BufferedOutputStream bos = null;
+        BufferedInputStream bis = null;
+        try {
+
+            File targetFile = new File(targetPath + targetFileName);
+            if (!targetFile.exists()) {
+                targetFile.createNewFile();
+            }
+            log.info("targetFile >> {}", targetFile);
+
+            // 파일 이어쓰기 가능하게 설정
+            bos = new BufferedOutputStream(new FileOutputStream(targetFile, true));
+
+            for (File file : files) {
+                bis = new BufferedInputStream(new FileInputStream(file.getPath()));
+                log.info("file.getPath >> {}", file.getPath());
+
+                byte[] buffer = new byte[1024];
+                int readCount = 0;
+
+                while ((readCount = bis.read(buffer)) > 0) {
+                    bos.write(buffer, 0, readCount);
+                    bos.flush();
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
     /**
      * temp 폴더에서 tsv 파일을 읽어 List로 변화하여 리턴
+     *
      * @param filePath
      * @return
      */
@@ -226,12 +275,13 @@ public class FileUtil {
     }
 
     /**
-     * TempFile 삭제
+     * 파일 삭제
+     *
      * @param filePath
      */
     public static void deleteFiles(String filePath) {
         File dir = new File(filePath);
-        if(dir == null) return;
+        if (dir == null) return;
 
         File[] files = dir.listFiles();
         if (files == null) return;

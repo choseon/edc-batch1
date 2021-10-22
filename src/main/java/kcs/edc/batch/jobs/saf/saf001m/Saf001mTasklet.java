@@ -49,7 +49,7 @@ public class Saf001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         // parameter setting
-        UriComponentsBuilder builder = getUriComponetsBuilder().replaceQueryParam("conditionValue", cletDt);
+        UriComponentsBuilder builder = getUriComponetsBuilder().replaceQueryParam("conditionValue", baseDt);
         uri = builder.build().toUri();
 
         // send API

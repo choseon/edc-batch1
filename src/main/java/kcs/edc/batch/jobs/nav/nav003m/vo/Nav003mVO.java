@@ -21,6 +21,6 @@ public class Nav003mVO {
     private String trnpMthdNm;
     private String siteUrl;
     private String prlstLrclNm;
-    private String cletDt;
+    private String baseDt;
 
 }
