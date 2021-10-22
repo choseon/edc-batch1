@@ -7,7 +7,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.property.FileProperty;
 import kcs.edc.batch.cmmn.property.JobConstant;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
@@ -19,7 +18,6 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -42,12 +40,19 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     @Value("#{stepExecutionContext[partitionList]}")
     private List<String> partitionList;
 
+    @Value("#{jobParameters[baseYear]}")
+    private String baseYear;
+
+
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
 
+        // apiService에  Custom RestTemplate Setting
         this.apiService.setRestTemplate(getRestTemplate());
+
+        // 국가목록 조회
         List<String> areaList = getAreaList();
 
         for (String r : this.partitionList) { // 신고국가
@@ -59,14 +64,14 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
                 builder.replaceQueryParam("r", r);
                 builder.replaceQueryParam("p", p);
-                builder.replaceQueryParam("ps", this.baseDt);
-                this.uri = builder.build().encode().toUri();
+                builder.replaceQueryParam("ps", this.baseYear);
+                URI uri = builder.build().encode().toUri();
 
                 Uct001mVO resultVO = null;
                 try {
 
                     resultVO = this.apiService.sendApiForEntity(uri, Uct001mVO.class);
-                    log.info("threadNum {}, r {}, p {}, ps {}", this.threadNum, r, p, this.baseDt);
+                    log.info("threadNum {}, r {}, p {}, ps {}", this.threadNum, r, p, this.baseYear);
 
                     if (Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
                     if (resultVO.getValidation() == null) continue;
@@ -86,7 +91,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 }
 
                 if (this.resultList.size() > 0) {
-                    String fileName = r + "_" + p;
+                    String fileName = this.baseYear + "_" + r + "_" + p;
                     this.fileService.makeTempFile(this.resultList, fileName);
                     this.resultList = new ArrayList<>();
                 }
@@ -123,20 +128,18 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     }
 
     /**
-     * ISO 3166-1 국가 리스트
+     * 리소스파일을 조회하여 ISO 3166-1 국가 리스트 반환
      *
      * @return
      */
-    private List<String> getAreaList() {
-//                String resourcePath = "C:/dev/edc-batch/resources/";
-//        String resourcePath = fileProperty.getResourcePath();
-        String resourcePath = this.fileService.getResourcePath();
-        String filePath = resourcePath + "/" + JobConstant.RESOURCE_FILE_NAME_UCT_AREA;
+    public List<String> getAreaList() {
 
         List<String> pList = new ArrayList<>();
-
         JsonArray jsonArray = null;
         try {
+
+            String resourcePath = this.fileService.getResourcePath();
+            String filePath = resourcePath + "/" + JobConstant.RESOURCE_FILE_NAME_UCT_AREA;
             jsonArray = FileUtil.readJsonFile(filePath, "results");
 
             for (JsonElement jsonElement : jsonArray) {
@@ -144,11 +147,11 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 String id = jsonObject.get("id").getAsString();
                 if (id.equals("all")) continue;
                 pList.add(id);
-
-                if(pList.size() == 10) break;
             }
+
         } catch (FileNotFoundException e) {
             log.info(e.getMessage());
+            return null;
         }
 
         return pList;

@@ -13,6 +13,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,9 +41,9 @@ public class Som005mTasklet extends CmmnJob implements Tasklet {
             builder.replaceQueryParam("issueEndDate", som001mVO.getDate());
             builder.replaceQueryParam("source", som001mVO.getSource());
             builder.replaceQueryParam("keyword", som001mVO.getKeyword());
-            this.uri = builder.build().toUri();
+            URI uri = builder.build().toUri();
 
-            Som005mVO resultVO = this.apiService.sendApiForEntity(this.uri, Som005mVO.class);
+            Som005mVO resultVO = this.apiService.sendApiForEntity(uri, Som005mVO.class);
             if(Objects.isNull(resultVO)) continue;
 
             log.info("[{}] >> source :: {} | keyword :: {} | kcsKeywordYn :: {} | size :: {}",

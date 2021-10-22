@@ -11,7 +11,6 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,13 +26,11 @@ public class CmmnJob implements StepExecutionListener {
     protected FileService fileService;
 
     @Value("#{jobParameters[baseDt]}")
-    protected String baseDt; // 수집일
+    protected String baseDt; // 수집기준일
 
-    protected URI uri;
     protected List<Object> resultList = new ArrayList<>();
 
     protected ExecutionContext jobExecutionContext;
-
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
@@ -42,11 +39,11 @@ public class CmmnJob implements StepExecutionListener {
             log.info("baseDt is null");
         }
 
-        this.apiService.setJobId(getCurrentJobId());
+        this.apiService.init(getCurrentJobId());
         this.fileService.init(getCurrentJobId(), this.baseDt);
 
-        // step간 파라미터 넘겨주기 위해 jobExcutionContext 설정
-        // afterStep에서 넘겨줄 값 셋팅
+        // step간 파라미터 넘겨주기 위해 jobExcutionContext 초기화
+        // afterStep에서 넘겨줄 값 셋팅하면 된다
         this.jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
     }
 

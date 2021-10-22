@@ -10,23 +10,20 @@ import java.util.Map;
 
 @Getter
 @Setter
-@Component
 @Configuration
 @ConfigurationProperties(prefix = "path")
-public class FileProperty {
+public class FileProperties {
 
     private String rootPath;
 
     private String storePath;
+
+    private Map<String, Map<String, String>> nasStroePath;
 
     private String resourcePath;
 
     private String configPath;
 
     private String logPath;
-
-//    private Map<String, Object> jobPath;
-
-
 
 }

@@ -1,4 +1,4 @@
 package kcs.edc.batch.config;
 
-public class OPDJobConfig {
+public class OpdJobConfig {
 }

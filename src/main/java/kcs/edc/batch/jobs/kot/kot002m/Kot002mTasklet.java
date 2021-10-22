@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.kot.kot002m;
 
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Kot001mVO;
 import kcs.edc.batch.jobs.kot.kot002m.vo.Kot002mVO;
@@ -16,8 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-@StepScope
-public class Kot002mTasklet extends CmmnTask implements Tasklet {
+public class Kot002mTasklet extends CmmnJob implements Tasklet {
 
     @Value("#{jobExecutionContext[resultList]}")
     List<Kot001mVO.Item> resultList;
@@ -26,7 +26,7 @@ public class Kot002mTasklet extends CmmnTask implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        writeCmmnLogStart();
+        this.writeCmmnLogStart();
 
         List<Kot002mVO> items = new ArrayList<>();
         List<String> keywordList = new ArrayList<>();
@@ -34,6 +34,7 @@ public class Kot002mTasklet extends CmmnTask implements Tasklet {
         for (Kot001mVO.Item item : resultList) {
             String[] split = item.getKwrd().split(",");
             keywordList.addAll(Arrays.asList(split));
+
             for (String keyword : keywordList) {
                 Kot002mVO vo = new Kot002mVO();
                 vo.setBbstxSn(item.getBbstxSn());
@@ -44,9 +45,9 @@ public class Kot002mTasklet extends CmmnTask implements Tasklet {
             }
         }
 
-        makeFile(getCurrentJobId(), items);
+        this.fileService.makeFile(items);
 
-        writeCmmnLogEnd();
+        this.writeCmmnLogEnd();
         return RepeatStatus.FINISHED;
     }
 }

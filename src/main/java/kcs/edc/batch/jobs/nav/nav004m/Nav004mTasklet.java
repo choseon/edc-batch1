@@ -17,7 +17,6 @@ import java.io.File;
 import java.util.List;
 
 @Slf4j
-@StepScope
 public class Nav004mTasklet extends CmmnJob implements Tasklet {
 
     @Autowired

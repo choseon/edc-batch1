@@ -8,26 +8,19 @@ import com.univocity.parsers.tsv.TsvParserSettings;
 import com.univocity.parsers.tsv.TsvWriter;
 import com.univocity.parsers.tsv.TsvWriterSettings;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 @Slf4j
 public class FileUtil {
-
-    public static final String CURRENT_MAKE_FILE_TYPE = FileUtil.MAKE_FILE_TYPE_TSV;
-    public static final String MAKE_FILE_TYPE_TSV = "tsv";
-    public static final String MAKE_FILE_TYPE_JSON = "json";
 
     /**
      * 파일생성
@@ -84,6 +77,93 @@ public class FileUtil {
         tsvWriter.close();
     }
 
+    /**
+     * 파일 병합
+     *
+     * @param sourceFilePath
+     * @param targetPath
+     * @param targetFileName
+     */
+    public static void mergeFile(String sourceFilePath, String targetPath, String targetFileName) {
+
+        File dir = new File(sourceFilePath);
+        if (dir == null) return;
+        File[] files = dir.listFiles();
+        if (files == null || files.length == 0) return;
+
+
+        BufferedOutputStream bos = null;
+        BufferedInputStream bis = null;
+        try {
+
+            File targetFile = new File(targetPath + targetFileName);
+            if (!targetFile.exists()) {
+                targetFile.createNewFile();
+            }
+            log.info("targetFile >> {}", targetFile);
+
+            // 파일 이어쓰기 가능하게 설정
+            bos = new BufferedOutputStream(new FileOutputStream(targetFile, true));
+
+            for (File file : files) {
+                bis = new BufferedInputStream(new FileInputStream(file.getPath()));
+                log.info("file.getPath >> {}", file.getPath());
+
+                byte[] buffer = new byte[1024];
+                int readCount = 0;
+
+                while ((readCount = bis.read(buffer)) > 0) {
+                    bos.write(buffer, 0, readCount);
+                    bos.flush();
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 파일 삭제
+     *
+     * @param filePath
+     */
+    public static void deleteFiles(String filePath) {
+        File dir = new File(filePath);
+        if (dir == null) return;
+
+        File[] files = dir.listFiles();
+        if (files == null) return;
+
+        for (File file : files) {
+            file.delete();
+        }
+    }
+
+    /**
+     *
+     * @param filePath
+     * @param objName
+     * @return
+     * @throws FileNotFoundException
+     */
     public static JsonArray readJsonFile(String filePath, String objName) throws FileNotFoundException {
         FileReader reader = new FileReader(filePath);
         JsonObject obj = new Gson().fromJson(reader, JsonObject.class);
@@ -92,6 +172,12 @@ public class FileUtil {
         return jsonArray;
     }
 
+    /**
+     *
+     * @param filePath
+     * @return
+     * @throws IOException
+     */
     public static List<String> readTextFile(String filePath) throws IOException {
 //        ClassPathResource resource = new ClassPathResource(filePath);
 //        Path path = Paths.get(resource.getURI());
@@ -185,70 +271,6 @@ public class FileUtil {
 
 
     /**
-     * 파일 병합
-     *
-     * @param sourceFilePath
-     * @param targetPath
-     * @param targetFileName
-     */
-    public static void mergeFile(String sourceFilePath, String targetPath, String targetFileName) {
-
-        File dir = new File(sourceFilePath);
-        if (dir == null) return;
-        File[] files = dir.listFiles();
-        if (files == null || files.length == 0) return;
-
-
-        BufferedOutputStream bos = null;
-        BufferedInputStream bis = null;
-        try {
-
-            File targetFile = new File(targetPath + targetFileName);
-            if (!targetFile.exists()) {
-                targetFile.createNewFile();
-            }
-            log.info("targetFile >> {}", targetFile);
-
-            // 파일 이어쓰기 가능하게 설정
-            bos = new BufferedOutputStream(new FileOutputStream(targetFile, true));
-
-            for (File file : files) {
-                bis = new BufferedInputStream(new FileInputStream(file.getPath()));
-                log.info("file.getPath >> {}", file.getPath());
-
-                byte[] buffer = new byte[1024];
-                int readCount = 0;
-
-                while ((readCount = bis.read(buffer)) > 0) {
-                    bos.write(buffer, 0, readCount);
-                    bos.flush();
-                }
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (bis != null) {
-                try {
-                    bis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (bos != null) {
-                try {
-                    bos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-
-    /**
      * temp 폴더에서 tsv 파일을 읽어 List로 변화하여 리턴
      *
      * @param filePath
@@ -272,22 +294,5 @@ public class FileUtil {
             dir.delete(); // 폴더 삭제
         }
         return rows;
-    }
-
-    /**
-     * 파일 삭제
-     *
-     * @param filePath
-     */
-    public static void deleteFiles(String filePath) {
-        File dir = new File(filePath);
-        if (dir == null) return;
-
-        File[] files = dir.listFiles();
-        if (files == null) return;
-
-        for (File file : files) {
-            file.delete();
-        }
     }
 }

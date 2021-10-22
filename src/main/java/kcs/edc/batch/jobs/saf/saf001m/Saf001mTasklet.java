@@ -34,7 +34,7 @@ public class Saf001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
     @Override
     public void beforeStep(StepExecution stepExecution) {
         jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-        jobProp = apiProperty.getJobProp(getJobGrpName());
+        jobProp = apiProperties.getJobProp(getJobGrpName());
         authKey = jobProp.getHeader().get("AuthKey");
     }
 

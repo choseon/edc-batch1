@@ -1,7 +1,7 @@
 package kcs.edc.batch.cmmn.service;
 
 import com.jcraft.jsch.*;
-import kcs.edc.batch.cmmn.property.SftpProperty;
+import kcs.edc.batch.cmmn.property.SftpProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,12 +14,12 @@ import java.util.Properties;
 public class SftpService {
 
     @Autowired
-    private SftpProperty sftpProperty;
+    private SftpProperties sftpProperties;
 
-    private SftpProperty.JobProp sftpProp;
+    private SftpProperties.JobProp sftpProp;
 
     public void setJobId(String jobId) {
-        this.sftpProp = this.sftpProperty.getCurrentJobProp(jobId);
+        this.sftpProp = this.sftpProperties.getCurrentJobProp(jobId);
     }
 
     public ChannelSftp connectSFTP() {

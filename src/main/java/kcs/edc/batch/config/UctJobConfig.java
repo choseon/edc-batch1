@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -18,16 +19,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * UN Comtrade 수출데이터 수집 Job Configuration
+ */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class UCTJobConfig {
+public class UctJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -36,17 +41,24 @@ public class UCTJobConfig {
     private int GRID_SIZE = 10;
     private int POOL_SIZE = 10;
 
-    //    @Scheduled(cron = "${scheduler.cron.uct}")
+    /**
+     * UN Comtrade job launcher (월배치)
+     * 매월 1일 전년도, 전전년도 2년치 데이터 수집하여
+     * 15일 이전에 내부 hlo1db에서 데이터 조회되도록 스케쥴링함.
+     */
+    @Scheduled(cron = "${scheduler.cron.uct}")
     public void launcher() {
         log.info("UctConfiguration launcher...");
 
-//        String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        // 수집기준일 : 오늘
+        String baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        // 수집기준일 : 전년도, 전전년도
-        String baseDt = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
+        // 수집기준년도 : 전년도, 전전년도 2년치
+        String baseYear = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)
+                .addString("baseYear", baseYear)
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
@@ -84,6 +96,7 @@ public class UCTJobConfig {
      * @return
      */
     @Bean
+    @JobScope
     public Step uct001mPartitionStep() {
 
         return stepBuilderFactory.get(JobConstant.JOB_ID_UCT001M + JobConstant.POST_FIX_PARTITION_STEP)
@@ -103,7 +116,7 @@ public class UCTJobConfig {
     public Step uct001mStep() {
 
         return stepBuilderFactory.get(JobConstant.JOB_ID_UCT001M + JobConstant.POST_FIX_STEP)
-                .tasklet(uct001mTasklet(null, null, null))
+                .tasklet(uct001mTasklet(null, null, null, null))
                 .build();
     }
 
@@ -120,6 +133,7 @@ public class UCTJobConfig {
     @StepScope
     public Uct001mTasklet uct001mTasklet(
             @Value("#{jobParameters[baseDt]}") String baseDt,
+            @Value("#{jobParameters[baseYear]}") String baseYear,
             @Value("#{stepExecutionContext[threadNum]}") String threadNum,
             @Value("#{stepExecutionContext[partitionList]}") List<String> partitionList) {
 

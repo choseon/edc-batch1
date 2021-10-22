@@ -14,19 +14,29 @@ import java.util.Map;
 
 /**
  * 데이터수집을 하기 위한 Open API 정보를 담는 클래스
- * api-info.yml의 api 그룹을 자동으로 매핑
+ * application.yml의 "api" 그룹을 자동으로 매핑하여 Configuration Bean으로 등록한다.
  */
 @Getter
 @Setter
-@Component
 @Configuration
 @ConfigurationProperties(prefix = "api")
-public class ApiProperty {
+public class ApiProperties {
 
     /**
      * Open API  jobs map info
      */
     private Map<String, JobProp> jobs = new HashMap<>();
+
+    /**
+     * 전체 OPEN API중 특정잡의 정보를 조회한다.
+     *
+     * @param jobName 특정 jobName
+     * @return
+     */
+    public JobProp getJobProp(String jobName) {
+        return this.jobs.get(jobName);
+    }
+
 
     @Getter
     @Setter
@@ -49,9 +59,4 @@ public class ApiProperty {
         private MultiValueMap<String, String> param;
 
     }
-
-    public JobProp getJobProp(String jobName) {
-        return this.jobs.get(jobName);
-    }
-
 }

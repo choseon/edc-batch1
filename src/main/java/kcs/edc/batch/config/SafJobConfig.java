@@ -1,8 +1,7 @@
 package kcs.edc.batch.config;
 
-import kcs.edc.batch.cmmn.property.JobConstant;
-import kcs.edc.batch.jobs.kot.kot001m.Kot001mTasklet;
-import kcs.edc.batch.jobs.kot.kot002m.Kot002mTasklet;
+import kcs.edc.batch.jobs.saf.saf001l.Saf001lTasklet;
+import kcs.edc.batch.jobs.saf.saf001m.Saf001mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -17,6 +16,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,13 +25,13 @@ import java.util.List;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class KOTJobConfig {
+public class SafJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-//    @Scheduled(cron = "${scheduler.cron.kot}")
+//    @Scheduled(cron = "${scheduler.cron.som}")
     public void launcher() throws Exception {
         log.info("KotJobConfig launcher...");
 
@@ -41,53 +41,62 @@ public class KOTJobConfig {
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
-        jobLauncher.run(kotJob(), jobParameters);
+//        jobLauncher.run(safJob(), jobParameters);
     }
 
-    @Bean
-    public Job kotJob() {
+//    @Bean
+    public Job safJob() {
 
-        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_KOT + JobConstant.POST_FIX_JOB)
-                .start(kot001mStep(null))
-                .next(kot002mStep(null, null))
+        return jobBuilderFactory.get("somJob")
+                .start(saf001mStep(null))
+                .next(saf001lStep(null, null))
+                .build();
+    }
+
+
+    /**
+     * 국가기술표준원 제품안전정보센터 Step
+     */
+    @Bean
+    @JobScope
+    public Step saf001mStep(
+            @Value("#{jobParameters[baseDt]}") String baseDt) {
+        return stepBuilderFactory.get("saf001mStep")
+                .tasklet(saf001mTasklet(baseDt))
                 .build();
     }
 
     /**
-     * 대한무역투자진흥공사 해외시장 뉴스 수집 Step
+     * 국가기술표준원 제품안전정보센터 Tasklet
+     */
+    @Bean
+    @StepScope
+    public Saf001mTasklet saf001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+        return new Saf001mTasklet();
+    }
+
+    /**
+     * 국가기술표준원 제품안전정보센터 Step
      */
     @Bean
     @JobScope
-    public Step kot001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_KOT001M + JobConstant.POST_FIX_STEP)
-                .tasklet(kot001mTasklet(baseDt))
+    public Step saf001lStep(
+            @Value("#{jobParameters[baseDt]}") String baseDt,
+            @Value("#{jobExecutionContext[certNumList]}") List<String> certNumList) {
+        return stepBuilderFactory.get("saf001lStep")
+                .tasklet(saf001lTasklet(baseDt, certNumList))
                 .build();
     }
 
     /**
-     * 대한무역투자진흥공사 해외시장 뉴스 수집 Tasklet
+     * 국가기술표준원 제품안전정보센터 Tasklet
      */
     @Bean
     @StepScope
-    public Kot001mTasklet kot001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return new Kot001mTasklet();
+    public Saf001lTasklet saf001lTasklet(
+            @Value("#{jobParameters[baseDt]}") String baseDt,
+            @Value("#{jobExecutionContext[certNumList]}") List<String> certNumList) {
+        return new Saf001lTasklet();
     }
 
-    @Bean
-    @JobScope
-    public Step kot002mStep(
-            @Value("#{jobParameters[baseDt]}") String baseDt,
-            @Value("#{jobExecutionContext[resultList]}") List<Object> resultList) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_KOT002M + JobConstant.POST_FIX_STEP)
-                .tasklet(kot002mTasklet(baseDt, resultList))
-                .build();
-    }
-
-    @Bean
-    @StepScope
-    public Kot002mTasklet kot002mTasklet(
-            @Value("#{jobParameters[baseDt]}") String baseDt,
-            @Value("#{jobExecutionContext[resultList]}") List<Object> resultList) {
-        return new Kot002mTasklet();
-    }
 }

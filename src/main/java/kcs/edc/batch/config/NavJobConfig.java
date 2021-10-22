@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class NAVJobConfig {
+public class NavJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;

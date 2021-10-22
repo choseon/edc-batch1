@@ -36,14 +36,14 @@ public class Big004mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
     public void beforeStep(StepExecution stepExecution) {
 
         jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-        jobProp = apiProperty.getJobProp(getJobGrpName());
+        jobProp = apiProperties.getJobProp(getJobGrpName());
         accessKey = jobProp.getHeader().get("accessKey");
 
         from = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -1, "yyyy-MM-dd");
         until = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -0, "yyyy-MM-dd");
 
         try {
-            String resourcePath = fileProperty.getResourcePath();
+            String resourcePath = fileProperties.getResourcePath();
             String filePath = resourcePath + JobConstant.RESOURCE_FILE_NAME_SOM_KCS_KEWORD;
             kcsKeywordList = FileUtil.readTextFile(filePath);
             log.info("kcsKeywordList.size() {}", kcsKeywordList.size());

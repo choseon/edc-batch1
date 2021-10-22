@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.kot.kot001m;
 
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Kot001mVO;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,11 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
@@ -20,29 +25,22 @@ import java.util.Objects;
  * 대한무역투자진흥공사 해외시장 뉴스 수집 Tasklet
  */
 @Slf4j
-@StepScope
-public class Kot001mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
-
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-        jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-    }
+public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        writeCmmnLogStart();
+        this.writeCmmnLogStart();
 
-        URI uri = null;
-        try {
-            // serviceKey에 encoding이 되어 있기 때문에 encoding을 하지 않음
-            uri = new URI(getUriComponetsBuilder().build(true).toUriString());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
+        builder.replaceQueryParam("search4", this.baseDt);
 
-        Kot001mVO resultVO = sendApiForEntity(uri, Kot001mVO.class);
-        if(Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
+        // serviceKey에 encoding이 되어 있기 때문에 encoding을 하지 않는 설정으로 build한다.
+        URI uri = builder.build(true).toUri();
+
+        Kot001mVO resultVO = this.apiService.sendApiForEntity(uri, Kot001mVO.class);
+        if (Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
+        if (!resultVO.getResultCode().equals("00")) return RepeatStatus.FINISHED; // NODATA_ERROR
 
         // 결과리스트에서 데이터 가공
         for (Kot001mVO.Item item : resultVO.getItems()) {
@@ -50,12 +48,12 @@ public class Kot001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
             item.setNewsBdt(htmlPath);
             item.setCletFileCtrnDttm(this.baseDt);
 
-            resultList.add(item);
+            this.resultList.add(item);
         }
 
         // kot001m 파일 생성
-        makeFile(getCurrentJobId(), resultList);
-        writeCmmnLogEnd();
+        this.fileService.makeFile(this.resultList);
+        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }

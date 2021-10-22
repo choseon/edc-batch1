@@ -13,6 +13,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +50,7 @@ public class Som002mTasklet extends CmmnJob implements Tasklet {
                 builder.queryParam("keyword", keyword);
             }
             builder.replaceQueryParam("keywordsExcFilterList[]", "");
-            uri = builder.build().toUri();
+            URI uri = builder.build().toUri();
 
             Som002mVO resultVO = this.apiService.sendApiForEntity(uri, Som002mVO.class);
             if(Objects.isNull(resultVO)) continue;

@@ -2,7 +2,7 @@ package kcs.edc.batch.cmmn.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kcs.edc.batch.cmmn.property.ApiProperty;
+import kcs.edc.batch.cmmn.property.ApiProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +20,20 @@ import java.util.Objects;
 public class ApiService {
 
     @Autowired
-    private ApiProperty apiProperty; // OpenApi information (all)
+    private ApiProperties apiPropertis; // OpenApi information (all)
 
-    private ApiProperty.JobProp jobProp; // OpenApi information (job)
+    private ApiProperties.JobProp jobProp; // OpenApi information (job)
 
     private RestTemplate restTemplate = new RestTemplate();
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public void setJobId (String jobId) {
-        this.jobProp = this.apiProperty.getJobProp(jobId);
+    public void init(String jobId) {
+        this.jobProp = this.apiPropertis.getJobProp(jobId);
     }
 
     /**
      * UriComponentsBuilder 생성
+     *
      * @return
      */
     public UriComponentsBuilder getUriComponetsBuilder() {
@@ -53,17 +54,50 @@ public class ApiService {
 
     /**
      * Send Open Api
+     *
      * @param uri
-     * @param targetClass
+     * @param resonseType
      * @param <T>
      * @return
      */
-    public <T> T sendApiForEntity(URI uri, Class<T> targetClass) {
+    public <T> T sendApiForEntity(URI uri, Class<T> resonseType) {
 
         log.debug("uri {}", uri);
 
         ResponseEntity<String> forEntity = this.restTemplate.getForEntity(uri, String.class);
         String resultJson = forEntity.getBody();
+
+        if (Objects.isNull(resultJson)) {
+            log.info("uri {}", uri);
+            log.info("resultJson is null");
+            return null;
+        } else {
+            log.debug("resultJson {}", resultJson);
+        }
+
+        T t = null;
+
+        try {
+            t = this.objectMapper.readValue(resultJson, resonseType);
+        } catch (JsonProcessingException e) {
+            log.info(e.getMessage());
+        }
+        return t;
+    }
+
+    /**
+     *
+     * @param uri
+     * @param request
+     * @param targetClass
+     * @param <T>
+     * @return
+     */
+    public <T> T sendApiPostForObject(URI uri, Object request, Class<T> targetClass) {
+
+        log.debug("uri {}", uri);
+
+        String resultJson = this.restTemplate.postForObject(uri, request, String.class);
 
         if (Objects.isNull(resultJson)) {
             log.info("uri {}", uri);
@@ -83,10 +117,21 @@ public class ApiService {
         return t;
     }
 
+    /**
+     * RestTemplate setting
+     *
+     * @param restTemplate
+     */
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
+    /**
+     * API parameter값 조회
+     *
+     * @param key 조회할 파라미터명
+     * @return
+     */
     public List<String> getjobPropParam(String key) {
         return this.jobProp.getParam().get(key);
     }

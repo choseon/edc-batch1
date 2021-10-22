@@ -41,7 +41,7 @@ public class Big001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
     @Override
     public void beforeStep(StepExecution stepExecution) {
         jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-        jobProp = apiProperty.getJobProp(getJobGrpName());
+        jobProp = apiProperties.getJobProp(getJobGrpName());
         accessKey = jobProp.getHeader().get("accessKey");
 
         from = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -1, "yyyy-MM-dd");

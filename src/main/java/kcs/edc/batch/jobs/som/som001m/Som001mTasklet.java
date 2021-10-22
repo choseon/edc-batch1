@@ -19,6 +19,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -86,9 +87,9 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
         builder.replaceQueryParam("source", source);
         builder.replaceQueryParam("startDate", this.baseDt);
         builder.replaceQueryParam("endDate", this.baseDt);
-        this.uri = builder.build().toUri();
+        URI uri = builder.build().toUri();
 
-        Som001mVO[] resultVO = this.apiService.sendApiForEntity(this.uri, Som001mVO[].class);
+        Som001mVO[] resultVO = this.apiService.sendApiForEntity(uri, Som001mVO[].class);
         if (Objects.isNull(resultVO)) return null;
 
         for (Som001mVO item : resultVO) {
@@ -142,7 +143,7 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
             for (String keyword : split) {
                 builder.queryParam("keyword[]", keyword);
             }
-            uri = builder.build().toUri();
+            URI uri = builder.build().toUri();
 
             KCSFrequencyVO resultVO = this.apiService.sendApiForEntity(uri, KCSFrequencyVO.class);
             if (Objects.isNull(resultVO)) continue;

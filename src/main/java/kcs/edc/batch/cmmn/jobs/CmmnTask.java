@@ -2,8 +2,8 @@ package kcs.edc.batch.cmmn.jobs;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kcs.edc.batch.cmmn.property.ApiProperty;
-import kcs.edc.batch.cmmn.property.FileProperty;
+import kcs.edc.batch.cmmn.property.ApiProperties;
+import kcs.edc.batch.cmmn.property.FileProperties;
 import kcs.edc.batch.cmmn.service.FileService;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
@@ -29,11 +29,11 @@ import java.util.*;
 public class CmmnTask {
 
     @Autowired
-    protected ApiProperty apiProperty; // OpenApi information (all)
-    protected ApiProperty.JobProp jobProp; // OpenApi information (job)
+    protected ApiProperties apiProperties; // OpenApi information (all)
+    protected ApiProperties.JobProp jobProp; // OpenApi information (job)
 
     @Autowired
-    protected FileProperty fileProperty;
+    protected FileProperties fileProperties;
 
     @Value("${path.storePath}")
     protected String storePath;
@@ -68,7 +68,7 @@ public class CmmnTask {
     public UriComponentsBuilder getUriComponetsBuilder() {
 
         // property loading
-        jobProp = apiProperty.getJobProp(getCurrentJobId());
+        jobProp = apiProperties.getJobProp(getCurrentJobId());
 
         // baseUrl setting
         String baseUrl = jobProp.getBaseUrl();
@@ -254,33 +254,4 @@ public class CmmnTask {
         log.info("END JOB :::: {}", getCurrentJobId());
         log.info("####################################################");
     }
-
-    /**
-     * tsv 파일을 읽고 리스트에 담아 결과값 반환
-     *
-     * @param jobId
-     * @return
-     */
-    protected List<Object[]> getMergeListFromTsvFile(String jobId) {
-        FileVO fileVO = getFileVO(jobId);
-        String tempFilePath = fileVO.getTempFilePath();
-        List<Object[]> list = FileUtil.getListFromTsvFile(tempFilePath);
-        return list;
-    }
-
-    protected void mergeFile(String jobId) {
-
-        try {
-            FileVO fileVO = getFileVO(jobId);
-            String tempFilePath = fileVO.getTempFilePath();
-            String dataFilePath = fileVO.getDataFilePath();
-            String dataFileName = fileVO.getDataFileName();
-            FileUtil.mergeFile(tempFilePath, dataFilePath, dataFileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
 }

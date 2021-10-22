@@ -1,6 +1,6 @@
 package kcs.edc.batch.cmmn.service;
 
-import kcs.edc.batch.cmmn.property.FileProperty;
+import kcs.edc.batch.cmmn.property.FileProperties;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.cmmn.vo.Log001mVO;
@@ -17,7 +17,7 @@ import java.util.List;
 public class FileService {
 
     @Autowired
-    protected FileProperty fileProperty;
+    protected FileProperties fileProperties;
 
     /**
      * 로그 테이블명
@@ -54,7 +54,6 @@ public class FileService {
      */
     private String baseDt;
 
-
     /**
      * 초기화
      *
@@ -86,8 +85,7 @@ public class FileService {
 
 //        return this.fileProperty.getStorePath() + getTableName() + "/";
 //        return String.format(this.fileProperty.getStorePath() + "%s/", getTableName());
-        return String.format(this.PATH_PATTERN, this.fileProperty.getStorePath(), getTableName());
-
+        return String.format(this.PATH_PATTERN, this.fileProperties.getStorePath(), getTableName());
     }
 
     /**
@@ -113,7 +111,7 @@ public class FileService {
     public String getLogFilePath() {
 
 //        return this.fileProperty.getStorePath() + LOG_TABLE_NAME + "/";
-        return String.format(this.PATH_PATTERN, this.fileProperty.getStorePath(), this.LOG_TABLE_NAME);
+        return String.format(this.PATH_PATTERN, this.fileProperties.getStorePath(), this.LOG_TABLE_NAME);
     }
 
     /**
@@ -155,14 +153,6 @@ public class FileService {
         return String.format(this.TEMP_FILE_NAME_PATTERN, this.jobId, this.baseDt, suffixFileName);
     }
 
-    /**
-     * 임시파일 전체경로 조회
-     *
-     * @return tempFileFullPath 임시파일 전체경로
-     */
-//    public String getTempFileFullPath() {
-//        return getTempFilePath() + getTempFileName();
-//    }
 
     /**
      * 리소스 경로
@@ -170,7 +160,7 @@ public class FileService {
      * @return
      */
     public String getResourcePath() {
-        return this.fileProperty.getResourcePath();
+        return this.fileProperties.getResourcePath();
     }
 
     public <T> void makeFile(List<T> list) {

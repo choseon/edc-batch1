@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * Common Partitioner
- * list와 gridSize로 분할하여 Thread로 실행한다.
+ * list를 gridSize로 분할한다
  */
 @Slf4j
 @StepScope

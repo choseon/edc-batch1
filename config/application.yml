@@ -10,11 +10,10 @@ spring:
       names: ${job.name:NONE}
 path:
   rootPath: C:/dev/edc-batch
-  storePath: C:/dev/hdata
-#    hive: C:/dev/hdata/
-#    nas:
-#      opd: C:/dev/data_nas/anl_data/BA204/opendart/
-#      kot: C:/dev/data_nas/anl_data/BA201/kotra/
+  storePath: C:/dev/hdata/
+#  nasStorePath:
+#    opd: C:/dev/data_nas/anl_data/BA204/opendart/
+#    kot: C:/dev/data_nas/anl_data/BA201/kotra/
   resourcePath: C:/dev/edc-batch/resources
   configPath: C:/dev/edc-batch/config
   logPath: C:/dev/log
@@ -27,6 +26,9 @@ spring:
 path:
   rootPath: /data/edc-batch/dev
   storePath: /data/edc-batch/dev/hdata
+#  nasStorePath:
+#    opd: /data/data_nas/anl_data/BA204/opendart/
+#    kot: /data/data_nas/anl_data/BA201/kotra/
   resourcePath: /data/edc-batch/dev/resources
   configPath: /data/edc-batch/dev/config
   logPath: /data/edc-batch/dev/log
@@ -39,6 +41,9 @@ spring:
 path:
   rootPath: /data/edc-batch/prod
   storePath: /hdata
+#  nasStorePath:
+#    opd: C:/dev/data_nas/anl_data/BA204/opendart/
+#    kot: C:/dev/data_nas/anl_data/BA201/kotra/
   resourcePath: /data/edc-batch/prod/resources
   configPath: /data/edc-batch/prod/config
   logPath: /data/edc-batch/prod/log
@@ -61,7 +66,7 @@ scheduler:
     nav:
     kot:
     opd:
-    uct: "* 59 16 * * ?"
+    uct: "* 45 14 * * ?"
 ---
 # Open Api Information
 api:
@@ -229,9 +234,8 @@ sftp:
       downloadFilePath: hdata/ht_nav004m/temp/
 ---
 resource:
-  jobs:
-    opd:
-      storePath: /data_nas/anl_data/BA204/opendart
-    kot:
-      storePath: /data_nas/anl_data/BA201/kotra
-
+  kot:
+    dataFilePath:
+    scriptPath:
+    newsBdtHtmlPath:
+    imgPath:
