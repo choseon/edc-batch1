@@ -1,6 +1,6 @@
 package kcs.edc.batch.config;
 
-import kcs.edc.batch.cmmn.property.JobConstant;
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.jobs.kot.kot001m.Kot001mTasklet;
 import kcs.edc.batch.jobs.kot.kot002m.Kot002mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class KotJobConfig {
     @Bean
     public Job kotJob() {
 
-        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_KOT + JobConstant.POST_FIX_JOB)
+        return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_KOT + CmmnConst.POST_FIX_JOB)
                 .start(kot001mStep(null))
                 .next(kot002mStep(null, null))
                 .build();
@@ -59,7 +59,7 @@ public class KotJobConfig {
     @Bean
     @JobScope
     public Step kot001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_KOT001M + JobConstant.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_KOT001M + CmmnConst.POST_FIX_STEP)
                 .tasklet(kot001mTasklet(baseDt))
                 .build();
     }
@@ -78,7 +78,7 @@ public class KotJobConfig {
     public Step kot002mStep(
             @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[resultList]}") List<Object> resultList) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_KOT002M + JobConstant.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_KOT002M + CmmnConst.POST_FIX_STEP)
                 .tasklet(kot002mTasklet(baseDt, resultList))
                 .build();
     }

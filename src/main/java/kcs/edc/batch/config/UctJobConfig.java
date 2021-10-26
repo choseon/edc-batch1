@@ -1,7 +1,8 @@
 package kcs.edc.batch.config;
 
+import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
 import kcs.edc.batch.cmmn.jobs.CmmnMergeFile;
-import kcs.edc.batch.cmmn.property.JobConstant;
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mPartitioner;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -83,8 +85,9 @@ public class UctJobConfig {
     @Bean
     public Job uctJob() {
 
-        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_UCT + JobConstant.POST_FIX_JOB)
-                .start(uct001mPartitionStep())
+        return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_JOB)
+                .start(uctFileCleanStep())
+                .next(uct001mPartitionStep())
                 .next(uctFileMergeStep())
                 .build();
     }
@@ -99,7 +102,7 @@ public class UctJobConfig {
     @JobScope
     public Step uct001mPartitionStep() {
 
-        return stepBuilderFactory.get(JobConstant.JOB_ID_UCT001M + JobConstant.POST_FIX_PARTITION_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_UCT001M + CmmnConst.POST_FIX_PARTITION_STEP)
                 .partitioner("uct001mStep", new Uct001mPartitioner())
                 .gridSize(GRID_SIZE)
                 .taskExecutor(uctExecutor())
@@ -115,7 +118,7 @@ public class UctJobConfig {
     @Bean
     public Step uct001mStep() {
 
-        return stepBuilderFactory.get(JobConstant.JOB_ID_UCT001M + JobConstant.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_UCT001M + CmmnConst.POST_FIX_STEP)
                 .tasklet(uct001mTasklet(null, null, null, null))
                 .build();
     }
@@ -149,17 +152,51 @@ public class UctJobConfig {
     @Bean
     public Step uctFileMergeStep() {
 
-        return stepBuilderFactory.get(JobConstant.JOB_ID_UCT001M + JobConstant.POST_FIX_FILE_STEP)
-//                .tasklet(new CmmnMergeFile(JobConstant.JOB_ID_UCT001M))
-                .tasklet(cmmnMergeFile(null))
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_UCT001M + CmmnConst.POST_FIX_FILE_MERGE_STEP)
+//                .tasklet(new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE, CmmnConst.JOB_ID_UCT001M))
+//                .tasklet(cmmnMergeFile(null))
+                .tasklet(uctFileMergeTasklet())
                 .build();
+    }
+
+    /**
+     * File Merge Tasklet
+     * @return
+     */
+    @Bean
+    public CmmnFileTasklet uctFileMergeTasklet() {
+        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE, CmmnConst.JOB_ID_UCT001M);
+    }
+
+
+    /**
+     * File Clean Step
+     * @return
+     */
+    @Bean
+    public Step uctFileCleanStep() {
+
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_UCT001M + CmmnConst.POST_FIX_FILE_CLEAN_STEP)
+//                .tasklet(new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN, CmmnConst.JOB_ID_UCT001M))
+//                .tasklet(cmmnMergeFile(null))
+                .tasklet(uctFileCleanTasklet())
+                .build();
+    }
+
+    /**
+     * File Clean Tasklet
+     * @return
+     */
+    @Bean
+    public CmmnFileTasklet uctFileCleanTasklet() {
+        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN, CmmnConst.JOB_ID_UCT001M);
     }
 
     @Bean
     @StepScope
-    public CmmnMergeFile cmmnMergeFile(
-            @Value("#{jobParameters[baseDt]}") String baseDt) {
-        return new CmmnMergeFile(JobConstant.JOB_ID_UCT001M);
+    public CmmnMergeFile cmmnMergeFile(@Value("#{jobParameters[baseDt]}") String baseDt) {
+        return new CmmnMergeFile(CmmnConst.JOB_ID_UCT001M);
+
     }
 
 

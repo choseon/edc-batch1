@@ -1,7 +1,7 @@
 package kcs.edc.batch.jobs.big.timeline;
 
 import kcs.edc.batch.cmmn.jobs.CmmnTask;
-import kcs.edc.batch.cmmn.property.JobConstant;
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.big.timeline.vo.Big004mVO;
@@ -44,7 +44,7 @@ public class Big004mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
 
         try {
             String resourcePath = fileProperties.getResourcePath();
-            String filePath = resourcePath + JobConstant.RESOURCE_FILE_NAME_SOM_KCS_KEWORD;
+            String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_SOM_KCS_KEWORD;
             kcsKeywordList = FileUtil.readTextFile(filePath);
             log.info("kcsKeywordList.size() {}", kcsKeywordList.size());
 

@@ -1,6 +1,7 @@
 package kcs.edc.batch.cmmn.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kcs.edc.batch.cmmn.property.ApiProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -78,6 +79,7 @@ public class ApiService {
         T t = null;
 
         try {
+            this.objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
             t = this.objectMapper.readValue(resultJson, resonseType);
         } catch (JsonProcessingException e) {
             log.info(e.getMessage());

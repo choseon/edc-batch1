@@ -4,14 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import kcs.edc.batch.cmmn.jobs.CmmnPartitioner;
-import kcs.edc.batch.cmmn.property.JobConstant;
-import kcs.edc.batch.cmmn.service.FileService;
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ExecutionContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -26,13 +22,15 @@ public class Uct001mPartitioner extends CmmnPartitioner {
     public Map<String, ExecutionContext> partition(int gridSize) {
 
         // 국가리스트 조회
-        List<String> areaList = getAreaList();
-        if(Objects.isNull(areaList)) {
-            return null;
-        }
+//        List<String> areaList = getAreaList();
+//        if(Objects.isNull(areaList)) {
+//            return null;
+//        }
 
         // 국가리스트의 String을 Object에 담기위해 Collections.singletonList 사용
-        this.list = Collections.singletonList(areaList);
+//        this.list = Collections.singletonList(areaList);
+        this.list = getAreaList();
+        log.info("list.size() : {}", this.list.size());
 
         // 상속받은 상위 클래스의 method 실행
         return super.partition(gridSize);
@@ -43,16 +41,16 @@ public class Uct001mPartitioner extends CmmnPartitioner {
      *
      * @return
      */
-    public List<String> getAreaList() {
+    public List<Object> getAreaList() {
 
         String resourcePath = "C:/dev/edc-batch/resources/";
 //        String resourcePath = fileProperty.getResourcePath();
 //        String resourcePath = this.fileService.getResourcePath();
 //        String filePath = resourcePath + "/" + JobConstant.RESOURCE_FILE_NAME_UCT_AREA;
 
-        String filePath = resourcePath + "/" + JobConstant.RESOURCE_FILE_NAME_UCT_AREA;
+        String filePath = resourcePath + "/" + CmmnConst.RESOURCE_FILE_NAME_UCT_AREA;
 
-        List<String> pList = new ArrayList<>();
+        List<Object> pList = new ArrayList<>();
 
         JsonArray jsonArray = null;
         try {
@@ -72,4 +70,6 @@ public class Uct001mPartitioner extends CmmnPartitioner {
 
         return pList;
     }
+
+
 }

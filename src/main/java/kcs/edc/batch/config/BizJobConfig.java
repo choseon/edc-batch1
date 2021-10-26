@@ -1,6 +1,6 @@
 package kcs.edc.batch.config;
 
-import kcs.edc.batch.cmmn.property.JobConstant;
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.jobs.biz.biz001m.Biz001mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +52,7 @@ public class BizJobConfig {
     @Bean
     public Job bizJob() {
 
-        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_BIZ + JobConstant.POST_FIX_JOB)
+        return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_BIZ + CmmnConst.POST_FIX_JOB)
                 .start(biz001mStep(null))
                 .build();
     }
@@ -63,7 +63,7 @@ public class BizJobConfig {
     @Bean
     @JobScope
     public Step biz001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_BIZ001M + JobConstant.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_BIZ001M + CmmnConst.POST_FIX_STEP)
                 .tasklet(biz001mTasklet(baseDt))
                 .build();
     }

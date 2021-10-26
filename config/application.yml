@@ -66,7 +66,7 @@ scheduler:
     nav:
     kot:
     opd:
-    uct: "* 45 14 * * ?"
+    uct: "* 34 17 * * ?"
 ---
 # Open Api Information
 api:
@@ -177,6 +177,16 @@ api:
       baseUrl: http://www.safetykorea.kr/openapi/api/cert/certificationDetail.json
       param:
         certNum:
+    eba:
+      baseUrl: https://svcs.ebay.com/services/search/FindingService/v1
+    nav001m:
+      baseUrl: https://dev.apis.naver.com/customs-service/shopping-product-api/getOverseasProducts
+    nav002m:
+      baseUrl: https://dev.apis.naver.com/customs-service/shopping-product-api/getOverseasProducts
+    nav003m:
+      baseUrl: https://tmr21th210.cafe24.com
+    nav004m:
+      baseUrl:
     uct001m:
       baseUrl: https://comtrade.un.org/api/get
       param:
@@ -199,20 +209,6 @@ api:
         pageNo: 1
         numOfRows: 50
         search4:
-    nav001m:
-      baseUrl: https://dev.apis.naver.com/customs-service/shopping-product-api/getOverseasProducts
-    nav002m:
-      baseUrl: https://dev.apis.naver.com/customs-service/shopping-product-api/getOverseasProducts
-    nav003m:
-      baseUrl: https://tmr21th210.cafe24.com
-    nav004m:
-      baseUrl:
-#    eba:
-#      baseUrl: https://svcs.ebay.com/services/search/FindingService/v1
-#      param:
-#      result:
-#        resultType:
-#        objName:
 ---
 sftp:
   jobs:
@@ -239,3 +235,14 @@ resource:
     scriptPath:
     newsBdtHtmlPath:
     imgPath:
+---
+file:
+#  storePath:
+#    hive: C:/dev/hdata/
+#    nas: C:/dev/data_nas/anl_data/
+  resourcePath: C:/dev/edc-batch/resources
+  hiveStorePath: C:/dev/hdata
+  nasStorePath: C:/dev/data_nas/anl_data
+---
+opd: C:/dev/data_nas/anl_data/BA204/opendart/
+kot: C:/dev/data_nas/anl_data/BA201/kotra/

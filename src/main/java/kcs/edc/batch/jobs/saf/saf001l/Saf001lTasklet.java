@@ -1,7 +1,7 @@
 package kcs.edc.batch.jobs.saf.saf001l;
 
 import kcs.edc.batch.cmmn.jobs.CmmnTask;
-import kcs.edc.batch.cmmn.property.JobConstant;
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.jobs.saf.saf001l.vo.Saf001lVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -99,10 +99,10 @@ public class Saf001lTasklet extends CmmnTask implements Tasklet, StepExecutionLi
         }
 
         // 파일 생성
-        makeFile(JobConstant.JOB_ID_SAF001L, derivationModels);
-        makeFile(JobConstant.JOB_ID_SAF002L, similarCertifications);
-        makeFile(JobConstant.JOB_ID_SAF003L, factories);
-        makeFile(JobConstant.JOB_ID_SAF004L, certificationImageUrls);
+        makeFile(CmmnConst.JOB_ID_SAF001L, derivationModels);
+        makeFile(CmmnConst.JOB_ID_SAF002L, similarCertifications);
+        makeFile(CmmnConst.JOB_ID_SAF003L, factories);
+        makeFile(CmmnConst.JOB_ID_SAF004L, certificationImageUrls);
 
         writeCmmnLogEnd();
 

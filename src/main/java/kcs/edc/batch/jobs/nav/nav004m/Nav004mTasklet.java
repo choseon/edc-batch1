@@ -52,7 +52,6 @@ public class Nav004mTasklet extends CmmnJob implements Tasklet {
         csvToList.remove(0);
 
         // Make TSV File
-        log.info("this.fileService.getJobId(): {} ", this.fileService.getJobId());
         this.fileService.makeFile(csvToList);
 
         this.writeCmmnLogEnd();

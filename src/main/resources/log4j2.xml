@@ -45,7 +45,7 @@
             <AppenderRef ref="console" />
             <AppenderRef ref="file" />
         </Logger>
-        <Root level="DEBUG">
+        <Root level="INFO">
             <AppenderRef ref="console" />
             <AppenderRef ref="file" />
         </Root>

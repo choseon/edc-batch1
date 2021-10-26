@@ -38,12 +38,16 @@ public class CmmnJob implements StepExecutionListener {
         if(Objects.isNull(this.baseDt)) {
             log.info("baseDt is null");
         }
+        log.info("getCurrentJobId() : {}", getCurrentJobId());
 
-        this.apiService.init(getCurrentJobId());
-        this.fileService.init(getCurrentJobId(), this.baseDt);
+        if(!getCurrentJobId().contains("cmmnfile")) {
+            this.apiService.init(getCurrentJobId());
+            this.fileService.init(getCurrentJobId(), this.baseDt);
+        }
+
 
         // step간 파라미터 넘겨주기 위해 jobExcutionContext 초기화
-        // afterStep에서 넘겨줄 값 셋팅하면 된다
+        // afterStep에서 넘겨줄 값 셋팅해준다
         this.jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
     }
 

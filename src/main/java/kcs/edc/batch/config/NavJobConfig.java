@@ -1,6 +1,6 @@
 package kcs.edc.batch.config;
 
-import kcs.edc.batch.cmmn.property.JobConstant;
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.jobs.nav.nav003m.Nav003mTasklet;
 import kcs.edc.batch.jobs.nav.nav004m.Nav004mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,7 @@ public class NavJobConfig {
 
     @Bean
     public Job navJob() {
-        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_NAV + JobConstant.POST_FIX_JOB)
+        return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_NAV + CmmnConst.POST_FIX_JOB)
                 .start(nav003mStep())
                 .next(nav004mStep())
                 .build();
@@ -58,7 +58,7 @@ public class NavJobConfig {
     @Bean
     @JobScope
     public Step nav003mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_NAV003M + JobConstant.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_NAV003M + CmmnConst.POST_FIX_STEP)
                 .tasklet(nav003mTasklet(null))
                 .build();
     }
@@ -72,7 +72,7 @@ public class NavJobConfig {
     @Bean
     @JobScope
     public Step nav004mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_NAV004M + JobConstant.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_NAV004M + CmmnConst.POST_FIX_STEP)
                 .tasklet(nav004mTasklet(null))
                 .build();
     }

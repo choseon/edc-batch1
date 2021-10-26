@@ -20,26 +20,25 @@ public class CmmnMergeFile implements Tasklet {
     @Value("#{jobParameters[baseDt]}")
     protected String baseDt; // 수집일
 
-    private List<String> mergeJobList;
+    private List<String> jobList;
 
     private String jobId;
 
-//    public CmmnMergeFile(List<String> mergeJobList) {
-//        this.mergeJobList = mergeJobList;
-//    }
+    public CmmnMergeFile(List<String> jobList) {
+        this.jobList = jobList;
+    }
 
     public CmmnMergeFile(String jobId) {
         this.jobId = jobId;
-
     }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        this.fileService.init(this.jobId, this.baseDt);
-        this.fileService.mergeTempFile();
+        this.fileService.init(this.jobId);
+        this.fileService.mergeTempFile(this.jobId);
 
-        log.info(">>>>>> {}", this.fileService.getTableName());
+//        log.info(">>>>>> {}", this.fileService.getTableName());
 /*
         writeCmmnLogStart();
 

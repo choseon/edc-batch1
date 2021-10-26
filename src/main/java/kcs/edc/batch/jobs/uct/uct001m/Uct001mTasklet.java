@@ -7,7 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.property.JobConstant;
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.uct.uct001m.vo.Uct001mVO;
@@ -71,7 +71,9 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 try {
 
                     resultVO = this.apiService.sendApiForEntity(uri, Uct001mVO.class);
-                    log.info("threadNum {}, r {}, p {}, ps {}", this.threadNum, r, p, this.baseYear);
+
+                    log.info("threadNum {}, r {}, p {}, ps {}, size {}",
+                            this.threadNum, r, p, this.baseYear, resultVO.getDataset().size());
 
                     if (Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
                     if (resultVO.getValidation() == null) continue;
@@ -80,20 +82,27 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                     List<Uct001mVO.Item> dataset = resultVO.getDataset();
                     for (Uct001mVO.Item item : dataset) {
+
+                        // 결과값 체크
+                        if(item.getYr().equals("0") || item.getRtCode().equals("0") || item.getPtTitle().equals("0") || item.getPtCode().equals("0")) {
+                            log.info(item.toString());
+                            throw new Exception();
+                        }
+
                         item.setCletFileCtrnDt(DateUtil.getCurrentDate());
                         this.resultList.add(item);
+                    }
+
+                    if (this.resultList.size() > 0) {
+                        String fileName = this.baseYear + "_" + r + "_" + p;
+                        this.fileService.makeTempFile(this.resultList, fileName);
+                        this.resultList = new ArrayList<>();
                     }
 
                 } catch (Exception e) {
                     if (!e.getMessage().contains("500")) {
                         log.info(e.getMessage());
                     }
-                }
-
-                if (this.resultList.size() > 0) {
-                    String fileName = this.baseYear + "_" + r + "_" + p;
-                    this.fileService.makeTempFile(this.resultList, fileName);
-                    this.resultList = new ArrayList<>();
                 }
             }
         }
@@ -139,7 +148,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
         try {
 
             String resourcePath = this.fileService.getResourcePath();
-            String filePath = resourcePath + "/" + JobConstant.RESOURCE_FILE_NAME_UCT_AREA;
+            String filePath = resourcePath + "/" + CmmnConst.RESOURCE_FILE_NAME_UCT_AREA;
             jsonArray = FileUtil.readJsonFile(filePath, "results");
 
             for (JsonElement jsonElement : jsonArray) {

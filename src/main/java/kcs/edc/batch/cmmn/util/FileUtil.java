@@ -46,35 +46,43 @@ public class FileUtil {
      * @throws FileNotFoundException
      * @throws IllegalAccessException
      */
-    public static <T> void makeTsvFile(String filePath, String fileName, List<T> list) throws FileNotFoundException, IllegalAccessException {
+    public static <T> void makeTsvFile(String filePath, String fileName, List<T> list) {
 
         File dir = new File(filePath);
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
-        Writer writer = new OutputStreamWriter(new FileOutputStream(filePath + fileName), StandardCharsets.UTF_8);
-        TsvWriter tsvWriter = new TsvWriter(writer, new TsvWriterSettings());
+        Writer writer = null;
+        try {
 
-        if (list.get(0) instanceof Object[]) {
-            tsvWriter.writeRows((Collection<Object[]>) list);
-        } else {
-            for (T t : list) {
-                Field[] fields = t.getClass().getDeclaredFields();
+            writer = new OutputStreamWriter(new FileOutputStream(filePath + fileName), StandardCharsets.UTF_8);
+            TsvWriter tsvWriter = new TsvWriter(writer, new TsvWriterSettings());
 
-                Object[] fieldArr = new Object[fields.length];
-                for (int i = 0; i < fields.length; i++) {
+            if (list.get(0) instanceof Object[]) {
+                tsvWriter.writeRows((Collection<Object[]>) list);
+            } else {
+                for (T t : list) {
+                    Field[] fields = t.getClass().getDeclaredFields();
 
-                    // som004mVO의 categoryList 항목은 제외
-                    if (fileName.contains("som004m") && fields[i].getName().equals("categoryList")) continue;
+                    Object[] fieldArr = new Object[fields.length];
+                    for (int i = 0; i < fields.length; i++) {
 
-                    fields[i].setAccessible(true);
-                    fieldArr[i] = fields[i].get(t);
+                        // som004mVO의 categoryList 항목은 제외
+                        if (fileName.contains("som004m") && fields[i].getName().equals("categoryList")) continue;
+
+                        fields[i].setAccessible(true);
+                        fieldArr[i] = fields[i].get(t);
+                    }
+                    tsvWriter.writeRow(fieldArr);
                 }
-                tsvWriter.writeRow(fieldArr);
             }
+
+            tsvWriter.close();
+
+        } catch (FileNotFoundException | IllegalAccessException e) {
+            log.info(e.getMessage());
         }
-        tsvWriter.close();
     }
 
     /**
@@ -91,23 +99,25 @@ public class FileUtil {
         File[] files = dir.listFiles();
         if (files == null || files.length == 0) return;
 
-
         BufferedOutputStream bos = null;
         BufferedInputStream bis = null;
         try {
 
             File targetFile = new File(targetPath + targetFileName);
-            if (!targetFile.exists()) {
-                targetFile.createNewFile();
+            // 파일이 존재하면 삭제
+            if (targetFile.exists()) {
+                targetFile.delete();
             }
-            log.info("targetFile >> {}", targetFile);
+            // 파일생성
+            targetFile.createNewFile();
+            log.info("createNewFile >> {}", targetFile);
 
             // 파일 이어쓰기 가능하게 설정
             bos = new BufferedOutputStream(new FileOutputStream(targetFile, true));
 
             for (File file : files) {
                 bis = new BufferedInputStream(new FileInputStream(file.getPath()));
-                log.info("file.getPath >> {}", file.getPath());
+                log.info("mergeFile >> {}", file.getPath());
 
                 byte[] buffer = new byte[1024];
                 int readCount = 0;
@@ -116,25 +126,26 @@ public class FileUtil {
                     bos.write(buffer, 0, readCount);
                     bos.flush();
                 }
+                bis.close();
             }
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         } finally {
             if (bis != null) {
                 try {
                     bis.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.info(e.getMessage());
                 }
             }
             if (bos != null) {
                 try {
                     bos.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.info(e.getMessage());
                 }
             }
         }
@@ -145,20 +156,22 @@ public class FileUtil {
      *
      * @param filePath
      */
-    public static void deleteFiles(String filePath) {
+    public static void deleteFile(String filePath) {
         File dir = new File(filePath);
-        if (dir == null) return;
+        if (!dir.exists()) return;
 
         File[] files = dir.listFiles();
         if (files == null) return;
 
         for (File file : files) {
-            file.delete();
+            boolean delete = file.delete();
+            log.info("deleteFile: {} isDelete : {}", file, delete);
         }
+        boolean delete = dir.delete();
+        log.info("deleteFolder : {}, isDelete : {}", dir, delete);
     }
 
     /**
-     *
      * @param filePath
      * @param objName
      * @return
@@ -173,7 +186,6 @@ public class FileUtil {
     }
 
     /**
-     *
      * @param filePath
      * @return
      * @throws IOException

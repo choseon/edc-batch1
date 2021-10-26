@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+/*
 @Getter
 @Setter
 @Configuration
@@ -25,5 +26,23 @@ public class FileProperties {
     private String configPath;
 
     private String logPath;
+
+}
+*/
+
+
+@Getter
+@Setter
+@Configuration
+@ConfigurationProperties(prefix = "file")
+public class FileProperties {
+
+//    private Map<String, Map<String, String>> storePath;
+
+    private String resourcePath;
+
+    private String hiveStorePath;
+
+    private String nasStorePath;
 
 }

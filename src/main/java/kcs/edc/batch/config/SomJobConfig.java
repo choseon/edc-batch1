@@ -1,8 +1,8 @@
 package kcs.edc.batch.config;
 
-import kcs.edc.batch.cmmn.jobs.CmmnMergeFile;
+import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
 import kcs.edc.batch.cmmn.jobs.CmmnPartitioner;
-import kcs.edc.batch.cmmn.property.JobConstant;
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.jobs.som.som001m.Som001mTasklet;
 import kcs.edc.batch.jobs.som.som002m.Som002mTasklet;
 import kcs.edc.batch.jobs.som.som003m.Som003mTasklet;
@@ -30,6 +30,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -73,7 +74,7 @@ public class SomJobConfig {
     @Bean
     public Job somJob() {
 
-        return jobBuilderFactory.get(JobConstant.JOB_GRP_ID_SOM + JobConstant.POST_FIX_JOB)
+        return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_SOM + CmmnConst.POST_FIX_JOB)
                 .start(som001mFlow())
                 .next(som002mFlow())
                 .next(som003mFlow())
@@ -91,15 +92,16 @@ public class SomJobConfig {
     @Bean
     @JobScope
     public Flow som001mFlow() {
-        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM001M + JobConstant.POST_FIX_FLOW)
-                .start(som001mStep(null))
+        return new FlowBuilder<Flow>(CmmnConst.JOB_ID_SOM001M + CmmnConst.POST_FIX_FLOW)
+                .start(somFileCleanStep())
+                .next(som001mStep(null))
                 .build();
     }
 
     @Bean
     @JobScope
     public Step som001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM001M + JobConstant.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_SOM001M + CmmnConst.POST_FIX_STEP)
                 .tasklet(som001mTasklet(null))
                 .build();
     }
@@ -117,8 +119,8 @@ public class SomJobConfig {
     @Bean
     @JobScope
     public Flow som002mFlow() {
-        currentJobId = JobConstant.JOB_ID_SOM002M;
-        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM002M + JobConstant.POST_FIX_FLOW)
+
+        return new FlowBuilder<Flow>(CmmnConst.JOB_ID_SOM002M + CmmnConst.POST_FIX_FLOW)
                 .start(som002mPartitionStep(null, null))// som002mPatitionStep 실행
                 .on("COMPLETED") // 성공이면
                 .to(somFileMergeStep()) // fileMergeStep 실행
@@ -131,7 +133,7 @@ public class SomJobConfig {
             @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[list]}") List<Object> list) {
 
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM002M + JobConstant.POST_FIX_PARTITION_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_SOM002M + CmmnConst.POST_FIX_PARTITION_STEP)
                 .partitioner("som002mStep", cmmnPartitioner(baseDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
                 .taskExecutor(somExecutor()) // multi thread
@@ -141,7 +143,8 @@ public class SomJobConfig {
 
     @Bean
     public Step som002mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM002M + JobConstant.POST_FIX_STEP)
+        this.currentJobId = CmmnConst.JOB_ID_SOM002M;
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_SOM002M + CmmnConst.POST_FIX_STEP)
                 .tasklet(som002mTasklet(null))
                 .build();
     }
@@ -159,8 +162,8 @@ public class SomJobConfig {
     @Bean
     @JobScope
     public Flow som003mFlow() {
-        currentJobId = JobConstant.JOB_ID_SOM003M;
-        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM003M + JobConstant.POST_FIX_FLOW)
+
+        return new FlowBuilder<Flow>(CmmnConst.JOB_ID_SOM003M + CmmnConst.POST_FIX_FLOW)
                 .start(som003mPartitionStep(null, null))
                 .on("COMPLETED")
                 .to(somFileMergeStep())
@@ -178,7 +181,7 @@ public class SomJobConfig {
             @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[list]}") List<Object> list) {
 
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM003M + JobConstant.POST_FIX_PARTITION_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_SOM003M + CmmnConst.POST_FIX_PARTITION_STEP)
                 .partitioner("som003mStep", cmmnPartitioner(baseDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
                 .taskExecutor(somExecutor()) // multi thread
@@ -188,7 +191,8 @@ public class SomJobConfig {
 
     @Bean
     public Step som003mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM003M + JobConstant.POST_FIX_STEP)
+        this.currentJobId = CmmnConst.JOB_ID_SOM003M;
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_SOM003M + CmmnConst.POST_FIX_STEP)
                 .tasklet(som003mTasklet(null))
                 .build();
     }
@@ -206,14 +210,12 @@ public class SomJobConfig {
     @Bean
     @JobScope
     public Flow som004mFlow() {
-        currentJobId = JobConstant.JOB_ID_SOM004M;
-        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM004M + JobConstant.POST_FIX_FLOW)
+
+        return new FlowBuilder<Flow>(CmmnConst.JOB_ID_SOM004M + CmmnConst.POST_FIX_FLOW)
                 .start(som004mPartitionStep(null, null))
                 .on("COMPLETED")
                 .to(somFileMergeStep())
                 .build();
-
-
     }
 
     @Bean
@@ -221,7 +223,7 @@ public class SomJobConfig {
     public Step som004mPartitionStep(
             @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[list]}") List<Object> list) {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM004M + JobConstant.POST_FIX_PARTITION_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_SOM004M + CmmnConst.POST_FIX_PARTITION_STEP)
                 .partitioner("som004mStep", cmmnPartitioner(baseDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
                 .taskExecutor(somExecutor()) // multi thread
@@ -231,7 +233,10 @@ public class SomJobConfig {
 
     @Bean
     public Step som004mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM004M + JobConstant.POST_FIX_STEP)
+
+        this.currentJobId = CmmnConst.JOB_ID_SOM004M;
+
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_SOM004M + CmmnConst.POST_FIX_STEP)
                 .tasklet(som004mTasklet(null))
                 .build();
     }
@@ -249,8 +254,8 @@ public class SomJobConfig {
     @Bean
     @JobScope
     public Flow som005mFlow() {
-        currentJobId = JobConstant.JOB_ID_SOM005M;
-        return new FlowBuilder<Flow>(JobConstant.JOB_ID_SOM005M + JobConstant.POST_FIX_FLOW)
+
+        return new FlowBuilder<Flow>(CmmnConst.JOB_ID_SOM005M + CmmnConst.POST_FIX_FLOW)
                 .start(som005mPartitionStep(null, null))
                 .on("COMPLETED")
                 .to(somFileMergeStep())
@@ -263,7 +268,7 @@ public class SomJobConfig {
             @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[list]}") List<Object> list) {
 
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM005M + JobConstant.POST_FIX_PARTITION_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_SOM005M + CmmnConst.POST_FIX_PARTITION_STEP)
                 .partitioner("som005mStep", cmmnPartitioner(baseDt, list)) // partitioning
                 .gridSize(GRID_SIZE) // partitioning size
                 .taskExecutor(somExecutor()) // multi thread
@@ -273,7 +278,8 @@ public class SomJobConfig {
 
     @Bean
     public Step som005mStep() {
-        return stepBuilderFactory.get(JobConstant.JOB_ID_SOM005M + JobConstant.POST_FIX_STEP)
+        this.currentJobId = CmmnConst.JOB_ID_SOM005M;
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_SOM005M + CmmnConst.POST_FIX_STEP)
                 .tasklet(som005mTasklet(null))
                 .build();
     }
@@ -290,21 +296,45 @@ public class SomJobConfig {
      **************************************************************************************************/
 
     @Bean
-//    @JobScope
     public Step somFileMergeStep() {
 
-
-//        if(Objects.isNull(currentJobId)) return null;
-        return stepBuilderFactory.get(JobConstant.JOB_GRP_ID_SOM + JobConstant.POST_FIX_FILE_STEP)
-                .tasklet(new CmmnMergeFile(currentJobId))
+        log.info("somFileMergeStep this.currentJobId : {}", this.currentJobId);
+        return stepBuilderFactory.get(CmmnConst.JOB_GRP_ID_SOM + CmmnConst.POST_FIX_FILE_MERGE_STEP)
+//                .tasklet(new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE, this.currentJobId))
+                .tasklet(somFileMergeTasklet())
                 .build();
     }
 
-//    @Bean
-//    @StepScope
-//    public CmmnMergeFile somMergeFileTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
-//        return new CmmnMergeFile(currentJobId);
-//    }
+    @Bean
+    public CmmnFileTasklet somFileMergeTasklet() {
+        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE, this.currentJobId);
+    }
+
+    @Bean
+    public Step somFileCleanStep() {
+        List<String> list = new ArrayList<>();
+        list.add(CmmnConst.JOB_ID_SOM002M);
+        list.add(CmmnConst.JOB_ID_SOM003M);
+        list.add(CmmnConst.JOB_ID_SOM004M);
+        list.add(CmmnConst.JOB_ID_SOM005M);
+        return stepBuilderFactory.get(CmmnConst.JOB_GRP_ID_SOM + CmmnConst.POST_FIX_FILE_CLEAN_STEP)
+//                .tasklet(new CmmnMergeFile(currentJobId))
+                .tasklet(somFileCleanTasklet())
+//                .tasklet(new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN, list))
+                .build();
+    }
+
+    @Bean
+    public CmmnFileTasklet somFileCleanTasklet() {
+
+        List<String> list = new ArrayList<>();
+        list.add(CmmnConst.JOB_ID_SOM002M);
+        list.add(CmmnConst.JOB_ID_SOM003M);
+        list.add(CmmnConst.JOB_ID_SOM004M);
+        list.add(CmmnConst.JOB_ID_SOM005M);
+
+        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN, list);
+    }
 
 /*    @Bean
     @StepScope
