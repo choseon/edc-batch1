@@ -46,7 +46,7 @@ public class UctJobConfig {
     /**
      * UN Comtrade job launcher (월배치)
      * 매월 1일 전년도, 전전년도 2년치 데이터 수집하여
-     * 15일 이전에 내부 hlo1db에서 데이터 조회되도록 스케쥴링함.
+     * 15일 이전에 내부 hlo1db에서 데이터 조회되도록 스케쥴링 필요.
      */
     @Scheduled(cron = "${scheduler.cron.uct}")
     public void launcher() {
@@ -78,7 +78,10 @@ public class UctJobConfig {
     }
 
     /**
-     * UN Comtrade Job 설정
+     * UN Comtrade Job 설정한다.
+     * Partitioning과 MultiThread를 실행한다.
+     * MultiThread로 생성된 Temp파일을 정리 및 병합하기 위해
+     * PartitionStep 전후에 FileCleanStep과 FileMergeStep을 실행한다.
      *
      * @return
      */
@@ -86,15 +89,15 @@ public class UctJobConfig {
     public Job uctJob() {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_JOB)
-                .start(uctFileCleanStep())
+                .start(uctFileCleanStep(null)) // temp 폴더 삭제
                 .next(uct001mPartitionStep())
-                .next(uctFileMergeStep())
+                .next(uctFileMergeStep(null)) // 파일 병합
                 .build();
     }
 
     /**
      * uct001m Partition Step
-     * Multi Thread를 위한 partitionr, executor 설정
+     * MultiThread를 위한 partitionr, executor 설정
      *
      * @return
      */
@@ -143,62 +146,66 @@ public class UctJobConfig {
         return new Uct001mTasklet();
     }
 
+    /**************************************************************************************************
+     * 공통 Step
+     **************************************************************************************************/
+
     /**
-     * File Merge Step
-     * Multi Thread 실행시 저장된 Temp File 을 Merge하기 위한 Step
+     * MultiThread로 생성된 파일을 병합하기 위한 FileMergeStep 설정
      *
+     * @param jobId
      * @return
      */
     @Bean
-    public Step uctFileMergeStep() {
+    @JobScope
+    public Step uctFileMergeStep(@Value("#{jobExecutionContext[jobId]}") String jobId) {
 
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_UCT001M + CmmnConst.POST_FIX_FILE_MERGE_STEP)
-//                .tasklet(new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE, CmmnConst.JOB_ID_UCT001M))
-//                .tasklet(cmmnMergeFile(null))
-                .tasklet(uctFileMergeTasklet())
+        return stepBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_FILE_MERGE_STEP)
+                .tasklet(uctFileMergeTasklet(null))
                 .build();
     }
 
     /**
-     * File Merge Tasklet
+     * MultiThread로 생성된 파일을 병합하기 위한 FileMergeTasklet 설정
+     *
+     * @param jobId
      * @return
      */
-    @Bean
-    public CmmnFileTasklet uctFileMergeTasklet() {
-        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE, CmmnConst.JOB_ID_UCT001M);
-    }
-
-
-    /**
-     * File Clean Step
-     * @return
-     */
-    @Bean
-    public Step uctFileCleanStep() {
-
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_UCT001M + CmmnConst.POST_FIX_FILE_CLEAN_STEP)
-//                .tasklet(new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN, CmmnConst.JOB_ID_UCT001M))
-//                .tasklet(cmmnMergeFile(null))
-                .tasklet(uctFileCleanTasklet())
-                .build();
-    }
-
-    /**
-     * File Clean Tasklet
-     * @return
-     */
-    @Bean
-    public CmmnFileTasklet uctFileCleanTasklet() {
-        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN, CmmnConst.JOB_ID_UCT001M);
-    }
-
     @Bean
     @StepScope
-    public CmmnMergeFile cmmnMergeFile(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return new CmmnMergeFile(CmmnConst.JOB_ID_UCT001M);
-
+    public CmmnFileTasklet uctFileMergeTasklet(@Value("#{jobExecutionContext[jobId]}") String jobId) {
+        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE);
     }
 
+    /**
+     * Temp폴더 삭제를 위한 FileCleanStep 설정
+     *
+     * @param jobId
+     * @return
+     */
+    @Bean
+    @JobScope
+    public Step uctFileCleanStep(@Value("#{jobExecutionContext[jobId]}") String jobId) {
+
+        return stepBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_FILE_CLEAN_STEP)
+                .tasklet(uctFileCleanTasklet(null))
+                .build();
+    }
+
+    /**
+     * Temp폴더 삭제를 위한 FileCleanTasklet 설정
+     *
+     * @param jobId
+     * @return
+     */
+    @Bean
+    @StepScope
+    public CmmnFileTasklet uctFileCleanTasklet(@Value("#{jobExecutionContext[jobId]}") String jobId) {
+
+        ArrayList<String> list = new ArrayList<>();
+        list.add(CmmnConst.JOB_ID_UCT001M);
+        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN, list);
+    }
 
     @Bean
     public TaskExecutor uctExecutor() {
@@ -210,4 +217,5 @@ public class UctJobConfig {
         executor.initialize();
         return executor;
     }
+
 }

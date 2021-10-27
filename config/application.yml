@@ -58,15 +58,15 @@ spring:
 # Job Scheduler
 scheduler:
   cron:
-    biz:
-    big:
-    som: "* 59 16 * * ?"
-    saf:
-    eba:
-    nav:
-    kot:
-    opd:
-    uct: "* 34 17 * * ?"
+    biz: "0 0 07 * * ?"
+    big: "0 0 07 * * ?"
+    som: "0 0 07 * * ?"
+    saf: "0 0 07 * * ?"
+    eba: "0 0 07 * * ?"
+    nav: "0 0 07 * * ?"
+    kot: "0 0 07 * * ?"
+    opd: "0 0 07 * * ?"
+    uct: "0 0 07 * * ?"
 ---
 # Open Api Information
 api:

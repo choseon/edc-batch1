@@ -32,7 +32,7 @@ public class FileUtil {
      * @throws FileNotFoundException
      * @throws IllegalAccessException
      */
-    public static <T> void makeFile(String filePath, String fileName, List<T> list) throws FileNotFoundException, IllegalAccessException {
+    public static <T> void makeFile(String filePath, String fileName, List<T> list){
         makeTsvFile(filePath, fileName, list);
     }
 
@@ -165,7 +165,6 @@ public class FileUtil {
 
         for (File file : files) {
             boolean delete = file.delete();
-            log.info("deleteFile: {} isDelete : {}", file, delete);
         }
         boolean delete = dir.delete();
         log.info("deleteFolder : {}, isDelete : {}", dir, delete);

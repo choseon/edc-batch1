@@ -10,6 +10,7 @@ import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
+import kcs.edc.batch.cmmn.vo.HiveFileVO;
 import kcs.edc.batch.jobs.uct.uct001m.vo.Uct001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
@@ -61,47 +62,58 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                 if (r.equals(p)) continue;
 
-                UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
-                builder.replaceQueryParam("r", r);
-                builder.replaceQueryParam("p", p);
-                builder.replaceQueryParam("ps", this.baseYear);
-                URI uri = builder.build().encode().toUri();
+                String sufixFileName = this.baseYear + "_" + r + "_" + p;
+                boolean tempFileExsists = this.fileService.tempFileExsists(sufixFileName);
+                if (!tempFileExsists) {
+                    while (true) {
 
-                Uct001mVO resultVO = null;
-                try {
+                        UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
+                        builder.replaceQueryParam("r", r);
+                        builder.replaceQueryParam("p", p);
+                        builder.replaceQueryParam("ps", this.baseYear);
+                        URI uri = builder.build().encode().toUri();
 
-                    resultVO = this.apiService.sendApiForEntity(uri, Uct001mVO.class);
+                        Uct001mVO resultVO = null;
+                        try {
 
-                    log.info("threadNum {}, r {}, p {}, ps {}, size {}",
-                            this.threadNum, r, p, this.baseYear, resultVO.getDataset().size());
+                            resultVO = this.apiService.sendApiForEntity(uri, Uct001mVO.class);
 
-                    if (Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
-                    if (resultVO.getValidation() == null) continue;
-                    if (!"Ok".equals(resultVO.getValidation().getStatus().get("name"))) continue;
-                    if ("0".equals(resultVO.getValidation().getCount().get("value"))) continue;
+                            log.info("thread #{}, r {}, p {}, ps {}, size {}",
+                                    this.threadNum, r, p, this.baseYear, resultVO.getDataset().size());
 
-                    List<Uct001mVO.Item> dataset = resultVO.getDataset();
-                    for (Uct001mVO.Item item : dataset) {
+//                            if (Objects.isNull(resultVO)) continue;
+//                            if (resultVO.getValidation() == null) continue;
+//                            if (!"Ok".equals(resultVO.getValidation().getStatus().get("name"))) continue;
+//                            if ("0".equals(resultVO.getValidation().getCount().get("value"))) continue;
 
-                        // 결과값 체크
-                        if(item.getYr().equals("0") || item.getRtCode().equals("0") || item.getPtTitle().equals("0") || item.getPtCode().equals("0")) {
-                            log.info(item.toString());
-                            throw new Exception();
+                            if (Objects.nonNull(resultVO.getValidation())) {
+                                if ("Ok".equals(resultVO.getValidation().getStatus().get("name"))) {
+
+                                    List<Uct001mVO.Item> dataset = resultVO.getDataset();
+                                    for (Uct001mVO.Item item : dataset) {
+                                        this.resultList = new ArrayList<>();
+
+                                        // 결과값 체크
+                                        if (item.getYr().equals("0") || item.getRtCode().equals("0") || item.getPtTitle().equals("0") || item.getPtCode().equals("0")) {
+                                            log.info(item.toString());
+                                            throw new Exception();
+                                        } else {
+                                            item.setCletFileCtrnDt(DateUtil.getCurrentDate());
+                                            this.resultList.add(item);
+                                        }
+                                    }
+
+                                    this.fileService.makeTempFile(this.resultList, sufixFileName);
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            if (!e.getMessage().contains("500")) {
+                                log.info(e.getMessage());
+                            }
                         }
 
-                        item.setCletFileCtrnDt(DateUtil.getCurrentDate());
-                        this.resultList.add(item);
-                    }
-
-                    if (this.resultList.size() > 0) {
-                        String fileName = this.baseYear + "_" + r + "_" + p;
-                        this.fileService.makeTempFile(this.resultList, fileName);
-                        this.resultList = new ArrayList<>();
-                    }
-
-                } catch (Exception e) {
-                    if (!e.getMessage().contains("500")) {
-                        log.info(e.getMessage());
+                        break;
                     }
                 }
             }

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,15 +55,8 @@ public class FileService {
         return this.fileProperties.getResourcePath();
     }
 
-    /**
-     * 파일생성 : 데이터파일과 로그파일을 생성한다
-     *
-     * @param list
-     * @param <T>
-     */
-    public <T> void makeFile(List<T> list) {
-
-        HiveFileVO hiveFileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
+    public <T> void makeFile(String jobId, List<T> list) {
+        HiveFileVO hiveFileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), jobId);
         hiveFileVO.setDataFileName(this.baseDt);
 
         if (list.size() == 0) {
@@ -72,6 +66,16 @@ public class FileService {
         }
         makeDataFile(list, hiveFileVO);
         makeLogFile(list, hiveFileVO);
+    }
+
+    /**
+     * 파일생성 : 데이터파일과 로그파일을 생성한다
+     *
+     * @param list
+     * @param <T>
+     */
+    public <T> void makeFile(List<T> list) {
+        makeFile(this.jobId, list);
     }
 
     /**
@@ -85,17 +89,9 @@ public class FileService {
         log.info("[{}] Data file make start", fileVO.getTableName());
         log.info("[{}] count : {}", fileVO.getTableName(), list.size());
 
-        try {
+        FileUtil.makeFile(fileVO.getDataFilePath(), fileVO.getDataFileName(), list);
 
-            FileUtil.makeFile(fileVO.getDataFilePath(), fileVO.getDataFileName(), list);
-
-            log.info("[{}] completed : {}", fileVO.getTableName(), fileVO.getDataFilePath() + fileVO.getDataFileName());
-
-        } catch (FileNotFoundException e) {
-            log.info(e.getMessage());
-        } catch (IllegalAccessException e) {
-            log.info(e.getMessage());
-        }
+        log.info("[{}] completed : {}", fileVO.getTableName(), fileVO.getDataFilePath() + fileVO.getDataFileName());
     }
 
     /**
@@ -120,18 +116,10 @@ public class FileService {
         ArrayList<Object> arrayList = new ArrayList<>();
         arrayList.add(logVO);
 
-        try {
+        // 로그 파일 생성
+        FileUtil.makeFile(fileVO.getLogFilePath(), fileVO.getLogFileName(), arrayList);
 
-            // 로그 파일 생성
-            FileUtil.makeFile(fileVO.getLogFilePath(), fileVO.getLogFileName(), arrayList);
-
-            log.info("[{}] completed :  {}", fileVO.getTableName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        log.info("[{}] completed :  {}", fileVO.getTableName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
     }
 
     private void makeLogFile(String msg) {
@@ -152,18 +140,11 @@ public class FileService {
         ArrayList<Object> arrayList = new ArrayList<>();
         arrayList.add(logVO);
 
-        try {
+        // 로그 파일 생성
+        FileUtil.makeFile(fileVO.getLogFilePath(), fileVO.getLogFileName(), arrayList);
 
-            // 로그 파일 생성
-            FileUtil.makeFile(fileVO.getLogFilePath(), fileVO.getLogFileName(), arrayList);
+        log.info("[{}] completed :  {}", fileVO.getTableName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
 
-            log.info("[{}] completed :  {}", fileVO.getTableName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -174,38 +155,21 @@ public class FileService {
      */
     public <T> void makeTempFile(List<T> list, String fileName) {
 
-        if (list.size() == 0) {
-            log.info("list is null");
-            return;
-        }
+//        if (list.size() == 0) {
+//            log.info("list is null");
+//            return;
+//        }
 
+        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
+        fileVO.setTempFileName(fileName);
 
-//        log.info("[{}] Temp file make start", getTableName());
-//        log.info("[{}] count : {}", getTableName(), list.size());
+        String tempFilePath = fileVO.getTempFilePath();
+        String tempFileName = fileVO.getTempFileName();
 
-        try {
+        FileUtil.makeFile(tempFilePath, tempFileName, list);
 
-            // temp 파일이 존재하면 모두 삭제
-//            FileUtil.deleteFiles(filePath);
-//            FileUtil.makeFile(getTempFilePath(), getTempFileName(fileName), list);
+        log.info("TempFile Completed :  {} ", tempFilePath + tempFileName);
 
-            HiveFileVO hiveFileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
-            hiveFileVO.setTempFileName(fileName);
-
-            String tempFilePath = hiveFileVO.getTempFilePath();
-            String tempFileName = hiveFileVO.getTempFileName();
-
-            FileUtil.makeFile(tempFilePath, tempFileName, list);
-
-
-//            log.info("[{}] completed :  {} ", getTableName(), getTempFileFullPath());
-            log.info("TempFile Completed :  {} ", tempFilePath + tempFileName);
-
-        } catch (FileNotFoundException e) {
-            log.info(e.getMessage());
-        } catch (IllegalAccessException e) {
-            log.info(e.getMessage());
-        }
     }
 
 
@@ -216,9 +180,12 @@ public class FileService {
 
         HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), jobId);
         fileVO.setDataFileName(this.baseDt);
-        log.info("fileVO.getTempFilePath() : {}", fileVO.getTempFilePath());
+
         FileUtil.mergeFile(fileVO.getTempFilePath(), fileVO.getDataFilePath(), fileVO.getDataFileName());
         FileUtil.deleteFile(fileVO.getTempFilePath());
+
+        // 로그파일 생성
+
     }
 
     /**
@@ -229,4 +196,14 @@ public class FileService {
         FileUtil.deleteFile(fileVO.getTempFilePath());
     }
 
+    public boolean tempFileExsists(String sufixFileName) {
+        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
+        fileVO.setTempFileName(sufixFileName);
+        String tempFilePath = fileVO.getTempFilePath();
+        String tempFileName = fileVO.getTempFileName();
+        File file = new File(tempFilePath + tempFileName);
+
+        return file.exists();
+
+    }
 }

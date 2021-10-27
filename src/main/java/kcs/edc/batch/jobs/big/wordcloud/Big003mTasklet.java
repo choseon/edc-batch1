@@ -1,7 +1,9 @@
 package kcs.edc.batch.jobs.big.wordcloud;
 
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
+import kcs.edc.batch.jobs.big.issue.vo.Big002mVO;
 import kcs.edc.batch.jobs.big.wordcloud.vo.Big003mVO;
 import kcs.edc.batch.jobs.big.wordcloud.vo.WCQueryVO;
 import lombok.SneakyThrows;
@@ -15,6 +17,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,7 +25,7 @@ import java.util.Objects;
  * WordCloud(워드클라우드)
  */
 @Slf4j
-public class Big003mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Big003mTasklet extends CmmnJob implements Tasklet{
 
     @Value("#{jobExecutionContext[keywordList]}")
     private List<String> keywordList;
@@ -33,65 +36,64 @@ public class Big003mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
     @Value("#{jobExecutionContext[issueSrwrYn]}")
     private String issueSrwrYn;
 
+    private String from;
+    private String until;
+    private String accessKey;
+
     @SneakyThrows
     @Override
     public void beforeStep(StepExecution stepExecution) {
-        jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-        jobProp = apiProperties.getJobProp(getJobGrpName());
-        accessKey = jobProp.getHeader().get("accessKey");
 
-        from = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -1, "yyyy-MM-dd");
-        until = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -0, "yyyy-MM-dd");
+        super.beforeStep(stepExecution);
+
+        this.accessKey = this.apiService.getJobPropHeader(getJobGrpName(), "accessKey");
+        this.from = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -1, "yyyy-MM-dd");
+        this.until = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -0, "yyyy-MM-dd");
     }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        writeCmmnLogStart();
+        this.writeCmmnLogStart();
 
         WCQueryVO queryVO = new WCQueryVO();
-        queryVO.setAccess_key(accessKey);
-        queryVO.getArgument().getPublished_at().setFrom(from);
-        queryVO.getArgument().getPublished_at().setUntil(until);
+        queryVO.setAccess_key(this.accessKey);
+        queryVO.getArgument().getPublished_at().setFrom(this.from);
+        queryVO.getArgument().getPublished_at().setUntil(this.until);
 
-        uri = getUriComponetsBuilder().build().toUri();
+        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
 
-        for (String keyword : keywordList) {
+        for (String keyword : this.keywordList) {
             queryVO.getArgument().setQuery(keyword);
 
-            String resultJson = restTemplate.postForObject(uri, queryVO, String.class);
-            log.info("uri {}", uri);
-            log.debug("resultJson {}", resultJson);
-
-            if(Objects.isNull(resultJson)) continue;
-
-            Big003mVO resultVO = objectMapper.readValue(resultJson, Big003mVO.class);
-
+            Big003mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big003mVO.class);
             if(resultVO.getResult() != 0) continue;
 
             List<Big003mVO.NodeItem> nodes = resultVO.getReturn_object().getNodes();
             for (Big003mVO.NodeItem item : nodes) {
-                item.setArtcPblsDt(until);
+                item.setArtcPblsDt(this.until);
                 item.setSrchQuesWordNm(keyword);
-                item.setKcsRgrsYn(kcsRgrsYn);
-                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
-                item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
+                item.setKcsRgrsYn(this.kcsRgrsYn);
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
-                resultList.add(item);
+                this.resultList.add(item);
             }
         }
         // 파일생성
-        makeFile(getCurrentJobId(), resultList);
-        writeCmmnLogEnd();
+        this.fileService.makeFile(resultList);
+        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        jobExecutionContext.put("keywordList", keywordList);
-        jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
-        jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
+        super.afterStep(stepExecution);
+
+        this.jobExecutionContext.put("keywordList", keywordList);
+        this.jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
+        this.jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
 
         return ExitStatus.COMPLETED;
     }

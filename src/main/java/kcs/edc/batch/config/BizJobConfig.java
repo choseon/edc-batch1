@@ -16,6 +16,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,7 +33,7 @@ public class BizJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-//    @Scheduled(cron = "${scheduler.cron.biz}")
+    @Scheduled(cron = "${scheduler.cron.biz}")
     public void launcher() throws Exception {
         log.info("BIZJobConfig launcher...");
 
@@ -42,7 +43,7 @@ public class BizJobConfig {
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
-//        jobLauncher.run(bizJob(), jobParameters);
+        jobLauncher.run(bizJob(), jobParameters);
     }
 
     /**

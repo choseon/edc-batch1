@@ -165,7 +165,6 @@ public class CmmnTask {
             return;
         }
 
-        try {
 
             String filePath = fileVO.getTempFilePath();
             String fileName = fileVO.getTempFileName();
@@ -177,11 +176,6 @@ public class CmmnTask {
 
             log.info("[{}] completed :  {} ", fileVO.getTableName(), fileVO.getTempFileFullPath());
 
-        } catch (FileNotFoundException e) {
-            log.info(e.getMessage());
-        } catch (IllegalAccessException e) {
-            log.info(e.getMessage());
-        }
     }
 
     private <T> void makeDataFile(FileVO fileVO, List<T> list) {
@@ -189,20 +183,12 @@ public class CmmnTask {
         log.info("[{}] Data file make start", fileVO.getTableName());
         log.info("[{}] count : {}", fileVO.getTableName(), list.size());
 
-        try {
-
             String dataFilePath = fileVO.getDataFilePath();
             String dataFileName = fileVO.getDataFileName();
             FileUtil.makeFile(dataFilePath, dataFileName, list);
 
             log.info("[{}] completed : {}", fileVO.getTableName(), fileVO.getDataFileFullPath());
 
-
-        } catch (FileNotFoundException e) {
-            log.info(e.getMessage());
-        } catch (IllegalAccessException e) {
-            log.info(e.getMessage());
-        }
     }
 
     private <T> void makeLogFile(FileVO fileVO, List<T> list) {
@@ -220,7 +206,6 @@ public class CmmnTask {
         ArrayList<Object> arrayList = new ArrayList<>();
         arrayList.add(logVO);
 
-        try {
 
             // 로그 파일 생성
             String logFilePath = fileVO.getLogFilePath();
@@ -229,11 +214,6 @@ public class CmmnTask {
 
             log.info("[{}] completed :  {}", fileVO.getTableName(), fileVO.getLogFileFullPath());
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
     }
 
     public void writeCmmnLogStart() {

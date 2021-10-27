@@ -35,8 +35,8 @@ public class Biz001mTasklet extends CmmnJob implements Tasklet {
         List<Biz001mVO.Item> jsonArray = resultVO.getJsonArray();
         for (Biz001mVO.Item item : jsonArray) {
 
-            item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
-            item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
+            item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+            item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
             resultList.add(item);
         }

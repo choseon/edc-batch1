@@ -8,8 +8,7 @@ import kcs.edc.batch.jobs.big.timeline.Big004mTasklet;
 import kcs.edc.batch.jobs.big.wordcloud.Big003mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -17,10 +16,16 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -33,13 +38,31 @@ public class BigJobConfig {
 
     private final JobLauncher jobLauncher;
 
-    //    @Scheduled(cron = "*/5 * * * * ?") // 5초마다
-    public void scheduler() throws Exception {
-//        JobParameters jobParameters = new JobParametersBuilder().addString("baseDt", LocalDateTime.now().toString()).toJobParameters();
-//        jobLauncher.run(bigJob(),jobParameters);
+    @Scheduled(cron = "${scheduler.cron.big}")
+    public void launcher() {
+        log.info("BigJobConfig launcher...");
+
+        try {
+            String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            JobParameters jobParameters = new JobParametersBuilder()
+                    .addString("baseDt", baseDt)
+                    .addLong("time", System.currentTimeMillis())
+                    .toJobParameters();
+
+            jobLauncher.run(bigJob(), jobParameters);
+
+        } catch (JobExecutionAlreadyRunningException e) {
+            e.printStackTrace();
+        } catch (JobRestartException e) {
+            e.printStackTrace();
+        } catch (JobInstanceAlreadyCompleteException e) {
+            e.printStackTrace();
+        } catch (JobParametersInvalidException e) {
+            e.printStackTrace();
+        }
     }
 
-//    @Bean
+    @Bean
     public Job bigJob() {
 
         // News TimeLine -> Word Cloud -> News Search

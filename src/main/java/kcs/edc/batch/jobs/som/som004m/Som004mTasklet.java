@@ -1,7 +1,6 @@
 package kcs.edc.batch.jobs.som.som004m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.som.som001m.vo.Som001mVO;
 import kcs.edc.batch.jobs.som.som004m.vo.Som004mVO;
@@ -57,7 +56,7 @@ public class Som004mTasklet extends CmmnJob implements Tasklet {
                 item.setKeyword(som001mVO.getKeyword());
 
                 String polarity = item.getCategoryList().get(0).substring(0, 6) + "0";
-                List<String> categoryList = this.apiService.getjobPropParam("categoryList[]");
+                List<String> categoryList = this.apiService.getJobPropParam("categoryList[]");
                 String sensWordClsfNm = convertPoNeNtOt(categoryList, polarity);
                 item.setSensWordClsfNm(sensWordClsfNm);
 
@@ -68,7 +67,8 @@ public class Som004mTasklet extends CmmnJob implements Tasklet {
             }
         }
 
-        this.fileService.makeTempFile(this.resultList, this.threadNum);
+        String fileName = this.baseDt + "_" + this.threadNum;
+        this.fileService.makeTempFile(this.resultList, fileName);
 
         this.writeCmmnLogEnd(this.threadNum);
 

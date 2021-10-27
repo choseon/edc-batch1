@@ -1,6 +1,6 @@
 package kcs.edc.batch.jobs.big.news;
 
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.news.code.NewNationWideComCode;
 import kcs.edc.batch.jobs.big.news.vo.Big001mVO;
@@ -16,14 +16,14 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * News Search(뉴스검색)
  */
 @Slf4j
-public class Big001mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionListener {
 
     @Value("#{jobExecutionContext[keywordList]}")
     private List<String> keywordList;
@@ -37,15 +37,19 @@ public class Big001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
     @Value("#{jobExecutionContext[newsClusterList]}")
     private List<String> newsClusterList;
 
+    private String from;
+    private String until;
+    private String accessKey;
+
     @SneakyThrows
     @Override
     public void beforeStep(StepExecution stepExecution) {
-        jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-        jobProp = apiProperties.getJobProp(getJobGrpName());
-        accessKey = jobProp.getHeader().get("accessKey");
 
-        from = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -1, "yyyy-MM-dd");
-        until = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -0, "yyyy-MM-dd");
+        super.beforeStep(stepExecution);
+
+        this.accessKey = this.apiService.getJobPropHeader(getJobGrpName(), "accessKey");
+        this.from = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -1, "yyyy-MM-dd");
+        this.until = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -0, "yyyy-MM-dd");
     }
 
     @Override
@@ -53,76 +57,60 @@ public class Big001mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
 
         writeCmmnLogStart();
 
-        uri = getUriComponetsBuilder().build().toUri();
+        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
 
         NewsQueryVO queryVO = new NewsQueryVO();
-        queryVO.setAccess_key(accessKey);
-        queryVO.getArgument().getPublished_at().setFrom(from);
-        queryVO.getArgument().getPublished_at().setUntil(until);
+        queryVO.setAccess_key(this.accessKey);
+        queryVO.getArgument().getPublished_at().setFrom(this.from);
+        queryVO.getArgument().getPublished_at().setUntil(this.until);
 
         NewNationWideComCode code = new NewNationWideComCode();
 
-        if(newsClusterList != null) { // 뉴스상세검색
+        if(this.newsClusterList != null) { // 뉴스상세검색
 
-            queryVO.getArgument().setNewsIds(newsClusterList);
+            queryVO.getArgument().setNewsIds(this.newsClusterList);
 
-            String resultJson = restTemplate.postForObject(uri, queryVO, String.class);
-            log.info("uri {}", uri);
-            log.debug("resultJson {}", resultJson);
-
-            if(Objects.isNull(resultJson)) return RepeatStatus.FINISHED;
-
-            Big001mVO resultVO = objectMapper.readValue(resultJson, Big001mVO.class);
+            Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
 
             List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
             for (Big001mVO.DocumentItem item : documents) {
                 item.setSrchQuesWordNm(queryVO.getArgument().getQuery());
                 item.setOxprClsfNm(code.getNewsNationName(item.getOxprNm()));
-                item.setIssueSrwrYn(issueSrwrYn);
-                item.setKcsRgrsYn(kcsRgrsYn);
-                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
-                item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
+                item.setIssueSrwrYn(this.issueSrwrYn);
+                item.setKcsRgrsYn(this.kcsRgrsYn);
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
-                resultList.add(item);
+                this.resultList.add(item);
             }
 
-        } else if(keywordList != null) { // 뉴스 키워드 검색
+        } else if(this.keywordList != null) { // 뉴스 키워드 검색
 
-            for (String keyword : keywordList) {
+            for (String keyword : this.keywordList) {
                 queryVO.getArgument().setQuery(keyword);
 
-                String resultJson = restTemplate.postForObject(uri, queryVO, String.class);
-                log.info("uri {}", uri);
-                log.info("resultJson {}", resultJson);
-
-                if(resultJson == null) continue;
-
-                Big001mVO resultVO = objectMapper.readValue(resultJson, Big001mVO.class);
-
+                Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
                 if(resultVO.getResult() != 0) continue;
 
                 List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
                 for (Big001mVO.DocumentItem item : documents) {
                     item.setSrchQuesWordNm(keyword);
                     item.setOxprClsfNm(code.getNewsNationName(item.getOxprNm()));
-                    item.setIssueSrwrYn(issueSrwrYn);
-                    item.setKcsRgrsYn(kcsRgrsYn);
-                    item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
-                    item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
+                    item.setIssueSrwrYn(this.issueSrwrYn);
+                    item.setKcsRgrsYn(this.kcsRgrsYn);
+                    item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                    item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
-                    resultList.add(item);
+                    this.resultList.add(item);
                 }
             }
         }
+
         // 파일생성
-        makeFile(getCurrentJobId(), resultList);
-        writeCmmnLogEnd();
+        this.fileService.makeFile(this.resultList);
+        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }
 
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-        return null;
-    }
 }

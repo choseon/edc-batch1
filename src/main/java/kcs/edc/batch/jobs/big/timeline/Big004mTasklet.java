@@ -1,11 +1,13 @@
 package kcs.edc.batch.jobs.big.timeline;
 
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.big.timeline.vo.Big004mVO;
 import kcs.edc.batch.jobs.big.timeline.vo.TimelineQueryVO;
+import kcs.edc.batch.jobs.big.wordcloud.vo.Big003mVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -17,6 +19,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,28 +27,30 @@ import java.util.Objects;
  * News TimeLine (뉴스 타임라인)
  */
 @Slf4j
-public class Big004mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionListener {
 
     private List<String> kcsKeywordList;
     private String kcsRgrsYn = "Y";
     private String issueSrwrYn = "N";
 
+    private String from;
+    private String until;
+    private String accessKey;
 
     @SneakyThrows
     @Override
     public void beforeStep(StepExecution stepExecution) {
 
-        jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-        jobProp = apiProperties.getJobProp(getJobGrpName());
-        accessKey = jobProp.getHeader().get("accessKey");
+        super.beforeStep(stepExecution);
 
-        from = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -1, "yyyy-MM-dd");
-        until = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -0, "yyyy-MM-dd");
+        this.accessKey = this.apiService.getJobPropHeader(getJobGrpName(), "accessKey");
+        this.from = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -1, "yyyy-MM-dd");
+        this.until = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -0, "yyyy-MM-dd");
 
         try {
-            String resourcePath = fileProperties.getResourcePath();
-            String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_SOM_KCS_KEWORD;
-            kcsKeywordList = FileUtil.readTextFile(filePath);
+            String resourcePath = this.fileService.getResourcePath();
+            String filePath = resourcePath + "/" + CmmnConst.RESOURCE_FILE_NAME_SOM_KCS_KEWORD;
+            this.kcsKeywordList = FileUtil.readTextFile(filePath);
             log.info("kcsKeywordList.size() {}", kcsKeywordList.size());
 
         } catch (IOException e) {
@@ -58,39 +63,32 @@ public class Big004mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
 
         writeCmmnLogStart();
 
-        uri = getUriComponetsBuilder().build().toUri();
+        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
 
         TimelineQueryVO queryVO = new TimelineQueryVO();
-        queryVO.setAccess_key(accessKey);
-        queryVO.getArgument().getPublished_at().setFrom(from);
-        queryVO.getArgument().getPublished_at().setUntil(until);
+        queryVO.setAccess_key(this.accessKey);
+        queryVO.getArgument().getPublished_at().setFrom(this.from);
+        queryVO.getArgument().getPublished_at().setUntil(this.until);
         log.info("from {} until {}", from, until);
 
-        for(String keyword : kcsKeywordList) {
+        for(String keyword : this.kcsKeywordList) {
             queryVO.getArgument().setQuery(keyword);
 
-            String resultJson = restTemplate.postForObject(uri, queryVO, String.class);
-            log.info("uri {}", uri);
-            log.debug("resultJson {}", resultJson);
-
-            if(Objects.isNull(resultJson)) return RepeatStatus.FINISHED;
-
-            Big004mVO resultVO = objectMapper.readValue(resultJson, Big004mVO.class);
-
+            Big004mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big004mVO.class);
             if(resultVO.getResult() != 0) continue;
 
             List<Big004mVO.TimeLineItem> time_line = resultVO.getReturn_object().getTime_line();
             for (Big004mVO.TimeLineItem item : time_line) {
                 item.setSrchQuesWordNm(keyword);
-                item.setKcsRgrsYn(kcsRgrsYn);
-                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
-                item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
+                item.setKcsRgrsYn(this.kcsRgrsYn);
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
-                resultList.add(item);
+                this.resultList.add(item);
             }
         }
         // 파일생성
-        makeFile(getCurrentJobId(), resultList);
+        this.fileService.makeFile(this.resultList);
         writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
@@ -99,10 +97,11 @@ public class Big004mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
+        super.afterStep(stepExecution);
 
-        jobExecutionContext.put("keywordList", kcsKeywordList);
-        jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
-        jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
+        this.jobExecutionContext.put("keywordList", kcsKeywordList);
+        this.jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
+        this.jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
 
         return ExitStatus.COMPLETED;
     }

@@ -34,11 +34,6 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
 
     private int index = 0;
 
-//    @Override
-//    public void beforeStep(StepExecution stepExecution) {
-//        jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-//    }
-
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
@@ -173,7 +168,8 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
+        super.afterStep(stepExecution);
         this.jobExecutionContext.put("list", this.resultList);
-        return (this.resultList.size() == 0) ? ExitStatus.FAILED : ExitStatus.COMPLETED;
+        return ExitStatus.COMPLETED;
     }
 }

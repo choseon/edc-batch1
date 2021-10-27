@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kcs.edc.batch.cmmn.property.ApiProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -88,7 +90,6 @@ public class ApiService {
     }
 
     /**
-     *
      * @param uri
      * @param request
      * @param targetClass
@@ -100,6 +101,30 @@ public class ApiService {
         log.debug("uri {}", uri);
 
         String resultJson = this.restTemplate.postForObject(uri, request, String.class);
+
+        if (Objects.isNull(resultJson)) {
+            log.info("uri {}", uri);
+            log.info("resultJson is null");
+            return null;
+        } else {
+            log.debug("resultJson {}", resultJson);
+        }
+
+        T t = null;
+
+        try {
+            t = this.objectMapper.readValue(resultJson, targetClass);
+        } catch (JsonProcessingException e) {
+            log.info(e.getMessage());
+        }
+        return t;
+    }
+
+    public <T> T sendApiExchange(URI uri, HttpMethod httpMethod, HttpEntity<String> entity, Class<T> targetClass) {
+        log.debug("uri {}", uri);
+
+        ResponseEntity<String> exchange = this.restTemplate.exchange(uri, httpMethod, entity, String.class);
+        String resultJson = exchange.getBody();
 
         if (Objects.isNull(resultJson)) {
             log.info("uri {}", uri);
@@ -134,7 +159,17 @@ public class ApiService {
      * @param key 조회할 파라미터명
      * @return
      */
-    public List<String> getjobPropParam(String key) {
+    public List<String> getJobPropParam(String key) {
         return this.jobProp.getParam().get(key);
+    }
+
+    /**
+     * API header값 조회
+     * @param key
+     * @return
+     */
+    public String getJobPropHeader(String jobGrpName, String key) {
+        ApiProperties.JobProp jobProp = this.apiPropertis.getJobProp(jobGrpName);
+        return jobProp.getHeader().get(key);
     }
 }

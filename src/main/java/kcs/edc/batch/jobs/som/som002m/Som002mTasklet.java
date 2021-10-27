@@ -1,7 +1,6 @@
 package kcs.edc.batch.jobs.som.som002m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.som.som001m.vo.Som001mVO;
 import kcs.edc.batch.jobs.som.som002m.vo.Som002mVO;
@@ -44,7 +43,7 @@ public class Som002mTasklet extends CmmnJob implements Tasklet {
             builder.replaceQueryParam("source", som001mVO.getSource());
 
 //            List<String> keywordsExcFilterList = jobProp.getParam().get("keywordsExcFilterList[]");
-            List<String> keywordsExcFilterList = this.apiService.getjobPropParam("keywordsExcFilterList[]");
+            List<String> keywordsExcFilterList = this.apiService.getJobPropParam("keywordsExcFilterList[]");
             for (String filter : keywordsExcFilterList) {
                 String keyword = "(" + som001mVO.getKeyword() + ")&&~(" + filter + ")";
                 builder.queryParam("keyword", keyword);

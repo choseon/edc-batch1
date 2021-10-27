@@ -38,24 +38,26 @@ public class CmmnJob implements StepExecutionListener {
         if(Objects.isNull(this.baseDt)) {
             log.info("baseDt is null");
         }
-        log.info("getCurrentJobId() : {}", getCurrentJobId());
 
         if(!getCurrentJobId().contains("cmmnfile")) {
             this.apiService.init(getCurrentJobId());
             this.fileService.init(getCurrentJobId(), this.baseDt);
         }
 
-
         // step간 파라미터 넘겨주기 위해 jobExcutionContext 초기화
         // afterStep에서 넘겨줄 값 셋팅해준다
         this.jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
+
     }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
+
+        // 현재의 jobId를 공통으로 담아준다. FileMerge시 자동으로 jobId가 전달된다.
+        this.jobExecutionContext.put("jobId", getCurrentJobId());
+
         return null;
     }
-
 
     /**
      * 클래스명 문자열을 잘라서 group name 추출 (Nav001Tasklet -> nav)
@@ -90,45 +92,44 @@ public class CmmnJob implements StepExecutionListener {
     }
 
     /**
-     * 배치잡 시작로그 출력
+     * 배치 시작로그 출력
      */
     public void writeCmmnLogStart() {
-        log.info("####################################################");
+        log.info("##########################################################################");
         log.info("START JOB :::: {} ", getCurrentJobId());
-        log.info("####################################################");
+        log.info("##########################################################################");
         log.info("baseDt : {}", baseDt);
-//        log.info("##### START JOB :::: {} ########################################", getJobId());
     }
 
     /**
-     * 배치잡 종료로그 출력
+     * 배치 종료로그 출력
      */
     public void writeCmmnLogEnd() {
-        log.info("####################################################");
+        log.info("##########################################################################");
         log.info("END JOB :::: {}", getCurrentJobId());
-        log.info("####################################################");
+        log.info("##########################################################################");
     }
 
     /**
-     * 배치잡 시작로그 출력
+     * 배치 시작로그 출력
      *
      * @param threadNum 쓰레드번호
      * @param listSize  목록건수
      */
     public void writeCmmnLogStart(String threadNum, int listSize) {
-        log.info("####################################################");
-        log.info("threadNum : #{}, baseDt : {}, list size : {}", threadNum, this.baseDt, listSize);
+        log.info("##########################################################################");
+        log.info("START JOB ::: {}, #{}, baseDt : {}, list size : {}", getCurrentJobId(), threadNum, this.baseDt, listSize);
     }
 
     /**
-     * 배치잡 종료로그 출력
+     * 배치 종료로그 출력
      *
      * @param threadNum 쓰레드번호
      */
     public void writeCmmnLogEnd(String threadNum) {
-        log.info("####################################################");
+//        log.info("##########################################################################");
         log.info("END JOB :::: {} #{}", getCurrentJobId(), threadNum);
-        log.info("####################################################");
+        log.info("##########################################################################");
     }
 
 }

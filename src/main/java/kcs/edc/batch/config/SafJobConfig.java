@@ -22,6 +22,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ *
+ */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -31,9 +34,12 @@ public class SafJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-//    @Scheduled(cron = "${scheduler.cron.som}")
+    /**
+     *
+     * @throws Exception
+     */
+    @Scheduled(cron = "${scheduler.cron.saf}")
     public void launcher() throws Exception {
-        log.info("KotJobConfig launcher...");
 
         String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         JobParameters jobParameters = new JobParametersBuilder()
@@ -41,18 +47,21 @@ public class SafJobConfig {
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
-//        jobLauncher.run(safJob(), jobParameters);
+        jobLauncher.run(safJob(), jobParameters);
     }
 
-//    @Bean
+    /**
+     *
+     * @return
+     */
+    @Bean
     public Job safJob() {
 
-        return jobBuilderFactory.get("somJob")
+        return jobBuilderFactory.get("safJob")
                 .start(saf001mStep(null))
-                .next(saf001lStep(null, null))
+//                .next(saf001lStep(null, null))
                 .build();
     }
-
 
     /**
      * 국가기술표준원 제품안전정보센터 Step
@@ -83,6 +92,7 @@ public class SafJobConfig {
     public Step saf001lStep(
             @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[certNumList]}") List<String> certNumList) {
+
         return stepBuilderFactory.get("saf001lStep")
                 .tasklet(saf001lTasklet(baseDt, certNumList))
                 .build();

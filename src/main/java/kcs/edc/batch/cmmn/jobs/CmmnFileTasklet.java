@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
+@StepScope
 public class CmmnFileTasklet implements Tasklet {
 
     @Autowired
@@ -22,17 +23,18 @@ public class CmmnFileTasklet implements Tasklet {
 
     private String actionType;
 
-    private String jobId;
+    @Value("#{jobExecutionContext[jobId]}")
+    public String jobId;
+
     private List<String> jobList;
+
+    public CmmnFileTasklet(String actionType) {
+        this.actionType = actionType;
+    }
 
     public CmmnFileTasklet(String actionType, List<String> jobList) {
         this.actionType = actionType;
         this.jobList = jobList;
-    }
-
-    public CmmnFileTasklet(String actionType, String jobId) {
-        this.actionType = actionType;
-        this.jobId = jobId;
     }
 
     @Override
@@ -44,18 +46,20 @@ public class CmmnFileTasklet implements Tasklet {
         log.info("actionType : {}", this.actionType);
         log.info("jobId: {}", this.jobId);
 
+
         if(this.actionType.equals(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE)) { // file merge
 
             this.fileService.mergeTempFile(this.jobId);
 
         } else if(this.actionType.equals(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN)) { // file clean
+
             if(Objects.nonNull(this.jobList)) {
 
                 for (String jobId : this.jobList) {
                     this.fileService.cleanTempFile(jobId);
                 }
             } else {
-                this.fileService.cleanTempFile(this.jobId);
+                log.info("jobList is null");
             }
         }
 

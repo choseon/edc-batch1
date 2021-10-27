@@ -1,9 +1,11 @@
 package kcs.edc.batch.jobs.big.issue;
 
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.issue.vo.Big002mVO;
 import kcs.edc.batch.jobs.big.issue.vo.IssueRankQueryVO;
+import kcs.edc.batch.jobs.big.news.vo.Big001mVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -14,6 +16,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,21 +25,25 @@ import java.util.Objects;
  * Issue Ranking (이슈랭킹)
  */
 @Slf4j
-public class Big002mTasklet extends CmmnTask implements Tasklet, StepExecutionListener {
+public class Big002mTasklet extends CmmnJob implements Tasklet {
 
     private String kcsRgrsYn = "N";
     private String issueSrwrYn = "N";
     private List<String> newsClusterList = new ArrayList<>();
 
+    private String from;
+    private String until;
+    private String accessKey;
+
     @SneakyThrows
     @Override
     public void beforeStep(StepExecution stepExecution) {
-        jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
-        jobProp = apiProperties.getJobProp(getJobGrpName());
-        accessKey = jobProp.getHeader().get("accessKey");
 
-        from = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -1, "yyyy-MM-dd");
-        until = DateUtil.getOffsetDate(DateUtil.getFormatDate(baseDt), -0, "yyyy-MM-dd");
+        super.beforeStep(stepExecution);
+
+        this.accessKey = this.apiService.getJobPropHeader(getJobGrpName(), "accessKey");
+        this.from = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -1, "yyyy-MM-dd");
+        this.until = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -0, "yyyy-MM-dd");
     }
 
     @Override
@@ -44,50 +51,44 @@ public class Big002mTasklet extends CmmnTask implements Tasklet, StepExecutionLi
 
         writeCmmnLogStart();
 
-        uri = getUriComponetsBuilder().build().toUri();
+        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
 
         IssueRankQueryVO queryVO = new IssueRankQueryVO();
-        queryVO.setAccess_key(accessKey);
-        queryVO.getArgument().setDate(until);
+        queryVO.setAccess_key(this.accessKey);
+        queryVO.getArgument().setDate(this.until);
 
-        String resultJson = restTemplate.postForObject(uri, queryVO, String.class);
-        log.info("uri {}", uri);
-        log.debug("resultJson {}", resultJson);
-
-        if(Objects.isNull(resultJson)) return RepeatStatus.FINISHED;
-
-        Big002mVO resultVO = objectMapper.readValue(resultJson, Big002mVO.class);
-
+        Big002mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big002mVO.class);
         if(resultVO.getResult() != 0) return RepeatStatus.FINISHED;
 
         List<Big002mVO.TopicItem> topics = resultVO.getReturn_object().getTopics();
         for (Big002mVO.TopicItem item : topics) {
 
             List<String> news_cluster = item.getArtcListCn();
-            newsClusterList.addAll(news_cluster);
+            this.newsClusterList.addAll(news_cluster);
 
-            item.setArtcPblsDt(until);
-            item.setKcsRgrsYn(kcsRgrsYn);
-            item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime2());
-            item.setLastChngDtlDttm(DateUtil.getCurrentTime2());
+            item.setArtcPblsDt(this.until);
+            item.setKcsRgrsYn(this.kcsRgrsYn);
+            item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+            item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
             // topic.newsClusterToString()
 
-            resultList.add(item);
+            this.resultList.add(item);
         }
         // 파일생성
-        makeFile(getCurrentJobId(), resultList);
-        writeCmmnLogEnd();
+        this.fileService.makeFile(resultList);
+        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
+        super.afterStep(stepExecution);
 
-        jobExecutionContext.put("newsClusterList", newsClusterList);
-        jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
-        jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
+        this.jobExecutionContext.put("newsClusterList", newsClusterList);
+        this.jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
+        this.jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
 
         return ExitStatus.COMPLETED;
     }

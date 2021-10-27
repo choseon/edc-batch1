@@ -18,6 +18,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,13 +32,12 @@ public class NavJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    //    @Scheduled(cron = "${scheduler.cron.kot}")
+    @Scheduled(cron = "${scheduler.cron.nav}")
     public void launcher() throws Exception {
         log.info("NAVJobConfig launcher...");
 
         // D-4일 기준
         String baseDt = LocalDateTime.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        baseDt = "20210711";
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)
