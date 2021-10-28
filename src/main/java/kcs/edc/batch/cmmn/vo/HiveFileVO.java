@@ -77,11 +77,11 @@ public class HiveFileVO {
         // 테이블명
         this.tableName = this.PRE_FIX_TABLE_NAME + this.jobId;
         // 수집데이터파일 경로
-        this.dataFilePath = this.rootPath + "/" + this.tableName + "/";
+        this.dataFilePath = this.rootPath + this.tableName + "/";
         // 로그파일 경로
-        this.logFilePath = this.rootPath + "/" + this.LOG_TABLE_NAME + "/";
+        this.logFilePath = this.rootPath + this.LOG_TABLE_NAME + "/";
         // 임시파일경로
-        this.tempFilePath = this.rootPath + "/" + this.tableName + "/" + this.TEMP_FILE_PATH + "/";
+        this.tempFilePath = this.dataFilePath + this.TEMP_FILE_PATH + "/";
 
         // 로그파일명
         this.logFileName = this.tableName + "_" + DateUtil.getCurrentTime2() + "." + this.FILE_EXTENSION;

@@ -1,25 +1,22 @@
 package kcs.edc.batch.jobs.big.issue;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.issue.vo.Big002mVO;
 import kcs.edc.batch.jobs.big.issue.vo.IssueRankQueryVO;
-import kcs.edc.batch.jobs.big.news.vo.Big001mVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Issue Ranking (이슈랭킹)
@@ -63,23 +60,37 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
         List<Big002mVO.TopicItem> topics = resultVO.getReturn_object().getTopics();
         for (Big002mVO.TopicItem item : topics) {
 
-            List<String> news_cluster = item.getArtcListCn();
-            this.newsClusterList.addAll(news_cluster);
+            List<String> newsCluster = item.getNewsCluster();
 
-            item.setArtcPblsDt(this.until);
+            this.newsClusterList.addAll(newsCluster);
+
+            item.setArtcListCn(convertNesClusterListToString(newsCluster));
+            item.setArtcPblsDt(this.baseDt);
             item.setKcsRgrsYn(this.kcsRgrsYn);
             item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
             item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-
-            // topic.newsClusterToString()
-
             this.resultList.add(item);
+
+            log.info("{} >> keyword : {}, KcsKeywordYn : {}", getCurrentJobId(), item.getArtcListCn(), this.kcsRgrsYn);
         }
         // 파일생성
         this.fileService.makeFile(resultList);
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
+    }
+
+    public String convertNesClusterListToString(List<String> newsClusterList) {
+        StringBuilder sb = new StringBuilder();
+        Iterator<String> iterator = newsClusterList.iterator();
+
+        while (iterator.hasNext()) {
+            String str = (String) iterator.next();
+            sb.append("\"").append(str).append("\"").append(",");
+        }
+
+        String clusterStr = sb.toString();
+        return clusterStr.substring(0, clusterStr.length() - 1) + "]";
     }
 
     @Override

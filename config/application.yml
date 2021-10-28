@@ -9,14 +9,19 @@ spring:
     job:
       names: ${job.name:NONE}
 path:
-  rootPath: C:/dev/edc-batch
-  storePath: C:/dev/hdata/
+#  rootPath: C:/dev/edc-batch
+#  storePath: C:/dev/hdata/
 #  nasStorePath:
 #    opd: C:/dev/data_nas/anl_data/BA204/opendart/
 #    kot: C:/dev/data_nas/anl_data/BA201/kotra/
-  resourcePath: C:/dev/edc-batch/resources
-  configPath: C:/dev/edc-batch/config
-  logPath: C:/dev/log
+#  resourcePath: C:/dev/edc-batch/resources
+#  configPath: C:/dev/edc-batch/config
+#  logPath: C:/dev/log
+file:
+  path:
+    resourcePath: C:/dev/edc-batch/resources/
+    hiveStorePath: C:/dev/hdata/
+    nasStorePath: C:/dev/data_nas/anl_data/
 ---
 spring:
   profiles: dev
@@ -32,6 +37,10 @@ path:
   resourcePath: /data/edc-batch/dev/resources
   configPath: /data/edc-batch/dev/config
   logPath: /data/edc-batch/dev/log
+file:
+  resourcePath: /app/ext-batch/dev/resources/
+  hiveStorePath: /app/ext-batch/dev/hdata/
+  nasStorePath: /app/ext-batch/dev/data_nas/anl_data/
 ---
 spring:
   profiles: prod
@@ -47,6 +56,10 @@ path:
   resourcePath: /data/edc-batch/prod/resources
   configPath: /data/edc-batch/prod/config
   logPath: /data/edc-batch/prod/log
+file:
+  resourcePath: /app/ext-batch/prod/resources/
+  hiveStorePath: /app/ext-batch/prod/hdata/
+  nasStorePath: /app/ext-batch/prod/data_nas/anl_data/
 ---
 spring:
   datasource:
@@ -171,7 +184,7 @@ api:
     saf001m:
       baseUrl: http://www.safetykorea.kr/openapi/api/cert/certificationList.json
       param:
-        conditionKey: certDate
+        conditionKey: signDate
         conditionValue:
     saf001l:
       baseUrl: http://www.safetykorea.kr/openapi/api/cert/certificationDetail.json
@@ -235,14 +248,6 @@ resource:
     scriptPath:
     newsBdtHtmlPath:
     imgPath:
----
-file:
-#  storePath:
-#    hive: C:/dev/hdata/
-#    nas: C:/dev/data_nas/anl_data/
-  resourcePath: C:/dev/edc-batch/resources
-  hiveStorePath: C:/dev/hdata
-  nasStorePath: C:/dev/data_nas/anl_data
 ---
 opd: C:/dev/data_nas/anl_data/BA204/opendart/
 kot: C:/dev/data_nas/anl_data/BA201/kotra/

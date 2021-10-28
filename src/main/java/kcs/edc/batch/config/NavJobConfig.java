@@ -65,7 +65,7 @@ public class NavJobConfig {
 
     @Bean
     @StepScope
-    public Tasklet nav003mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+    public Nav003mTasklet nav003mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Nav003mTasklet();
     }
 
@@ -79,7 +79,7 @@ public class NavJobConfig {
 
     @Bean
     @StepScope
-    public Tasklet nav004mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+    public Nav004mTasklet nav004mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Nav004mTasklet();
     }
 }

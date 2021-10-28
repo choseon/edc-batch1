@@ -38,6 +38,9 @@ public class BigJobConfig {
 
     private final JobLauncher jobLauncher;
 
+    /**
+     * 한국언론진흥재단 빅카인드 배치 launcher 설정
+     */
     @Scheduled(cron = "${scheduler.cron.big}")
     public void launcher() {
         log.info("BigJobConfig launcher...");
@@ -62,17 +65,22 @@ public class BigJobConfig {
         }
     }
 
+    /**
+     * 한국언론진흥재단 빅카인드 배치 Job 설정
+     *
+     * @return
+     */
     @Bean
     public Job bigJob() {
 
-        // News TimeLine -> Word Cloud -> News Search
+        // News TimeLine -> Word Cloud -> News Search(뉴스조회)
         Flow bigFlow1 = new FlowBuilder<Flow>("bigFlow1")
                 .start(big004mStep(null)) // News Timeline
                 .next(big003mStep(null, null, null, null)) // Word Cloud
-                .next(big001mStep(null, null, null, null,null)) // News Search
+                .next(big001mStep(null, null, null, null, null)) // News Search
                 .build();
 
-        // query_rank(인기검색어) -> Word Cloud -> News Search
+        // query_rank(인기검색어) -> Word Cloud -> News Search(뉴스조회)
         Flow bigFlow2 = new FlowBuilder<Flow>("bigFlow2")
                 .start(big005mStep(null)) // query_rank
                 .next(big003mStep(null, null, null, null)) // Word Cloud
@@ -93,6 +101,16 @@ public class BigJobConfig {
                 .build();
     }
 
+    /**
+     * 한국언론진흥재단 빅카인드 뉴스검색 수집 Step 설정
+     *
+     * @param baseDt
+     * @param keywordList
+     * @param kcsRgrsYn
+     * @param issueSrwrYn
+     * @param newsClusterList
+     * @return
+     */
     @Bean
     @JobScope
     public Step big001mStep(
@@ -107,6 +125,15 @@ public class BigJobConfig {
                 .build();
     }
 
+    /**
+     * 한국언론진흥재단 빅카인드 뉴스검색 수집 Tasklet 설정
+     *
+     * @param baseDt
+     * @param keywordList
+     * @param kcsRgrsYn
+     * @param issueSrwrYn
+     * @return
+     */
     @Bean
     @StepScope
     public Big001mTasklet big001mTasklet(
@@ -117,6 +144,12 @@ public class BigJobConfig {
         return new Big001mTasklet();
     }
 
+    /**
+     * 한국언론진흥재단 빅카인드 이슈랭킹 수집 Step 설정
+     *
+     * @param baseDt
+     * @return
+     */
     @Bean
     @JobScope
     public Step big002mStep(
@@ -127,6 +160,12 @@ public class BigJobConfig {
                 .build();
     }
 
+    /**
+     * 한국언론진흥재단 빅카인드 이슈랭킹 수집 Tasklet 설정
+     *
+     * @param baseDt
+     * @return
+     */
     @Bean
     @StepScope
     public Big002mTasklet big002mTasklet(
@@ -134,6 +173,15 @@ public class BigJobConfig {
         return new Big002mTasklet();
     }
 
+    /**
+     * 한국언론진흥재단 빅카인드 워드클라우드 수집 Step 설정
+     *
+     * @param baseDt
+     * @param keywordList
+     * @param kcsRgrsYn
+     * @param issueSrwrYn
+     * @return
+     */
     @Bean
     @JobScope
     public Step big003mStep(
@@ -147,7 +195,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 Tasklet
+     * 한국언론진흥재단 빅카인드 워드클라우드 수집 Tasklet 설정
      */
     @Bean
     @StepScope
@@ -160,7 +208,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 Step
+     * 한국언론진흥재단 빅카인드 뉴스타임라인 수집 Step 설정
      */
     @Bean
     @JobScope
@@ -171,7 +219,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 Tasklet
+     * 한국언론진흥재단 빅카인드 뉴스타임라인 수집 Tasklet 설정
      */
     @Bean
     @StepScope
@@ -180,7 +228,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 Step
+     * 한국언론진흥재단 빅카인드 뉴스타임라인 수집 Step 설정
      */
     @Bean
     @JobScope
@@ -191,7 +239,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 Tasklet
+     * 한국언론진흥재단 빅카인드 뉴스타임라인 수집  Tasklet 설정
      */
     @Bean
     @StepScope

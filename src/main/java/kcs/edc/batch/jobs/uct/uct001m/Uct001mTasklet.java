@@ -160,7 +160,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
         try {
 
             String resourcePath = this.fileService.getResourcePath();
-            String filePath = resourcePath + "/" + CmmnConst.RESOURCE_FILE_NAME_UCT_AREA;
+            String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_UCT_AREA;
             jsonArray = FileUtil.readJsonFile(filePath, "results");
 
             for (JsonElement jsonElement : jsonArray) {

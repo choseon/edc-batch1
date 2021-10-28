@@ -1,13 +1,11 @@
 package kcs.edc.batch.jobs.big.timeline;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.big.timeline.vo.Big004mVO;
 import kcs.edc.batch.jobs.big.timeline.vo.TimelineQueryVO;
-import kcs.edc.batch.jobs.big.wordcloud.vo.Big003mVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -21,7 +19,6 @@ import org.springframework.batch.repeat.RepeatStatus;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * News TimeLine (뉴스 타임라인)
@@ -49,7 +46,7 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
         try {
             String resourcePath = this.fileService.getResourcePath();
-            String filePath = resourcePath + "/" + CmmnConst.RESOURCE_FILE_NAME_SOM_KCS_KEWORD;
+            String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_KCS_KEYWORD;
             this.kcsKeywordList = FileUtil.readTextFile(filePath);
             log.info("kcsKeywordList.size() {}", kcsKeywordList.size());
 
@@ -83,8 +80,9 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
                 item.setKcsRgrsYn(this.kcsRgrsYn);
                 item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-
                 this.resultList.add(item);
+
+                log.info("{} >> keyword : {}, KcsKeywordYn : {}", getCurrentJobId(), keyword, this.kcsRgrsYn);
             }
         }
         // 파일생성

@@ -48,14 +48,19 @@ public class Som002mVO {
         /** KCS_REGR_YN */
         private String registYn;
 
+        /** DEL_YN */
         private String delYn = "N";
 
+        /** FRST_REGST_ID */
         private String frstRegstId = "EX_BDP";
 
+        /** FRST_RGSR_DTL_DTTM  */
         private String frstRgsrDtlDttm;
 
+        /** LAST_CHPR_ID  */
         private String lastChprId = "EX_BDP";
 
+        /** LAST_CHNG_DTL_DTTM  */
         private String lastChngDtlDttm;
 
 //        private String source;
@@ -92,20 +97,20 @@ public class Som002mVO {
 
     }
 
-    @Getter
-    @Setter
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Author {
-        private String site;
-        private int viewCnt;
-        private String imageUrl;
-        private int writeCnt;
-        private int friendCnt;
-        private int likeCnt;
-        private boolean valid;
-        private String sequence;
-        private String name;
-        private String realName;
-
-    }
+//    @Getter
+//    @Setter
+//    @JsonIgnoreProperties(ignoreUnknown = true)
+//    public static class Author {
+//        private String site;
+//        private int viewCnt;
+//        private String imageUrl;
+//        private int writeCnt;
+//        private int friendCnt;
+//        private int likeCnt;
+//        private boolean valid;
+//        private String sequence;
+//        private String name;
+//        private String realName;
+//
+//    }
 }

@@ -1,7 +1,6 @@
 package kcs.edc.batch.jobs.som.som003m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.som.som001m.vo.Som001mVO;
 import kcs.edc.batch.jobs.som.som003m.vo.Som003mVO;

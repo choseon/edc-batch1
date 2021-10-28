@@ -48,7 +48,7 @@ public class Uct001mPartitioner extends CmmnPartitioner {
 //        String resourcePath = this.fileService.getResourcePath();
 //        String filePath = resourcePath + "/" + JobConstant.RESOURCE_FILE_NAME_UCT_AREA;
 
-        String filePath = resourcePath + "/" + CmmnConst.RESOURCE_FILE_NAME_UCT_AREA;
+        String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_UCT_AREA;
 
         List<Object> pList = new ArrayList<>();
 

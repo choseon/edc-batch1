@@ -59,7 +59,7 @@ public class SafJobConfig {
 
         return jobBuilderFactory.get("safJob")
                 .start(saf001mStep(null))
-//                .next(saf001lStep(null, null))
+                .next(saf001lStep(null, null))
                 .build();
     }
 

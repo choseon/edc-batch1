@@ -100,8 +100,9 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
                     item.setKcsRgrsYn(this.kcsRgrsYn);
                     item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                     item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-
                     this.resultList.add(item);
+
+                    log.info("{} >> keyword : {}, newsId: {}, KcsKeywordYn : {}", getCurrentJobId(),keyword, item.getArtcId(), this.kcsRgrsYn);
                 }
             }
         }

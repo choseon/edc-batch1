@@ -1,7 +1,6 @@
 package kcs.edc.batch.jobs.biz.biz001m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.biz.biz001m.vo.Biz001mVO;
 import lombok.extern.slf4j.Slf4j;

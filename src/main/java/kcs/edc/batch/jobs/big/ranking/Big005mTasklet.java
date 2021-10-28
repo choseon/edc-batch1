@@ -1,12 +1,10 @@
 package kcs.edc.batch.jobs.big.ranking;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.jobs.CmmnTask;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.ranking.vo.Big005mVO;
 import kcs.edc.batch.jobs.big.ranking.vo.RankingQueryVO;
-import kcs.edc.batch.jobs.big.timeline.vo.Big004mVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -19,7 +17,6 @@ import org.springframework.batch.repeat.RepeatStatus;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Query Ranking (인기검색어)
@@ -67,6 +64,8 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
             item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
             this.resultList.add(item);
+
+            log.info("{} >> query : {}, KcsKeywordYn : {}", getCurrentJobId(), item.getSrchQuesWordNm(), this.kcsRgrsYn);
         }
         // 파일생성
         this.fileService.makeFile(CmmnConst.JOB_ID_BIG004M, resultList);

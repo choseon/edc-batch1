@@ -34,7 +34,7 @@ public class FileProperties {
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "file")
+@ConfigurationProperties(prefix = "file.path")
 public class FileProperties {
 
 //    private Map<String, Map<String, String>> storePath;

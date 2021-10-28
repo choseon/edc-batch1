@@ -114,7 +114,7 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
             String resourcePath = this.fileService.getResourcePath();
             String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_SOM_KCS_KEWORD;
             keywordList = FileUtil.readTextFile(filePath);
-            if (keywordList == null || keywordList.size() == 0) {
+            if (keywordList.size() == 0) {
                 log.info("filePath {} is null ", filePath);
                 return null;
             }

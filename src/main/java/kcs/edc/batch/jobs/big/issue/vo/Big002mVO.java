@@ -40,8 +40,8 @@ public class Big002mVO {
         @JsonProperty("topic_keyword")
         private String issuekywdNm;
 
-        @JsonProperty("news_cluster")
-        private List<String> artcListCn;
+//        @JsonProperty("news_cluster")
+        private String artcListCn;
 
         private String KcsRgrsYn;
 
@@ -55,16 +55,17 @@ public class Big002mVO {
 
         private String lastChngDtlDttm;
 
-//        private List<String> news_cluster = new ArrayList<>();
+        @JsonProperty("news_cluster")
+        private List<String> newsCluster;
 
-        public String newsClusterToString() {
-            StringBuilder sb = new StringBuilder();
-            for(String str : this.artcListCn) {
-                sb.append("\"").append(str).append("\"").append(",");
-            }
-
-            String clusterStr = sb.toString();
-            return clusterStr.substring(0, clusterStr.length() - 1) + "]";
-        }
+//        public String newsClusterToString() {
+//            StringBuilder sb = new StringBuilder();
+//            for(String str : this.artcListCn) {
+//                sb.append("\"").append(str).append("\"").append(",");
+//            }
+//
+//            String clusterStr = sb.toString();
+//            return clusterStr.substring(0, clusterStr.length() - 1) + "]";
+//        }
     }
 }

@@ -1,7 +1,6 @@
 package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
-import kcs.edc.batch.cmmn.jobs.CmmnMergeFile;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mPartitioner;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mTasklet;
