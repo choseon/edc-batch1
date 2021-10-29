@@ -58,7 +58,7 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        writeCmmnLogStart();
+        this.writeCmmnLogStart();
 
         URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
 
@@ -87,7 +87,7 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
         }
         // 파일생성
         this.fileService.makeFile(this.resultList);
-        writeCmmnLogEnd();
+        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }

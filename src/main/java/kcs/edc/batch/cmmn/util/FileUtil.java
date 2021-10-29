@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class FileUtil {
@@ -59,6 +60,7 @@ public class FileUtil {
             writer = new OutputStreamWriter(new FileOutputStream(filePath + fileName), StandardCharsets.UTF_8);
             TsvWriter tsvWriter = new TsvWriter(writer, new TsvWriterSettings());
 
+            if(list.size() == 0) return;
             if (list.get(0) instanceof Object[]) {
                 tsvWriter.writeRows((Collection<Object[]>) list);
             } else {

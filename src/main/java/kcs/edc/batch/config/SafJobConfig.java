@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
- *
+ * 국가기술표준원 제품안전정보센터 데이터수집 Batch Configuration
  */
 @Slf4j
 @Configuration
@@ -35,6 +35,7 @@ public class SafJobConfig {
     private final JobLauncher jobLauncher;
 
     /**
+     * 국가기술표준원 제품안전정보센터 데이터수집 Batch Launcher 설정
      *
      * @throws Exception
      */
@@ -51,6 +52,7 @@ public class SafJobConfig {
     }
 
     /**
+     * 국가기술표준원 제품안전정보센터 데이터수집 Batch Job 설정
      *
      * @return
      */
@@ -64,7 +66,7 @@ public class SafJobConfig {
     }
 
     /**
-     * 국가기술표준원 제품안전정보센터 Step
+     * 국가기술표준원 제품안전정보센터 제품안전정보 수집 Step 설정
      */
     @Bean
     @JobScope
@@ -76,7 +78,7 @@ public class SafJobConfig {
     }
 
     /**
-     * 국가기술표준원 제품안전정보센터 Tasklet
+     * 국가기술표준원 제품안전정보센터 제품안전정보 수집 Tasklet 설정
      */
     @Bean
     @StepScope
@@ -85,7 +87,9 @@ public class SafJobConfig {
     }
 
     /**
-     * 국가기술표준원 제품안전정보센터 Step
+     * 국가기술표준원 제품안전정보센터
+     * 제품안전정보 파생모델목록 수집, 연관인증번호 목록 수집, 제조공장목록 수집, 이미지목록 수집
+     * Step 설정
      */
     @Bean
     @JobScope
@@ -99,7 +103,9 @@ public class SafJobConfig {
     }
 
     /**
-     * 국가기술표준원 제품안전정보센터 Tasklet
+     * 국가기술표준원 제품안전정보센터
+     * 제품안전정보 파생모델목록 수집, 연관인증번호 목록 수집, 제조공장목록 수집, 이미지목록 수집
+     * Tasklet 설정
      */
     @Bean
     @StepScope

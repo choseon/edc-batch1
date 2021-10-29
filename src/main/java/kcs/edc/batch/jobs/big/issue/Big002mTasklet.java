@@ -46,7 +46,7 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        writeCmmnLogStart();
+        this.writeCmmnLogStart();
 
         URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
 

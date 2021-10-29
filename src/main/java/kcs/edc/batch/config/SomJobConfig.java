@@ -33,6 +33,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 바이브컴퍼티 썸트랜드 데이터수집 Batch Configuration
+ */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -47,6 +50,9 @@ public class SomJobConfig {
 
     private String currentJobId;
 
+    /**
+     * 바이브컴퍼티 썸트랜드 데이터수집 Batch Launcher 설정
+     */
     @Scheduled(cron = "${scheduler.cron.som}")
     public void launcher() {
         log.info("SomConfiguration launcher...");
@@ -71,6 +77,11 @@ public class SomJobConfig {
         }
     }
 
+    /**
+     * 바이브컴퍼티 썸트랜드 데이터수집 Batch Job 설정
+     *
+     * @return
+     */
     @Bean
     public Job somJob() {
 

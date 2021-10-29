@@ -64,6 +64,7 @@ public class Som004mTasklet extends CmmnJob implements Tasklet {
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
                 this.resultList.add(item);
+
             }
         }
 

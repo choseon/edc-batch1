@@ -28,6 +28,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * 한국언론진흥재단 빅카인드 데이터수집 Batch Configuration
+ */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -39,7 +42,7 @@ public class BigJobConfig {
     private final JobLauncher jobLauncher;
 
     /**
-     * 한국언론진흥재단 빅카인드 배치 launcher 설정
+     * 한국언론진흥재단 빅카인드 데이터수집 Batch launcher 설정
      */
     @Scheduled(cron = "${scheduler.cron.big}")
     public void launcher() {
@@ -66,7 +69,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 배치 Job 설정
+     * 한국언론진흥재단 빅카인드 데이터수집 Batch Job 설정
      *
      * @return
      */

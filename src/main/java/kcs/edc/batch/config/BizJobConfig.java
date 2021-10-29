@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * 중소기업연구원 중소벤처기업부 기업마당 Batch Configuration
+ * 중소기업연구원 중소벤처기업부 기업마당 데이터수집 Batch Configuration
  */
 @Slf4j
 @Configuration
@@ -33,6 +33,11 @@ public class BizJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
+    /**
+     * 중소기업연구원 중소벤처기업부 기업마당 데이터수집 Batch Launcher 설정
+     *
+     * @throws Exception
+     */
     @Scheduled(cron = "${scheduler.cron.biz}")
     public void launcher() throws Exception {
         log.info("BIZJobConfig launcher...");
@@ -47,7 +52,8 @@ public class BizJobConfig {
     }
 
     /**
-     * 중소기업연구원 중소벤처기업부 기업마당 Job
+     * 중소기업연구원 중소벤처기업부 기업마당 데이터수집 Batch Job 설정
+     *
      * @return
      */
     @Bean
@@ -59,7 +65,7 @@ public class BizJobConfig {
     }
 
     /**
-     * 중소기업연구원 중소벤처기업부 기업마당 Setp
+     * 중소기업연구원 중소벤처기업부 기업마당 최신공고 Batch Step 설정
      */
     @Bean
     @JobScope
@@ -70,7 +76,7 @@ public class BizJobConfig {
     }
 
     /**
-     * 중소기업연구원 중소벤처기업부 기업마당 Tasklet
+     * 중소기업연구원 중소벤처기업부 기업마당 최신공고 Batch Tasklet 설정
      */
     @Bean
     @StepScope

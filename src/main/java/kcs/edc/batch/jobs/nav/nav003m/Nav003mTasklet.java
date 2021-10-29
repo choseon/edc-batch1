@@ -3,6 +3,7 @@ package kcs.edc.batch.jobs.nav.nav003m;
 import com.jcraft.jsch.ChannelSftp;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.service.SftpService;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -27,7 +28,7 @@ public class Nav003mTasklet extends CmmnJob implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
 
-        writeCmmnLogStart();
+        this.writeCmmnLogStart();
 
         // set JobId
         this.sftpService.setJobId(getCurrentJobId());
@@ -49,10 +50,16 @@ public class Nav003mTasklet extends CmmnJob implements Tasklet {
 
         // header 삭제
         csvToList.remove(0);
+        // 수집파일생성일자 현재날짜로 셋팅
+        for (Object[] objects : csvToList) {
+            objects[objects.length - 1] = DateUtil.getCurrentDate();
+        }
 
         // Make TSV File
         this.fileService.makeFile(csvToList);
 
+        // Download TempFile 삭제
+        this.fileService.cleanTempFile(getCurrentJobId());
 
         this.writeCmmnLogEnd();
 

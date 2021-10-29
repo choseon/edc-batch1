@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * UN Comtrade 수출데이터 수집 Job Configuration
+ * UN Comtrade 수출데이터 수집 Batch Configuration
  */
 @Slf4j
 @Configuration
@@ -43,7 +43,7 @@ public class UctJobConfig {
     private int POOL_SIZE = 10;
 
     /**
-     * UN Comtrade job launcher (월배치)
+     * UN Comtrade Batch launcher (월배치)
      * 매월 1일 전년도, 전전년도 2년치 데이터 수집하여
      * 15일 이전에 내부 hlo1db에서 데이터 조회되도록 스케쥴링 필요.
      */
@@ -77,7 +77,7 @@ public class UctJobConfig {
     }
 
     /**
-     * UN Comtrade Job 설정한다.
+     * UN Comtrade Batch Job 설정한다.
      * Partitioning과 MultiThread를 실행한다.
      * MultiThread로 생성된 Temp파일을 정리 및 병합하기 위해
      * PartitionStep 전후에 FileCleanStep과 FileMergeStep을 실행한다.

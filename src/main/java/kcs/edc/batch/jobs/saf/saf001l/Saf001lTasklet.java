@@ -1,14 +1,13 @@
 package kcs.edc.batch.jobs.saf.saf001l;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.Base64;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.saf.saf001l.vo.Saf001lVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -34,19 +33,6 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
 
     @Value("#{jobExecutionContext[certNumList]}")
     private List<String> certNumList;
-    private String authKey;
-
-    private List<Saf001lVO.DerivationModelItem> derivationModels = new ArrayList<>();
-    private List<Saf001lVO.CertificationImageUrlItem> certificationImageUrls  = new ArrayList<>();;
-    private List<Saf001lVO.FatoryItem> factories = new ArrayList<>();;
-    private List<Saf001lVO.SimilarCertItem> similarCertifications  = new ArrayList<>();;
-
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-
-        super.beforeStep(stepExecution);
-        this.authKey = this.apiService.getJobPropHeader(getJobGrpName(), "AuthKey");
-    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -55,8 +41,10 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
 
         // header setting
         HttpHeaders headers = new HttpHeaders();
-        headers.set("AuthKey", this.authKey);
+        headers.set("AuthKey", this.apiService.getJobPropHeader(getJobGrpName(), "AuthKey"));
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+
+        List<Saf001lVO.Item> resultList = new ArrayList<>();
 
         for (String certNum : this.certNumList) {
 
@@ -66,56 +54,127 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
 
             // send API
             Saf001lVO resultVO = this.apiService.sendApiExchange(uri, HttpMethod.GET, entity, Saf001lVO.class);
-            if(Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
+            if (Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
 
             Saf001lVO.Item resultData = resultVO.getResultData();
+            resultList.add(resultData);
 
-            String crtfInfoId = resultData.getCertUid();
+            log.info("certNum: {}, derivationModels: {}, similarCertifications: {}, factories: {}, certificationImageUrls: {}",
+                    certNum, resultData.getDerivationModels().size(), resultData.getSimilarCertifications().size(),
+                    resultData.getFactories().size(), resultData.getCertificationImageUrls().size());
+        }
 
-            // ht_saf001l
-            for (String model : resultData.getDerivationModels()) {
+        // HT_SAF001L 파생모델목록 파일생성
+        List<Saf001lVO.DerivationModelItem> derivationModelList = getDerivationModelList(resultList);
+        this.fileService.makeFile(CmmnConst.JOB_ID_SAF001L, derivationModelList);
+
+        // HT_SAF002L 연관인증번호 목록 파일생성
+        List<Saf001lVO.SimilarCertItem> similarCertificationList = getSimilarCertificationList(resultList);
+        this.fileService.makeFile(CmmnConst.JOB_ID_SAF002L, similarCertificationList);
+
+        // HT_SAF003L 제조공장목록 파일생성
+        List<Saf001lVO.FatoryItem> factoryList = getFactoryList(resultList);
+        this.fileService.makeFile(CmmnConst.JOB_ID_SAF003L, factoryList);
+
+        // HT_SAF004L 이미지목록 파일생성
+        List<Saf001lVO.CertificationImageUrlItem> certificationImageUrlList = getCertificationImageUrlList(resultList);
+        this.fileService.makeFile(CmmnConst.JOB_ID_SAF004L, certificationImageUrlList);
+
+        this.writeCmmnLogEnd();
+
+        return RepeatStatus.FINISHED;
+    }
+
+    /**
+     * 제품안전정보 파생모델목록
+     *
+     * @param list
+     * @return
+     */
+    private List<Saf001lVO.DerivationModelItem> getDerivationModelList(List<Saf001lVO.Item> list) {
+
+        List<Saf001lVO.DerivationModelItem> resultList = new ArrayList<>();
+        for (Saf001lVO.Item obj : list) {
+            String crtfInfoId = obj.getCertUid();
+            for (String model : obj.getDerivationModels()) {
                 Saf001lVO.DerivationModelItem item = new Saf001lVO.DerivationModelItem();
                 item.setCertInfoId(crtfInfoId);
                 item.setModel(model);
                 item.setRegrDt(this.baseDt);
                 item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-                this.derivationModels.add(item);
+                resultList.add(item);
 
-                log.info("saf001l >> DerivationModelItem certInfoId : {} model : {}", crtfInfoId, model);
+                log.info("saf001l >> DerivationModelItem >> certInfoId : {} model : {}", crtfInfoId, model);
             }
+        }
+        return resultList;
+    }
 
+    /**
+     * 제품안전정보 연관인증번호 목록
+     *
+     * @param list
+     * @return
+     */
+    private List<Saf001lVO.SimilarCertItem> getSimilarCertificationList(List<Saf001lVO.Item> list) {
 
-            // ht_saf002l
-            for (Saf001lVO.SimilarCertItem item : resultData.getSimilarCertifications()) {
+        List<Saf001lVO.SimilarCertItem> resultList = new ArrayList<>();
+        for (Saf001lVO.Item obj : list) {
+            String crtfInfoId = obj.getCertUid();
+            for (Saf001lVO.SimilarCertItem item : obj.getSimilarCertifications()) {
                 item.setCertInfoId(crtfInfoId);
                 item.setRegrDt(this.baseDt);
                 item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-                this.similarCertifications.add(item);
+                resultList.add(item);
 
-                log.info("saf002l >> DerivationModelItem certInfoId : {}, certState : {}", crtfInfoId, item.getCertState());
+                log.info("saf002l >> SimilarCertItem >> certInfoId : {}, certState : {}", crtfInfoId, item.getCertState());
             }
+        }
+        return resultList;
+    }
 
+    /**
+     * 제품안전정보 제조공장목록
+     *
+     * @param list
+     * @return
+     */
+    private List<Saf001lVO.FatoryItem> getFactoryList(List<Saf001lVO.Item> list) {
 
-            // ht_saf003l
-            for (Saf001lVO.FatoryItem item : resultData.getFactories()) {
+        List<Saf001lVO.FatoryItem> resultList = new ArrayList<>();
+        for (Saf001lVO.Item obj : list) {
+            String crtfInfoId = obj.getCertUid();
+            for (Saf001lVO.FatoryItem item : obj.getFactories()) {
                 item.setCertInfoId(crtfInfoId);
                 item.setRegrDt(this.baseDt);
                 item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-                this.factories.add(item);
+                resultList.add(item);
 
-                log.info("saf003l >> FatoryItem certInfoId : {}, markNm : {}", crtfInfoId, item.getMakerName());
+                log.info("saf003l >> FatoryItem >> certInfoId : {}, markNm : {}", crtfInfoId, item.getMakerName());
             }
+        }
+        return resultList;
+    }
 
+    /**
+     * 제품안전정보 이미지목록
+     *
+     * @param list
+     * @return
+     */
+    private List<Saf001lVO.CertificationImageUrlItem> getCertificationImageUrlList(List<Saf001lVO.Item> list) {
 
-            // ht_saf004l
-            for (String imageUrl : resultData.getCertificationImageUrls()) {
+        List<Saf001lVO.CertificationImageUrlItem> resultList = new ArrayList<>();
+        for (Saf001lVO.Item obj : list) {
+            String crtfInfoId = obj.getCertUid();
+            for (String imageUrl : obj.getCertificationImageUrls()) {
                 Saf001lVO.CertificationImageUrlItem item = new Saf001lVO.CertificationImageUrlItem();
                 item.setCertInfoId(crtfInfoId);
 
-                if(Objects.isNull(imageUrl)) continue;
+                if (Objects.isNull(imageUrl)) continue;
 
                 String imageFileName = FilenameUtils.getName(imageUrl);
                 item.setImageUrl(imageFileName);
@@ -124,60 +183,63 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
                 item.setRegrDt(this.baseDt);
                 item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-                this.certificationImageUrls.add(item);
+                resultList.add(item);
 
-                log.info("saf004l >> FatoryItem certInfoId : {}, imageUrl : {}", crtfInfoId, imageUrl);
+                log.info("saf004l >> CertificationImageUrlItem >> certInfoId : {}, imageUrl : {}", crtfInfoId, imageUrl);
             }
         }
-
-        // 파일생성
-        this.fileService.makeFile(CmmnConst.JOB_ID_SAF001L, this.derivationModels);
-        this.fileService.makeFile(CmmnConst.JOB_ID_SAF004L, this.certificationImageUrls);
-        this.fileService.makeFile(CmmnConst.JOB_ID_SAF002L, this.similarCertifications);
-        this.fileService.makeFile(CmmnConst.JOB_ID_SAF003L, this.factories);
-
-        this.writeCmmnLogEnd();
-
-        return RepeatStatus.FINISHED;
+        return resultList;
     }
 
 
+    /**
+     * 이미지경로의 암호화된 ByteArrayOutputStream ByteArray
+     *
+     * @param imageUrl 이미지경로
+     * @return
+     */
+    private byte[] getByteArray(String imageUrl) {
 
-    public byte[] getByteArray(String imageUrl) {
-        URL image = null;
-        try {
-            image = new URL(imageUrl);
-        } catch (MalformedURLException e) {
-            log.info(e.getMessage());
-        }
-        URLConnection ucon = null;
-        try {
-            ucon = image.openConnection();
-        } catch (IOException e) {
-            log.info(e.getMessage());
-        }
+        ByteArrayOutputStream baos = null;
         InputStream is = null;
         try {
+            URL image = new URL(imageUrl);
+            URLConnection ucon = null;
+            ucon = image.openConnection();
             is = ucon.getInputStream();
-        } catch (IOException e) {
-            log.info(e.getMessage());
-        }
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int read;
-        while(true) {
-            try {
-                if (!((read = is.read(buffer, 0, buffer.length)) != -1)) break;
-                baos.write(buffer, 0, read);
-            } catch (IOException e) {
-                log.info(e.getMessage());
+            baos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int read;
+            while (true) {
+                try {
+                    if (!((read = is.read(buffer, 0, buffer.length)) != -1)) break;
+                    baos.write(buffer, 0, read);
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
             }
-        }
-        try {
             baos.flush();
+        } catch (MalformedURLException e) {
+            log.info(e.getMessage());
         } catch (IOException e) {
             log.info(e.getMessage());
+        } finally {
+            if (baos != null) {
+                try {
+                    baos.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
         }
         return baos.toByteArray();
     }
+
 }

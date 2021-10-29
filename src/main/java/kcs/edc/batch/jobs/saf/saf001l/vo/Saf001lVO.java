@@ -7,7 +7,8 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Saf001lVO {
 
@@ -16,7 +17,8 @@ public class Saf001lVO {
 
     private Item resultData;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Item {
 
@@ -46,7 +48,8 @@ public class Saf001lVO {
 
     }
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DerivationModelItem {
 
@@ -63,7 +66,8 @@ public class Saf001lVO {
         private String lastChngDtlDttm;
     }
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class SimilarCertItem {
 
@@ -77,7 +81,7 @@ public class Saf001lVO {
 
         @JsonProperty
         private String certState;
-//        private String certDiv;
+        //        private String certDiv;
 //        private String certDate;
 //        private String certChgDate;
 //        private String certChgReason;
@@ -104,7 +108,8 @@ public class Saf001lVO {
         private String lastChngDtlDttm;
     }
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class FatoryItem {
 
@@ -124,7 +129,8 @@ public class Saf001lVO {
         private String lastChngDtlDttm;
     }
 
-    @Getter @Setter
+    @Getter
+    @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CertificationImageUrlItem {
 
@@ -142,9 +148,6 @@ public class Saf001lVO {
         private String lastChprId = "EX_BDP";
         private String lastChngDtlDttm;
     }
-
-
-
 
 
 }

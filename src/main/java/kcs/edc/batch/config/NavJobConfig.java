@@ -14,7 +14,6 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +54,11 @@ public class NavJobConfig {
                 .build();
     }
 
+    /**
+     * 네이버카페 나이키매니아 판매데이터 수집 Step 설정
+     *
+     * @return
+     */
     @Bean
     @JobScope
     public Step nav003mStep() {
@@ -63,12 +67,23 @@ public class NavJobConfig {
                 .build();
     }
 
+    /**
+     * 네이버카페 나이키매니아 판매데이터 수집 Tasklet 설정
+     *
+     * @param baseDt
+     * @return
+     */
     @Bean
     @StepScope
     public Nav003mTasklet nav003mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Nav003mTasklet();
     }
 
+    /**
+     * 네이버카페 중고나라 판매데이터 수집 Step 설정
+     *
+     * @return
+     */
     @Bean
     @JobScope
     public Step nav004mStep() {
@@ -77,6 +92,12 @@ public class NavJobConfig {
                 .build();
     }
 
+    /**
+     * 네이버카페 중고나라 판매데이터 수집 Tasklet 설정
+     *
+     * @param baseDt
+     * @return
+     */
     @Bean
     @StepScope
     public Nav004mTasklet nav004mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {

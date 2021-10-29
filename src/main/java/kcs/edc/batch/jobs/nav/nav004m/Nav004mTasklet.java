@@ -59,8 +59,14 @@ public class Nav004mTasklet extends CmmnJob implements Tasklet {
         // Make TSV File
         this.fileService.makeFile(csvToList);
 
+        // Download TempFile 삭제
+        this.fileService.cleanTempFile(getCurrentJobId());
+
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }
 }
+
+
+

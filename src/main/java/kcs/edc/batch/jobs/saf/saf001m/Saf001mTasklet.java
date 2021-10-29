@@ -29,14 +29,6 @@ import java.util.Objects;
 public class Saf001mTasklet extends CmmnJob implements Tasklet {
 
     private List<String> certNumList = new ArrayList<>();
-    private String authKey;
-
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-
-        super.beforeStep(stepExecution);
-        this.authKey = this.apiService.getJobPropHeader(getJobGrpName(), "AuthKey");
-    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -45,31 +37,33 @@ public class Saf001mTasklet extends CmmnJob implements Tasklet {
 
         // header setting
         HttpHeaders headers = new HttpHeaders();
-        headers.set("AuthKey", authKey);
+        headers.set("AuthKey", this.apiService.getJobPropHeader(getJobGrpName(), "AuthKey"));
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         // parameter setting
         UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
-        builder.replaceQueryParam("conditionValue", baseDt);
+        builder.replaceQueryParam("conditionValue", this.baseDt);
         URI uri = builder.build().toUri();
 
         // send API
         Saf001mVO resultVO = this.apiService.sendApiExchange(uri, HttpMethod.GET, entity, Saf001mVO.class);
         if(Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
 
-        // certNum을 추출한 List를 saf001l에 넘겨준다
+
         for (Saf001mVO.Item item : resultVO.getResultData()) {
 
             item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
             item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+            this.resultList.add(item);
 
             log.info("certUid: {}, certNum : {}", item.getCertUid(), item.getCertNum());
 
-            resultList.add(item);
-            certNumList.add(item.getCertNum());
+            // certNum을 추출한 certNumList를 saf001l에 넘겨준다
+            this.certNumList.add(item.getCertNum());
         }
+
         // 파일생성
-        this.fileService.makeFile(resultList);
+        this.fileService.makeFile(this.resultList);
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
@@ -77,7 +71,10 @@ public class Saf001mTasklet extends CmmnJob implements Tasklet {
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        this.jobExecutionContext.put("certNumList", certNumList);
+
+        // certNum을 추출한 certNumList를 saf001l에 넘겨준다
+        this.jobExecutionContext.put("certNumList", this.certNumList);
+
         return ExitStatus.COMPLETED;
     }
 }

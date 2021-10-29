@@ -22,13 +22,6 @@ public class Uct001mPartitioner extends CmmnPartitioner {
     public Map<String, ExecutionContext> partition(int gridSize) {
 
         // 국가리스트 조회
-//        List<String> areaList = getAreaList();
-//        if(Objects.isNull(areaList)) {
-//            return null;
-//        }
-
-        // 국가리스트의 String을 Object에 담기위해 Collections.singletonList 사용
-//        this.list = Collections.singletonList(areaList);
         this.list = getAreaList();
         log.info("list.size() : {}", this.list.size());
 

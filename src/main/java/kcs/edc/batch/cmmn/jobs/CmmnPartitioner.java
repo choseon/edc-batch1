@@ -37,6 +37,9 @@ public class CmmnPartitioner implements Partitioner {
         Map<String, ExecutionContext> result = new HashMap<String, ExecutionContext>();
 
         for (int i = 1; i <= gridSize; i++) {
+
+            log.info("Partitioner Starting : Thread {}, size {}, from {}, to {}", i, size, from, to);
+
             ExecutionContext value = new ExecutionContext();
 
             List<Object> partitionList = new ArrayList<>();
@@ -51,8 +54,6 @@ public class CmmnPartitioner implements Partitioner {
             from = to + 1;
             to += range;
             if (to >= size) to = size;
-
-            log.info("Partitioner Starting : Thread {}, size {}, from {}, to {}", i, partitionList.size(), from, to);
         }
 
         return result;
