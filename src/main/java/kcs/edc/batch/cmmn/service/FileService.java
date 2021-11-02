@@ -10,13 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Service
 public class FileService {
+
+    private String LOG_FILE_STEP = "EXT_FILE_CREATE";
 
     @Autowired
     protected FileProperties fileProperties;
@@ -32,6 +33,11 @@ public class FileService {
     private String baseDt;
 
     /**
+     * 배치 시작일시 ex) 20211020 09:23:11
+     */
+    private static String startTime;
+
+    /**
      * 초기화
      *
      * @param jobId  배치잡ID
@@ -40,10 +46,7 @@ public class FileService {
     public void init(String jobId, String baseDt) {
         this.jobId = jobId;
         this.baseDt = baseDt;
-    }
-
-    public void init(String jobId) {
-        this.jobId = jobId;
+        this.startTime = DateUtil.getCurrentTime();
     }
 
     /**
@@ -106,9 +109,9 @@ public class FileService {
 
         Log001mVO logVO = new Log001mVO();
         logVO.setParamYmd(this.baseDt);
-        logVO.setStep("EXT_FILE_CREATE");
+        logVO.setStep(this.LOG_FILE_STEP);
         logVO.setTableName(fileVO.getTableName());
-        logVO.setStartTime(DateUtil.getCurrentTime());
+        logVO.setStartTime(this.startTime);
         logVO.setEndTime(DateUtil.getCurrentTime());
         logVO.setJobStat("Succeeded");
         logVO.setTargSuccessRows(list.size());
@@ -129,13 +132,13 @@ public class FileService {
 
         Log001mVO logVO = new Log001mVO();
         logVO.setParamYmd(this.baseDt);
-        logVO.setStep("EXT_FILE_CREATE");
+        logVO.setStep(this.LOG_FILE_STEP);
         logVO.setTableName(fileVO.getTableName());
-        logVO.setStartTime(DateUtil.getCurrentTime());
+        logVO.setStartTime(this.startTime);
         logVO.setEndTime(DateUtil.getCurrentTime());
         logVO.setJobStat("Fail");
         logVO.setErrm(msg);
-        logVO.setTargSuccessRows(0);
+        logVO.setTargSuccessRows(1);
 
         ArrayList<Object> arrayList = new ArrayList<>();
         arrayList.add(logVO);
@@ -206,4 +209,5 @@ public class FileService {
         return file.exists();
 
     }
+
 }

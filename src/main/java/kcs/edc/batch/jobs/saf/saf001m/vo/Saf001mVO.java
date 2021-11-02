@@ -1,6 +1,7 @@
 package kcs.edc.batch.jobs.saf.saf001m.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,9 +21,17 @@ public class Saf001mVO {
     @Getter
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Item{
+    public static class Item {
+
+        /**
+         * CRTF_INFO_ID	인증정보ID
+         */
+        @JsonProperty
         private String certUid;
 
+        /**
+         * REQ_APRE_ITT_NM	요건승인기관명
+         */
         private String certOrganName;
 
         private String certNum;

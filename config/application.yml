@@ -21,7 +21,10 @@ file:
   path:
     resourcePath: C:/dev/edc-batch/resources/
     hiveStorePath: C:/dev/hdata/
-    nasStorePath: C:/dev/data_nas/anl_data/
+#    nasStorePath: C:/dev/data_nas/anl_data/
+    nasStorePath:
+      opd: C:/dev/data_nas/anl_data/BA204/opendart/
+      kot: C:/dev/data_nas/anl_data/BA201/kotra/
 ---
 spring:
   profiles: dev
@@ -79,7 +82,7 @@ scheduler:
     nav: "0 0 07 * * ?"
     kot: "0 0 07 * * ?"
     opd: "0 0 07 * * ?"
-    uct: "0 0 07 * * ?"
+    uct: "0 47 10 * * ?"
 ---
 # Open Api Information
 api:

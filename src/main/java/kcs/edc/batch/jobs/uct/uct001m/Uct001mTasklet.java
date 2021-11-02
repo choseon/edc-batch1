@@ -98,11 +98,14 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                         this.fileService.makeTempFile(this.resultList, suffixFileName);
 
+
                     } catch (Exception e) {
 
-                        if(e.getMessage().contains("409")) {
-                            e.printStackTrace();
-                        }
+//                        log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
+
+//                        if(e.getMessage().contains("409")) {
+//                            e.printStackTrace();
+//                        }
 
                         if (!e.getMessage().contains("500")) {
                             log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());

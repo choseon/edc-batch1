@@ -1,6 +1,7 @@
 package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.biz.biz001m.Biz001mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,9 @@ public class BizJobConfig {
     public void launcher() throws Exception {
         log.info("BIZJobConfig launcher...");
 
+        // 수집기준일 : D-1
         String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)
                 .addLong("time", System.currentTimeMillis())
@@ -60,7 +63,7 @@ public class BizJobConfig {
     public Job bizJob() {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_BIZ + CmmnConst.POST_FIX_JOB)
-                .start(biz001mStep(null))
+                .start(biz001mStep())
                 .build();
     }
 
@@ -68,10 +71,9 @@ public class BizJobConfig {
      * 중소기업연구원 중소벤처기업부 기업마당 최신공고 Batch Step 설정
      */
     @Bean
-    @JobScope
-    public Step biz001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
+    public Step biz001mStep() {
         return stepBuilderFactory.get(CmmnConst.JOB_ID_BIZ001M + CmmnConst.POST_FIX_STEP)
-                .tasklet(biz001mTasklet(baseDt))
+                .tasklet(biz001mTasklet(null))
                 .build();
     }
 
@@ -80,7 +82,8 @@ public class BizJobConfig {
      */
     @Bean
     @StepScope
-    public Biz001mTasklet biz001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+    public Biz001mTasklet biz001mTasklet(
+            @Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Biz001mTasklet();
     }
 

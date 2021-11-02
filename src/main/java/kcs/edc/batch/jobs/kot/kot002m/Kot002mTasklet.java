@@ -38,7 +38,7 @@ public class Kot002mTasklet extends CmmnJob implements Tasklet {
                 vo.setBbstxSn(item.getBbstxSn());
                 vo.setKwrd(keyword);
                 vo.setNewsWrtDt(item.getNewsWrtDt());
-                vo.setCletFileCtrnDttm(item.getCletFileCtrnDttm());
+                vo.setCletFileCtrnDttm(item.getCletFileCtrnDt());
                 items.add(vo);
             }
         }

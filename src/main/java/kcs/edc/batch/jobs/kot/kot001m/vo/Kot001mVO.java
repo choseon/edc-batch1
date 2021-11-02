@@ -69,7 +69,7 @@ public class Kot001mVO {
 
         private String updDt; // 수정일시
 
-        private String CletFileCtrnDttm; // 수집파일생성일자
+        private String CletFileCtrnDt; // 수집파일생성일자
     }
 
 }

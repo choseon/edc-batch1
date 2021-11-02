@@ -2,6 +2,7 @@ package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mPartitioner;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -88,9 +89,9 @@ public class UctJobConfig {
     public Job uctJob() {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_JOB)
-                .start(uctFileCleanStep(null)) // temp 폴더 삭제
+                .start(uctFileCleanStep(null)) // temp 파일 삭제
                 .next(uct001mPartitionStep())
-                .next(uctFileMergeStep(null)) // 파일 병합
+                .next(uctFileMergeStep(null)) // temp 파일 병합
                 .build();
     }
 

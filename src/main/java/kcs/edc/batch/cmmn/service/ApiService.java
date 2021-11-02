@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -78,15 +79,15 @@ public class ApiService {
             log.debug("resultJson {}", resultJson);
         }
 
-        T t = null;
-
         try {
+
             this.objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-            t = this.objectMapper.readValue(resultJson, resonseType);
+            return this.objectMapper.readValue(resultJson, resonseType);
+
         } catch (JsonProcessingException e) {
             log.info(e.getMessage());
         }
-        return t;
+        return null;
     }
 
     /**
@@ -165,6 +166,7 @@ public class ApiService {
 
     /**
      * API header값 조회
+     *
      * @param key
      * @return
      */
