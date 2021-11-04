@@ -1,8 +1,9 @@
 package kcs.edc.batch.cmmn.jobs;
 
+import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.JobProperties;
 import kcs.edc.batch.cmmn.service.ApiService;
 import kcs.edc.batch.cmmn.service.FileService;
-import kcs.edc.batch.cmmn.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
@@ -12,13 +13,14 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @StepScope
 public class CmmnJob implements StepExecutionListener {
+
+    @Autowired
+    private JobProperties jobProperties;
 
     @Autowired
     protected ApiService apiService;
@@ -29,14 +31,12 @@ public class CmmnJob implements StepExecutionListener {
     @Value("#{jobParameters[baseDt]}")
     protected String baseDt; // 수집기준일
 
-    @Value("#{jobParameters[startTime]}")
-    protected String startTime; // 배치 시작시간
-
     protected List<Object> resultList = new ArrayList<>(); // 최종결과리스트
-
     protected ExecutionContext jobExecutionContext;
 
-//    protected String startTime;
+    private String jobGroupId;
+    private String jobId;
+
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
@@ -44,12 +44,14 @@ public class CmmnJob implements StepExecutionListener {
         if (Objects.isNull(this.baseDt)) {
             log.info("baseDt is null");
         }
+        this.jobId = getCurrentJobId();
+        this.jobGroupId = getJobGroupId(this.jobId);
 
-//        this.startTime = DateUtil.getCurrentTime();
-        this.apiService.init(getCurrentJobId());
-        this.fileService.init(getCurrentJobId(), this.baseDt);
-//        log.info("startTime {}", this.startTime);
-//        this.fileService.init(getCurrentJobId(), this.baseDt, this.startTime);
+        this.apiService.init(this.jobId);
+        this.fileService.init(this.jobGroupId, this.jobId, this.baseDt);
+
+
+        this.fileService.init(this.jobGroupId, this.jobId, this.baseDt);
 
         // step간 파라미터 넘겨주기 위해 jobExcutionContext 초기화
         // afterStep에서 넘겨줄 값 셋팅해준다
@@ -66,20 +68,53 @@ public class CmmnJob implements StepExecutionListener {
         return ExitStatus.COMPLETED;
     }
 
+
+    public List<String> getJobId(String jobGroupId) {
+        return jobProperties.getGroup().get(jobGroupId);
+    }
+
+    public String getJobGroupId(String jobId) {
+
+        Map<String, List<String>> group = jobProperties.getGroup();
+        Iterator<String> iterator = group.keySet().iterator();
+
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            List<String> jobIds = group.get(key);
+            for (String id : jobIds) {
+                if(id.equals(jobId)) {
+                    return key;
+                }
+            }
+        }
+        return null;
+    }
+
+    protected String getJobGroupId() {
+        return getJobGroupId(this.jobId);
+    }
+
+
     /**
      * 클래스명 문자열을 잘라서 group name 추출 (Nav001Tasklet -> nav)
      *
      * @return grpName 배치그룹명
      */
-    protected String getJobGrpName() {
-
-        String className = this.getClass().getSimpleName();
-
-        // 클래스명 문자열을 잘라서 group name 추출 (Nav001Tasklet -> nav)
-        String grpName = className.substring(0, 3).toLowerCase();
-
-        return grpName;
-    }
+//    protected String getJobGrpName() {
+//
+//        String grpName = null;
+//        String className = this.getClass().getSimpleName();
+//
+//        if(className.startsWith("iac")) {
+//            grpName = CmmnConst.JOB_GRP_ID_OPD;
+//        } else if(className.startsWith("pit")) {
+//            grpName = CmmnConst.JOB_GRP_ID_KOT;
+//        } else {
+//            // 클래스명 문자열을 잘라서 group name 추출 (Nav001Tasklet -> nav)
+//            grpName = className.substring(0, 3).toLowerCase();
+//        }
+//        return grpName;
+//    }
 
     /**
      * ClassName에서 JobId 추출하여 return ex) Nav001mTasklet -> nav001m

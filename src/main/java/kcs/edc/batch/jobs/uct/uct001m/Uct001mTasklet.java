@@ -57,7 +57,6 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
         List<String> areaList = getAreaList();
 
         for (String r : this.partitionList) { // 신고국가
-
             for (String p : areaList) { // 파트너국가
 
                 if (r.equals(p)) continue;
@@ -101,16 +100,13 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                     } catch (Exception e) {
 
-//                        log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
-
-//                        if(e.getMessage().contains("409")) {
-//                            e.printStackTrace();
-//                        }
-
-                        if (!e.getMessage().contains("500")) {
-                            log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
-                        } else {
+                        if (e.getMessage().contains("500")) {
                             log.debug("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
+                        } else if (e.getMessage().contains("409")) { // RATE LIMIT: You must wait 1 seconds.
+                            log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
+                            Thread.sleep(1000);
+                        } else {
+                            log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
                         }
                     }
                     break;
@@ -148,6 +144,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     }
 
     /**
+     * 파트너국가 목록 조회
      * 리소스파일을 조회하여 ISO 3166-1 국가 리스트 반환
      *
      * @return
@@ -171,7 +168,6 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
         } catch (FileNotFoundException e) {
             log.info(e.getMessage());
-            return null;
         }
 
         return pList;

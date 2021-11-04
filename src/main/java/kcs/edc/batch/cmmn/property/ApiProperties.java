@@ -2,11 +2,8 @@ package kcs.edc.batch.cmmn.property;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
 import java.util.HashMap;
@@ -25,22 +22,11 @@ public class ApiProperties {
     /**
      * Open API  jobs map info
      */
-    private Map<String, JobProp> jobs = new HashMap<>();
-
-    /**
-     * 전체 OPEN API중 특정잡의 정보를 조회한다.
-     *
-     * @param jobName 특정 jobName
-     * @return
-     */
-    public JobProp getJobProp(String jobName) {
-        return this.jobs.get(jobName);
-    }
-
+    private Map<String, ApiProp> jobs = new HashMap<>();
 
     @Getter
     @Setter
-    public static class JobProp {
+    public static class ApiProp {
 
         /**
          * Open API url
@@ -58,5 +44,15 @@ public class ApiProperties {
          */
         private MultiValueMap<String, String> param;
 
+    }
+
+    /**
+     * 전체 OPEN API중 특정잡의 정보를 조회한다.
+     *
+     * @param jobName 특정 jobName
+     * @return
+     */
+    public ApiProp getApiProp(String jobName) {
+        return this.jobs.get(jobName);
     }
 }

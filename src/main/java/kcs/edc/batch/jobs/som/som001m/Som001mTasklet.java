@@ -100,7 +100,7 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
 
     /**
      * 관세청키워드 목록 조회하여 결과값 리턴
-     * kcs_keyword_for_somtrend 파일을 조회하여 관세청키워드 목록을 추출 후 url전송하여 결과 수집
+     * kcs_keyword_for_somtrend 파일을 조회하여 관세청키워드 목록을 추출 후 API 호출하여 결과 수집
      *
      * @param source
      * @return
@@ -168,8 +168,7 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        super.afterStep(stepExecution);
         this.jobExecutionContext.put("list", this.resultList);
-        return ExitStatus.COMPLETED;
+        return super.afterStep(stepExecution);
     }
 }

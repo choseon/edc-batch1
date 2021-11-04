@@ -7,7 +7,6 @@ import kcs.edc.batch.jobs.big.news.vo.Big001mVO;
 import kcs.edc.batch.jobs.big.news.vo.NewsQueryVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * News Search(뉴스검색)
@@ -47,7 +47,7 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
         super.beforeStep(stepExecution);
 
-        this.accessKey = this.apiService.getJobPropHeader(getJobGrpName(), "accessKey");
+        this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
         this.from = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -1, "yyyy-MM-dd");
         this.until = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -0, "yyyy-MM-dd");
     }
@@ -66,10 +66,9 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
         NewNationWideComCode code = new NewNationWideComCode();
 
-        if(this.newsClusterList != null) { // 뉴스상세검색
+        if (!Objects.isNull(this.newsClusterList)) { // 뉴스상세검색
 
             queryVO.getArgument().setNewsIds(this.newsClusterList);
-
             Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
 
             List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
@@ -83,14 +82,17 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
                 this.resultList.add(item);
             }
+            log.info("{} >> newsClusterList.size : {}, documents.size: {}, KcsKeywordYn : {}",
+                    getCurrentJobId(), this.newsClusterList.size(), documents.size(), this.kcsRgrsYn);
 
-        } else if(this.keywordList != null) { // 뉴스 키워드 검색
+
+        } else if (!Objects.isNull(this.keywordList)) { // 뉴스 키워드 검색
 
             for (String keyword : this.keywordList) {
                 queryVO.getArgument().setQuery(keyword);
 
                 Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
-                if(resultVO.getResult() != 0) continue;
+                if (resultVO.getResult() != 0) continue;
 
                 List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
                 for (Big001mVO.DocumentItem item : documents) {
@@ -101,14 +103,14 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
                     item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                     item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                     this.resultList.add(item);
-
-                    log.info("{} >> keyword : {}, newsId: {}, KcsKeywordYn : {}", getCurrentJobId(),keyword, item.getArtcId(), this.kcsRgrsYn);
                 }
+                log.info("{} >> keyword : {}, documents.size: {}, KcsKeywordYn : {}",
+                        getCurrentJobId(), keyword, documents.size(), this.kcsRgrsYn);
             }
         }
 
         // 파일생성
-        this.fileService.makeFile(this.resultList);
+        this.fileService.makeFile(this.resultList, true);
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;

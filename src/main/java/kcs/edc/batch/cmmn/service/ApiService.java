@@ -11,7 +11,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -24,15 +23,20 @@ import java.util.Objects;
 public class ApiService {
 
     @Autowired
-    private ApiProperties apiPropertis; // OpenApi information (all)
+    private ApiProperties apiProperties; // OpenApi information (all)
 
-    private ApiProperties.JobProp jobProp; // OpenApi information (job)
+    private ApiProperties.ApiProp apiProp; // OpenApi information (job)
 
     private RestTemplate restTemplate = new RestTemplate();
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public void init(String jobId) {
-        this.jobProp = this.apiPropertis.getJobProp(jobId);
+        log.info("ApiService init() >> jobId: {}", jobId);
+        this.apiProp = this.apiProperties.getApiProp(jobId);
+
+        if(Objects.isNull(this.apiProp)) {
+            throw new NullPointerException("apiProperty is null");
+        }
     }
 
     /**
@@ -46,10 +50,10 @@ public class ApiService {
 //        jobProp = apiProperty.getJobProp(getCurrentJobId());
 
         // baseUrl setting
-        String baseUrl = this.jobProp.getBaseUrl();
+        String baseUrl = this.apiProp.getBaseUrl();
 
         // parameter setting
-        MultiValueMap<String, String> param = this.jobProp.getParam();
+        MultiValueMap<String, String> param = this.apiProp.getParam();
 
         UriComponentsBuilder builder = UriComponentsBuilder.newInstance().fromHttpUrl(baseUrl).queryParams(param);
 
@@ -66,7 +70,7 @@ public class ApiService {
      */
     public <T> T sendApiForEntity(URI uri, Class<T> resonseType) {
 
-        log.debug("uri {}", uri);
+        log.info("uri {}", uri);
 
         ResponseEntity<String> forEntity = this.restTemplate.getForEntity(uri, String.class);
         String resultJson = forEntity.getBody();
@@ -161,7 +165,7 @@ public class ApiService {
      * @return
      */
     public List<String> getJobPropParam(String key) {
-        return this.jobProp.getParam().get(key);
+        return this.apiProp.getParam().get(key);
     }
 
     /**
@@ -171,7 +175,7 @@ public class ApiService {
      * @return
      */
     public String getJobPropHeader(String jobGrpName, String key) {
-        ApiProperties.JobProp jobProp = this.apiPropertis.getJobProp(jobGrpName);
-        return jobProp.getHeader().get(key);
+        ApiProperties.ApiProp apiProp = this.apiProperties.getApiProp(jobGrpName);
+        return apiProp.getHeader().get(key);
     }
 }

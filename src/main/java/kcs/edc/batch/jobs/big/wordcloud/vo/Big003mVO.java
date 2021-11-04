@@ -35,11 +35,11 @@ public class Big003mVO {
 
         private String srchQuesWordNm;
 
-        @JsonProperty("name")
-        private String rltnWordNm;
+        @JsonProperty
+        private String name;
 
-        @JsonProperty("weight")
-        private double rltnWordScr;
+        @JsonProperty
+        private double weight;
 
         private String KcsRgrsYn;
 

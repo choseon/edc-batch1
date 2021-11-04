@@ -33,9 +33,11 @@ public class FileUtil {
      * @throws FileNotFoundException
      * @throws IllegalAccessException
      */
-    public static <T> void makeFile(String filePath, String fileName, List<T> list){
-        makeTsvFile(filePath, fileName, list);
-    }
+//    public static <T> void makeFile(String filePath, String fileName, List<T> list){
+//        makeTsvFile(filePath, fileName, list);
+//    }
+
+
 
     /**
      * tsv 파일생성
@@ -49,6 +51,10 @@ public class FileUtil {
      */
     public static <T> void makeTsvFile(String filePath, String fileName, List<T> list) {
 
+        makeTsvFile(filePath, fileName, list, false);
+    }
+
+    public static <T> void makeTsvFile(String filePath, String fileName, List<T> list, Boolean append) {
         File dir = new File(filePath);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -57,7 +63,7 @@ public class FileUtil {
         Writer writer = null;
         try {
 
-            writer = new OutputStreamWriter(new FileOutputStream(filePath + fileName), StandardCharsets.UTF_8);
+            writer = new OutputStreamWriter(new FileOutputStream(filePath + fileName, append), StandardCharsets.UTF_8);
             TsvWriter tsvWriter = new TsvWriter(writer, new TsvWriterSettings());
 
             if(list.size() == 0) return;
@@ -85,6 +91,7 @@ public class FileUtil {
         } catch (FileNotFoundException | IllegalAccessException e) {
             log.info(e.getMessage());
         }
+
     }
 
     /**

@@ -1,6 +1,14 @@
 package kcs.edc.batch.jobs.opd.iac003l.vo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kcs.edc.batch.cmmn.jobs.CmmnJob;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -33,9 +41,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * 기업개황정보 데이터수집 Tasklet Class
+ * 금융감독원 OpenDart 기업개황정보 데이터수집 Tasklet
  */
-public class Iac003lTasklet {
+@Slf4j
+@StepScope
+public class Iac003lTasklet extends CmmnJob implements Tasklet {
 
     /******************* API 인증키 정보 **************************************/
     //private static String crtfcKey = "70ba99fc377c718ce8bba08ae757ef98def20a4b"; //API 인증키 (운영) IP 211.173.37.77에서 무제한 사용 가능
@@ -46,7 +56,7 @@ public class Iac003lTasklet {
     /**********************************************************************/
 
     /******************* 실행 서버에 따라 변경해야 하는 값 **************************************/
-    private static String filePathNm = "D:\\test\\"; //API 호출하여 제공받은 파일이 저장되는 루트 경로
+    private static String filePathNm = "C:\\dev\\"; //API 호출하여 제공받은 파일이 저장되는 루트 경로
     private static String strSep = "\\"; // 디렉토리를 구분하는 문자 (윈도우 \\ , 유닉스or리눅스 /)
     /*********************************************************************************/
 
@@ -55,8 +65,8 @@ public class Iac003lTasklet {
     private static int totCnt = 0;
     private static int stockCnt = 0;
 
-    public static void main(String[] args) {
-
+    @Override
+    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
         dailyFilePathNm = creDir();// 파일을 저장할 오늘날짜의 디렉토리 생성 (루트 경로 하위로 디렉토리 생성)
 
 
@@ -76,10 +86,18 @@ public class Iac003lTasklet {
 
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(url+"?"+"crtfc_key=" + crtfcKey).build();
 
+//		    Path file = restTemplate.execute(uri.toString(), HttpMethod.GET, null, response -> {
+//		        Path zipFile = Files.createTempFile("opendart-", ".zip");
+//		        Files.write(zipFile, response.getBody().readAllBytes());
+//
+//		        return zipFile;
+//		    });
+
             Path file = restTemplate.execute(uri.toString(), HttpMethod.GET, null, response -> {
                 Path zipFile = Files.createTempFile("opendart-", ".zip");
-                Files.write(zipFile, response.getBody().readAllBytes());
-
+                InputStream ins = response.getBody();
+                byte[] bytes = IOUtils.toByteArray(ins);
+                Files.write(zipFile, bytes);
                 return zipFile;
             });
 
@@ -102,18 +120,18 @@ public class Iac003lTasklet {
 
             saveModifyDt();// 처리일 저장
 
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException  e) {
 
             System.out.println(e.toString());
 
         } catch (Exception e) {
             System.out.println(e.toString());
         }
-
-
+        return RepeatStatus.FINISHED;
     }
+
     //XML 파싱하여 기업 고유번호 추출
-    private static void xmlParsing(String dwnlFileNm)  throws ParserConfigurationException, SAXException {
+    private static void xmlParsing(String dwnlFileNm)  throws ParserConfigurationException, SAXException{
 
         try {
             String lastModifyDt = getLastModifyDt(); //이전 배치를 실행한 날짜
@@ -364,4 +382,6 @@ public class Iac003lTasklet {
 
         return returnDate;
     }
+
+
 }

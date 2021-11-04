@@ -4,45 +4,61 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
-/*
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "path")
+@ConfigurationProperties(prefix = "file")
 public class FileProperties {
-
-    private String rootPath;
-
-    private String storePath;
-
-    private Map<String, Map<String, String>> nasStroePath;
 
     private String resourcePath;
 
-    private String configPath;
+    private List<String> portalJobGroupIdList;
 
-    private String logPath;
+    private Map<String, FileProp> destination;
+//    private List<FileProp> destination;
 
-}
-*/
+    @Getter
+    @Setter
+    public static class FileProp {
 
+//        private String name;
+//        private String rootPath;
+//        private Map<String, Map<String, String>> rootPath;
+        private Map<String, String> rootPath;
 
-@Getter
-@Setter
-@Configuration
-@ConfigurationProperties(prefix = "file.path")
-public class FileProperties {
+        private String logPath;
 
-//    private Map<String, Map<String, String>> storePath;
+        private String tempPath;
 
-    private String resourcePath;
+        private String prefixTableName;
 
-    private String hiveStorePath;
+        private String logTableName;
 
-    private String nasStorePath;
+        private String fileExtension;
+    }
+
+    public FileProp getFileProp(String jobGroupId) {
+
+        if(isPortalJobGroup(jobGroupId)) { // portal
+            return destination.get("portal");
+        } else { // hive
+            return this.destination.get("hive");
+        }
+    }
+
+    public Boolean isPortalJobGroup(String jobGroupId) {
+
+        for (String grpNm : this.portalJobGroupIdList) {
+            if(grpNm.equals(jobGroupId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }

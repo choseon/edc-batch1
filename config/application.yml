@@ -1,75 +1,76 @@
-
 spring:
   profiles:
     active: local
+  datasource:
+    hikari: jdbc-url= jdbc:h2:mem:edcb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
 ---
 spring:
   profiles: local
   batch:
     job:
       names: ${job.name:NONE}
-path:
-#  rootPath: C:/dev/edc-batch
-#  storePath: C:/dev/hdata/
-#  nasStorePath:
-#    opd: C:/dev/data_nas/anl_data/BA204/opendart/
-#    kot: C:/dev/data_nas/anl_data/BA201/kotra/
-#  resourcePath: C:/dev/edc-batch/resources
-#  configPath: C:/dev/edc-batch/config
-#  logPath: C:/dev/log
 file:
-  path:
-    resourcePath: C:/dev/edc-batch/resources/
-    hiveStorePath: C:/dev/hdata/
-#    nasStorePath: C:/dev/data_nas/anl_data/
-    nasStorePath:
-      opd: C:/dev/data_nas/anl_data/BA204/opendart/
-      kot: C:/dev/data_nas/anl_data/BA201/kotra/
+  resourcePath: C:/dev/edc-batch/resources/
+  #  fileStorePath:
+  #    hive: C:/dev/hdata/
+  #    portal:
+  #      opd: C:/dev/data_nas/anl_data/BA204/opendart/
+  #      kot: C:/dev/data_nas/anl_data/BA201/kotra/
+  #    hiveStorePath: C:/dev/hdata/
+  #    tiberoStorePath:
+  #      opd: C:/dev/data_nas/anl_data/BA204/opendart/
+  #      kot: C:/dev/data_nas/anl_data/BA201/kotra/
+  portalJobGroupIdList: opd, kot
+  destination:
+    hive:
+#      rootPath: C:/dev/hdata/
+      rootPath:
+        all: C:/dev/hdata/
+      logPath: C:/dev/hdata/ht_log001m/
+      tempPath: temp/
+      prefixTableName: ht_
+      logTableName: ht_log001m
+      fileExtension: txt
+    portal:
+#      rootPath: C:/dev/data_nas/anl_data/
+      rootPath:
+        opd: C:/dev/data_nas/anl_data/BA204/opendart/
+        kot: C:/dev/data_nas/anl_data/BA201/kotra/
+      logPath: C:/dev/hdata/ht_log001m/
+      tempPath: temp/
+      prefixTableName: tb_bdp_
+      logTableName: ht_log001m
+      fileExtension: txt
+
 ---
 spring:
   profiles: dev
   batch:
     job:
       names: ${job.name:NONE}
-path:
-  rootPath: /data/edc-batch/dev
-  storePath: /data/edc-batch/dev/hdata
-#  nasStorePath:
-#    opd: /data/data_nas/anl_data/BA204/opendart/
-#    kot: /data/data_nas/anl_data/BA201/kotra/
-  resourcePath: /data/edc-batch/dev/resources
-  configPath: /data/edc-batch/dev/config
-  logPath: /data/edc-batch/dev/log
 file:
-  resourcePath: /app/ext-batch/dev/resources/
-  hiveStorePath: /app/ext-batch/dev/hdata/
-  nasStorePath: /app/ext-batch/dev/data_nas/anl_data/
+  path:
+    resourcePath: /app/ext-batch/dev/resources/
+    hiveStorePath: /app/ext-batch/dev/hdata/
+    tiberoStorePath:
+      opd: /app/ext-batch/dev/data_nas/anl_data/BA204/opendart/
+      kot: /app/ext-batch/dev/data_nas/anl_data/BA201/kotra/
 ---
 spring:
   profiles: prod
   batch:
     job:
       names: ${job.name:NONE}
-path:
-  rootPath: /data/edc-batch/prod
-  storePath: /hdata
-#  nasStorePath:
-#    opd: C:/dev/data_nas/anl_data/BA204/opendart/
-#    kot: C:/dev/data_nas/anl_data/BA201/kotra/
-  resourcePath: /data/edc-batch/prod/resources
-  configPath: /data/edc-batch/prod/config
-  logPath: /data/edc-batch/prod/log
 file:
-  resourcePath: /app/ext-batch/prod/resources/
-  hiveStorePath: /app/ext-batch/prod/hdata/
-  nasStorePath: /app/ext-batch/prod/data_nas/anl_data/
----
-spring:
-  datasource:
-    hikari: jdbc-url= jdbc:h2:mem:edcb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+  path:
+    resourcePath: /app/ext-batch/prod/resources/
+    hiveRootPath: /app/ext-batch/prod/hdata/
+    tiberoRootPath:
+      opd: /app/ext-batch/prod/data_nas/anl_data/BA204/opendart/
+      kot: /app/ext-batch/prod/data_nas/anl_data/BA201/kotra/
 ---
 # Job Scheduler
 scheduler:
@@ -82,7 +83,7 @@ scheduler:
     nav: "0 0 07 * * ?"
     kot: "0 0 07 * * ?"
     opd: "0 0 07 * * ?"
-    uct: "0 47 10 * * ?"
+    uct: "0 52 16 * * ?"
 ---
 # Open Api Information
 api:
@@ -141,7 +142,7 @@ api:
         outputOption: freq
         categorySetName: SM
         categoryExclusive: true
-        "[categoryList[]]":  123/0/0,125/0/0,126/0/0,127/0/0
+        "[categoryList[]]": 123/0/0,125/0/0,126/0/0,127/0/0
         "[keywordsExcFilterList[]]": -안녕,-상담,-카톡,-대출,-중고
         source:
         startDate:
@@ -217,7 +218,34 @@ api:
         ps:
     opd001m:
       baseUrl: https://opendart.fss.or.kr/api/list.json
-    kot001m:
+    opd:
+      header:
+        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4
+    iac003l:
+      baseUrl: https://opendart.fss.or.kr/api/corpCode.xml
+      param:
+        crtfc_key:
+#      baseUrl: https://opendart.fss.or.kr/api/company.json
+#        param:
+#          crtfc_key:
+#          corp_code:
+    iac016l:
+      baseUrl: https://opendart.fss.or.kr/api/list.json
+      param:
+        crtfc_key:
+        copr_code:
+        bgn_de:
+        end_de:
+        last_reprt_at:
+        pblntf_ty:
+        pblntf_detail_ty:
+        page_no:
+        page_count: 100
+#      baseUrl: https://opendart.fss.or.kr/api/document.xml
+#      param:
+#        crtfc_key:
+#        rcept_no:
+    pit811m:
       baseUrl: http://apis.data.go.kr/B410001/ovseaMrktNewsService/ovseaMrktNews
       param:
         serviceKey: 39AV7BHhz62j2L4GUFjSk%2FuwDQT9SZvJ1fcNGfiYXDdnMMb%2FE%2FhGqu%2FYF5qtfXwvBLc9UZjfbyn8aRMIUcS9RQ%3D%3D
@@ -245,12 +273,22 @@ sftp:
       remoteFileName: HT_NAV004M
       downloadFilePath: hdata/ht_nav004m/temp/
 ---
-resource:
-  kot:
-    dataFilePath:
-    scriptPath:
-    newsBdtHtmlPath:
-    imgPath:
+kot:
+  subRootPath: BA201/kotra/
+  scriptFileName: kot_img_download.sh
+opd:
+  subRootPath:
 ---
-opd: C:/dev/data_nas/anl_data/BA204/opendart/
-kot: C:/dev/data_nas/anl_data/BA201/kotra/
+job:
+  group:
+    som: som001m, som002m, som003m, som004m, som005m
+    biz: biz001m
+    big: big001m, big002m, big003m, big004m
+    saf: saf001m, saf001l, saf002l, saf003l, saf004l
+    eba: eba001m
+    nav: nav001m, nav002m, nav003m, nav004m
+    kot: pit811m, pit812m
+    opd: iac003l, iac016l
+    uct: uct001m
+
+

@@ -37,7 +37,7 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
         super.beforeStep(stepExecution);
 
-        this.accessKey = this.apiService.getJobPropHeader(getJobGrpName(), "accessKey");
+        this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
         this.from = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -1, "yyyy-MM-dd");
         this.until = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -0, "yyyy-MM-dd");
     }
@@ -68,7 +68,7 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
             log.info("{} >> query : {}, KcsKeywordYn : {}", getCurrentJobId(), item.getSrchQuesWordNm(), this.kcsRgrsYn);
         }
         // 파일생성
-        this.fileService.makeFile(CmmnConst.JOB_ID_BIG004M, resultList);
+        this.fileService.makeFile(CmmnConst.JOB_ID_BIG004M, resultList, true);
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;

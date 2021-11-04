@@ -76,14 +76,14 @@ public class BigJobConfig {
     @Bean
     public Job bigJob() {
 
-        // News TimeLine -> Word Cloud -> News Search(뉴스조회)
+        // News TimeLine(뉴스타임라인) -> Word Cloud(워드클라우드) -> News Search(뉴스조회)
         Flow bigFlow1 = new FlowBuilder<Flow>("bigFlow1")
                 .start(big004mStep(null)) // News Timeline
                 .next(big003mStep(null, null, null, null)) // Word Cloud
                 .next(big001mStep(null, null, null, null, null)) // News Search
                 .build();
 
-        // query_rank(인기검색어) -> Word Cloud -> News Search(뉴스조회)
+        // query_rank(인기검색어) -> Word Cloud(워드클라우드) -> News Search(뉴스조회)
         Flow bigFlow2 = new FlowBuilder<Flow>("bigFlow2")
                 .start(big005mStep(null)) // query_rank
                 .next(big003mStep(null, null, null, null)) // Word Cloud
@@ -124,7 +124,7 @@ public class BigJobConfig {
             @Value("#{jobExecutionContext[newsClusterList]}") List<Object> newsClusterList) {
 
         return stepBuilderFactory.get("big001mStep")
-                .tasklet(big001mTasklet(null, null, null, null))
+                .tasklet(big001mTasklet(null, null, null, null, null))
                 .build();
     }
 
@@ -143,7 +143,8 @@ public class BigJobConfig {
             @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[keywordList]}") List<Object> keywordList,
             @Value("#{jobExecutionContext[kcsRgrsYn]}") List<Object> kcsRgrsYn,
-            @Value("#{jobExecutionContext[issueSrwrYn]}") List<Object> issueSrwrYn) {
+            @Value("#{jobExecutionContext[issueSrwrYn]}") List<Object> issueSrwrYn,
+            @Value("#{jobExecutionContext[newsClusterList]}") List<Object> newsClusterList) {
         return new Big001mTasklet();
     }
 

@@ -2,7 +2,6 @@ package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
 import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mPartitioner;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +12,7 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
@@ -90,7 +90,7 @@ public class UctJobConfig {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_JOB)
                 .start(uctFileCleanStep(null)) // temp 파일 삭제
-                .next(uct001mPartitionStep())
+                .next(uct001mPartitionStep(null))
                 .next(uctFileMergeStep(null)) // temp 파일 병합
                 .build();
     }
@@ -103,15 +103,22 @@ public class UctJobConfig {
      */
     @Bean
     @JobScope
-    public Step uct001mPartitionStep() {
+    public Step uct001mPartitionStep(@Value("#{jobExecutionContext[list]}") List<Object> list) {
 
         return stepBuilderFactory.get(CmmnConst.JOB_ID_UCT001M + CmmnConst.POST_FIX_PARTITION_STEP)
-                .partitioner("uct001mStep", new Uct001mPartitioner())
+                .partitioner("uctPartitioner", uct001mPartitioner(null))
                 .gridSize(GRID_SIZE)
                 .taskExecutor(uctExecutor())
                 .step(uct001mStep())
                 .build();
     }
+
+    @Bean
+    @StepScope
+    public Uct001mPartitioner uct001mPartitioner(@Value("#{jobExecutionContext[list]}") List<Object> list) {
+        return new Uct001mPartitioner();
+    }
+
 
     /**
      * uct001m Step

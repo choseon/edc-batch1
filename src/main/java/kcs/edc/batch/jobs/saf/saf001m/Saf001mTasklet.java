@@ -37,7 +37,7 @@ public class Saf001mTasklet extends CmmnJob implements Tasklet {
 
         // header setting
         HttpHeaders headers = new HttpHeaders();
-        headers.set("AuthKey", this.apiService.getJobPropHeader(getJobGrpName(), "AuthKey"));
+        headers.set("AuthKey", this.apiService.getJobPropHeader(getJobGroupId(), "AuthKey"));
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         // parameter setting

@@ -12,6 +12,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <java.version>11</java.version>
     </properties>
 
 <!--    <repositories>
@@ -100,11 +101,11 @@
             <version>0.1.55</version>
         </dependency>
 
-        <dependency>
-            <groupId>egovframework.rte</groupId>
-            <artifactId>egovframework.rte.fdl.idgnr</artifactId>
-            <version>3.9.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>egovframework.rte</groupId>-->
+<!--            <artifactId>egovframework.rte.fdl.idgnr</artifactId>-->
+<!--            <version>3.9.0</version>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>

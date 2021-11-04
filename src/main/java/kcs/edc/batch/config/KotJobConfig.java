@@ -1,7 +1,7 @@
 package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.jobs.kot.kot001m.Kot001mTasklet;
+import kcs.edc.batch.jobs.kot.kot001m.Pit811mTasklet;
 import kcs.edc.batch.jobs.kot.kot002m.Kot002mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,7 +32,7 @@ public class KotJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-//    @Scheduled(cron = "${scheduler.cron.kot}")
+    @Scheduled(cron = "${scheduler.cron.kot}")
     public void launcher() throws Exception {
         log.info("KotJobConfig launcher...");
 
@@ -49,7 +50,7 @@ public class KotJobConfig {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_KOT + CmmnConst.POST_FIX_JOB)
                 .start(kot001mStep(null))
-                .next(kot002mStep(null, null))
+//                .next(kot002mStep(null, null))
                 .build();
     }
 
@@ -59,7 +60,7 @@ public class KotJobConfig {
     @Bean
     @JobScope
     public Step kot001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_KOT001M + CmmnConst.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_PIT811M + CmmnConst.POST_FIX_STEP)
                 .tasklet(kot001mTasklet(baseDt))
                 .build();
     }
@@ -69,8 +70,8 @@ public class KotJobConfig {
      */
     @Bean
     @StepScope
-    public Kot001mTasklet kot001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return new Kot001mTasklet();
+    public Pit811mTasklet kot001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+        return new Pit811mTasklet();
     }
 
     @Bean
@@ -78,7 +79,7 @@ public class KotJobConfig {
     public Step kot002mStep(
             @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[resultList]}") List<Object> resultList) {
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_KOT002M + CmmnConst.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_PIT812M + CmmnConst.POST_FIX_STEP)
                 .tasklet(kot002mTasklet(baseDt, resultList))
                 .build();
     }

@@ -16,11 +16,11 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "sftp")
 public class SftpProperties {
 
-    private Map<String, JobProp> jobs = new HashMap<>();
+    private Map<String, SftpProp> jobs = new HashMap<>();
 
     @Getter
     @Setter
-    public static class JobProp {
+    public static class SftpProp {
 
         private String host;
         private int port;
@@ -31,9 +31,8 @@ public class SftpProperties {
         private String downloadFilePath;
     }
 
-    public SftpProperties.JobProp getCurrentJobProp(String jobName) {
+    public SftpProp getCurrentJobProp(String jobName) {
         return this.jobs.get(jobName);
     }
-
 
 }

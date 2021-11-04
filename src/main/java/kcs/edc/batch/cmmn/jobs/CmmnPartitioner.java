@@ -1,10 +1,12 @@
 package kcs.edc.batch.cmmn.jobs;
 
+import kcs.edc.batch.cmmn.service.FileService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ import java.util.Map;
 public class CmmnPartitioner implements Partitioner {
 
     @Value("#{jobExecutionContext[list]}")
-    protected List<Object> list;
+    public List<Object> list;
 
     @SneakyThrows
     @Override

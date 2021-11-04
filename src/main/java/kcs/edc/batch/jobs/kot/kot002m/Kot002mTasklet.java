@@ -1,7 +1,7 @@
 package kcs.edc.batch.jobs.kot.kot002m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.jobs.kot.kot001m.vo.Kot001mVO;
+import kcs.edc.batch.jobs.kot.kot001m.vo.Pit811mVO;
 import kcs.edc.batch.jobs.kot.kot002m.vo.Kot002mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -18,7 +18,7 @@ import java.util.List;
 public class Kot002mTasklet extends CmmnJob implements Tasklet {
 
     @Value("#{jobExecutionContext[resultList]}")
-    List<Kot001mVO.Item> resultList;
+    List<Pit811mVO.Item> resultList;
 
 
     @Override
@@ -29,7 +29,7 @@ public class Kot002mTasklet extends CmmnJob implements Tasklet {
         List<Kot002mVO> items = new ArrayList<>();
         List<String> keywordList = new ArrayList<>();
 
-        for (Kot001mVO.Item item : resultList) {
+        for (Pit811mVO.Item item : resultList) {
             String[] split = item.getKwrd().split(",");
             keywordList.addAll(Arrays.asList(split));
 

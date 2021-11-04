@@ -9,7 +9,7 @@ public class CmmnConst {
     public static final String JOB_GRP_ID_BIG = "big";
     public static final String JOB_GRP_ID_SOM = "som";
     public static final String JOB_GRP_ID_SAF = "saf";
-    public static final String JOB_GRP_ID_EBA = "eag";
+    public static final String JOB_GRP_ID_EBA = "eba";
     public static final String JOB_GRP_ID_NAV = "nav";
     public static final String JOB_GRP_ID_OPD = "opd";
     public static final String JOB_GRP_ID_KOT = "kot";
@@ -45,19 +45,18 @@ public class CmmnConst {
     public static final String JOB_ID_NAV003M = "nav003m";
     public static final String JOB_ID_NAV004M = "nav004m";
 
-    public static final String JOB_ID_OPD001M = "opd001m";
-    public static final String JOB_ID_OPD002M = "opd002m";
-    public static final String JOB_ID_OPD003M = "opd003m";
-
-    public static final String JOB_ID_KOT001M = "kot001m";
-    public static final String JOB_ID_KOT002M = "kot002m";
-
     public static final String JOB_ID_UCT001M = "uct001m";
+
+    public static final String JOB_ID_IAC003l = "iac003l";
+    public static final String JOB_ID_IAC016l = "iac016l";
+
+    public static final String JOB_ID_PIT811M = "pit811m";
+    public static final String JOB_ID_PIT812M = "pit812m";
+
 
     /***********************************************************************************
      * JOB CONFIGRATION POST FIX
      ***********************************************************************************/
-
     public static final String POST_FIX_JOB = "Job";
     public static final String POST_FIX_STEP = "Step";
     public static final String POST_FIX_PARTITION_STEP = "PartitionStep";
@@ -80,7 +79,7 @@ public class CmmnConst {
     public static final String RESOURCE_FILE_NAME_KCS_KEYWORD = "kcs_keyword.txt";
 
     /***********************************************************************************
-     * FILE RESOURCE INFO
+     * FILE ACTION TYPE
      ***********************************************************************************/
     public static final String CMMN_FILE_ACTION_TYPE_MERGE = "merge";
     public static final String CMMN_FILE_ACTION_TYPE_CLEAN = "clean";

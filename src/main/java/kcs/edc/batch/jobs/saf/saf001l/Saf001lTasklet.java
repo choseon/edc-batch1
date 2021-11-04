@@ -41,7 +41,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
 
         // header setting
         HttpHeaders headers = new HttpHeaders();
-        headers.set("AuthKey", this.apiService.getJobPropHeader(getJobGrpName(), "AuthKey"));
+        headers.set("AuthKey", this.apiService.getJobPropHeader(getJobGroupId(), "AuthKey"));
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 
         List<Saf001lVO.Item> resultList = new ArrayList<>();
@@ -69,14 +69,17 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
         this.fileService.makeFile(CmmnConst.JOB_ID_SAF001L, derivationModelList);
 
         // HT_SAF002L 연관인증번호 목록 파일생성
+        this.fileService.setStartTime(DateUtil.getCurrentTime());
         List<Saf001lVO.SimilarCertItem> similarCertificationList = getSimilarCertificationList(resultList);
         this.fileService.makeFile(CmmnConst.JOB_ID_SAF002L, similarCertificationList);
 
         // HT_SAF003L 제조공장목록 파일생성
+        this.fileService.setStartTime(DateUtil.getCurrentTime());
         List<Saf001lVO.FatoryItem> factoryList = getFactoryList(resultList);
         this.fileService.makeFile(CmmnConst.JOB_ID_SAF003L, factoryList);
 
         // HT_SAF004L 이미지목록 파일생성
+        this.fileService.setStartTime(DateUtil.getCurrentTime());
         List<Saf001lVO.CertificationImageUrlItem> certificationImageUrlList = getCertificationImageUrlList(resultList);
         this.fileService.makeFile(CmmnConst.JOB_ID_SAF004L, certificationImageUrlList);
 

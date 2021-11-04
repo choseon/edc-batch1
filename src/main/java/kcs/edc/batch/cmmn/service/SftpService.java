@@ -16,7 +16,7 @@ public class SftpService {
     @Autowired
     private SftpProperties sftpProperties;
 
-    private SftpProperties.JobProp sftpProp;
+    private SftpProperties.SftpProp sftpProp;
 
     public void setJobId(String jobId) {
         this.sftpProp = this.sftpProperties.getCurrentJobProp(jobId);
