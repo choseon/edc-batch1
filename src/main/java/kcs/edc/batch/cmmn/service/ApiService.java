@@ -31,12 +31,13 @@ public class ApiService {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public void init(String jobId) {
-        log.info("ApiService init() >> jobId: {}", jobId);
+
         this.apiProp = this.apiProperties.getApiProp(jobId);
 
         if(Objects.isNull(this.apiProp)) {
             throw new NullPointerException("apiProperty is null");
         }
+        log.info("ApiService init() >> jobId: {}", jobId);
     }
 
     /**
@@ -70,7 +71,7 @@ public class ApiService {
      */
     public <T> T sendApiForEntity(URI uri, Class<T> resonseType) {
 
-        log.info("uri {}", uri);
+        log.debug("uri {}", uri);
 
         ResponseEntity<String> forEntity = this.restTemplate.getForEntity(uri, String.class);
         String resultJson = forEntity.getBody();

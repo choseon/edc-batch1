@@ -1,8 +1,8 @@
 package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.jobs.opd.iac003l.vo.Iac003lTasklet;
-import kcs.edc.batch.jobs.opd.iac016l.vo.Iac016lTasklet;
+import kcs.edc.batch.jobs.opd.iac003l.Iac003lTasklet;
+import kcs.edc.batch.jobs.opd.iac016l.Iac016lTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -14,7 +14,6 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * 금융감독원 OpenDart 데이터수집 Batch Configuration
@@ -35,6 +35,11 @@ public class OpdJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
+    /**
+     * 금융감독원 OpenDart Job launcher
+     *
+     * @throws Exception
+     */
     @Scheduled(cron = "${scheduler.cron.opd}")
     public void launcher() throws Exception {
         log.info("OpdJobConfig launcher...");
@@ -51,6 +56,8 @@ public class OpdJobConfig {
     }
 
     /**
+     * 금융감독원 OpenDart Job
+     *
      * @return
      */
     @Bean
@@ -58,7 +65,7 @@ public class OpdJobConfig {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_OPD + CmmnConst.POST_FIX_JOB)
                 .start(iac003lStep())
-//                .next(iac016lStep())
+                .next(iac016lStep(null))
                 .build();
     }
 
@@ -95,9 +102,10 @@ public class OpdJobConfig {
      */
     @Bean
     @JobScope
-    public Step iac016lStep() {
+    public Step iac016lStep(
+            @Value("#{jobExecutionContext[companyCodeList]}") List<String> companyCodeList) {
         return stepBuilderFactory.get(CmmnConst.JOB_ID_IAC003l + CmmnConst.POST_FIX_STEP)
-                .tasklet(iac016lTasklet(null))
+                .tasklet(iac016lTasklet(null, null))
                 .build();
     }
 
@@ -109,7 +117,9 @@ public class OpdJobConfig {
      */
     @Bean
     @StepScope
-    public Iac016lTasklet iac016lTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+    public Iac016lTasklet iac016lTasklet(
+            @Value("#{jobParameters[baseDt]}") String baseDt,
+            @Value("#{jobExecutionContext[companyCodeList]}") List<String> companyCodeList) {
         return new Iac016lTasklet();
     }
 }

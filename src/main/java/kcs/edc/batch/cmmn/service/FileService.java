@@ -72,6 +72,8 @@ public class FileService {
         // 포털여부
         Boolean isPortalJobGroup = this.fileProperties.isPortalJobGroup(this.jobGroupId);
         this.fileVO = new CmmnFileVO(fileProp, isPortalJobGroup, this.jobGroupId, this.jobId);
+
+        log.info("FileService init() >> jobId: {}", jobId);
     }
 
     /**

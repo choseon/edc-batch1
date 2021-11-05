@@ -220,15 +220,16 @@ api:
       baseUrl: https://opendart.fss.or.kr/api/list.json
     opd:
       header:
-        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4
+#        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4
+        crtfcKey: 8c45ec2be39327de0815ab43c7a766b1d47bbcd6
     iac003l:
-      baseUrl: https://opendart.fss.or.kr/api/corpCode.xml
+      baseUrl: https://opendart.fss.or.kr/api/company.json
       param:
         crtfc_key:
-#      baseUrl: https://opendart.fss.or.kr/api/company.json
-#        param:
-#          crtfc_key:
-#          corp_code:
+        corp_code:
+        #      baseUrl: https://opendart.fss.or.kr/api/corpCode.xml
+        #      param:
+        #        crtfc_key:
     iac016l:
       baseUrl: https://opendart.fss.or.kr/api/list.json
       param:
@@ -236,7 +237,7 @@ api:
         copr_code:
         bgn_de:
         end_de:
-        last_reprt_at:
+        last_reprt_at: Y
         pblntf_ty:
         pblntf_detail_ty:
         page_no:

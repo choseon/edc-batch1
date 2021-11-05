@@ -50,9 +50,6 @@ public class CmmnJob implements StepExecutionListener {
         this.apiService.init(this.jobId);
         this.fileService.init(this.jobGroupId, this.jobId, this.baseDt);
 
-
-        this.fileService.init(this.jobGroupId, this.jobId, this.baseDt);
-
         // step간 파라미터 넘겨주기 위해 jobExcutionContext 초기화
         // afterStep에서 넘겨줄 값 셋팅해준다
         this.jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();

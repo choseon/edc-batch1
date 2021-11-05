@@ -32,9 +32,6 @@ import java.util.Objects;
 @Slf4j
 public class Pit811mTasklet extends CmmnJob implements Tasklet {
 
-//    private String scriptPath = "C:\\dev\\edc-batch\\resources\\";
-//    private String scriptFileName = "img_download.sh";
-//    private String kotNasStorePath = "C:/dev/data_nas/anl_data/BA201/kotra/";
     private String encoding = "UTF-8";
 
     private String rootPath;
@@ -55,6 +52,12 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
 
         this.scriptPath = this.fileService.getResourcePath();
         this.rootPath = this.fileService.getRootPath();
+    }
+
+    @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+        jobExecutionContext.put("resultList", resultList);
+        return super.afterStep(stepExecution);
     }
 
     @Override
@@ -113,12 +116,6 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
-    }
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-        jobExecutionContext.put("resultList", resultList);
-        return super.afterStep(stepExecution);
     }
 
     /**
