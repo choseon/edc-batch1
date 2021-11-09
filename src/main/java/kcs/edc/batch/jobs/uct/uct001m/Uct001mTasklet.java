@@ -97,6 +97,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                         this.fileService.makeTempFile(this.resultList, suffixFileName);
 
+                        break;
 
                     } catch (Exception e) {
 
@@ -109,7 +110,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                             log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
                         }
                     }
-                    break;
+
                 }
             }
         }

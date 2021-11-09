@@ -5,7 +5,6 @@ import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.KOTFileUtil;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Pit811mVO;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Pit812mVO;
-import kcs.edc.batch.jobs.kot.kot002m.vo.Kot002mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
@@ -34,7 +33,8 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
 
     private String encoding = "UTF-8";
 
-    private String rootPath;
+    private String attachedFilePath;
+
     private String scriptPath;
 
     @Value("${kot.scriptFileName}")
@@ -51,7 +51,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
         super.beforeStep(stepExecution);
 
         this.scriptPath = this.fileService.getResourcePath();
-        this.rootPath = this.fileService.getRootPath();
+        this.attachedFilePath = this.fileService.getAttachedFilePath();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
             if (Objects.isNull(item.getNewsBdt())) {
 
             } else {
-                htmlPath = this.rootPath + item.getBbstxSn() + "/" + htmlPath;
+                htmlPath = this.attachedFilePath + item.getBbstxSn() + "/" + htmlPath;
                 makeHtmlFile(htmlPath, item.getNewsBdt());
             }
 
@@ -163,7 +163,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
         this.imgURLsOrg.clear();
         this.imgChangePaths.clear();
 
-        ArrayList<String> fileNames = KOTFileUtil.getFileNamesOfSearchTree(this.rootPath, true);
+        ArrayList<String> fileNames = KOTFileUtil.getFileNamesOfSearchTree(this.attachedFilePath, true);
 
         int cnt = 0;
         for (String fileName : fileNames) {

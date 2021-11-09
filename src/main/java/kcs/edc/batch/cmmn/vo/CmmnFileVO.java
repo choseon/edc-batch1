@@ -75,6 +75,16 @@ public class CmmnFileVO {
      */
     private String logFileName;
 
+    /**
+     * 첨부파일 경로
+     */
+    private String attachedFilePath;
+
+    /**
+     * 첨부파일명
+     */
+    private String attachedFileName;
+
 
     /**
      *
@@ -93,14 +103,22 @@ public class CmmnFileVO {
         this.TEMP_FILE_PATH = fileProp.getTempPath();
         this.FILE_EXTENSION = fileProp.getFileExtension();
 
-        // 테이블명
+
         if(isPortal) {
+            // 테이블명
             this.tableName = this.PRE_FIX_TABLE_NAME + this.jobId.substring(0,3) + "_" + this.jobId.substring(3);
+            // 수집데이터파일 경로
+            this.dataFilePath = this.ROOT_PATH + fileProp.getDataFileDir() + "/" + this.tableName + "/";
+            // 첨부파일 경로
+            this.attachedFilePath = this.ROOT_PATH + fileProp.getAttachedFileDir() + "/";
+
         } else {
+            // 테이블명
             this.tableName = this.PRE_FIX_TABLE_NAME + this.jobId;
+            // 수집데이터파일 경로
+            this.dataFilePath = this.ROOT_PATH + this.tableName + "/";
         }
-        // 수집데이터파일 경로
-        this.dataFilePath = this.ROOT_PATH + this.tableName + "/";
+
         // 로그파일 경로
         this.logFilePath = fileProp.getLogPath();
         // 임시파일경로
@@ -110,6 +128,10 @@ public class CmmnFileVO {
         this.logFileName = this.tableName + "_" + DateUtil.getCurrentTime2() + "." + this.FILE_EXTENSION;
     }
 
+    /**
+     * 데이터수집 파일명
+     * @param dataFileName
+     */
     public void setDataFileName(String dataFileName) {
         this.dataFileName = this.tableName + "_" + dataFileName + "." + this.FILE_EXTENSION;
     }
@@ -117,4 +139,5 @@ public class CmmnFileVO {
     public void setTempFileName(String tempFileName) {
         this.tempFileName = this.tableName + "_" + tempFileName + "." + this.FILE_EXTENSION;
     }
+
 }

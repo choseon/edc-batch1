@@ -30,6 +30,11 @@ public class FileProperties {
 //        private Map<String, Map<String, String>> rootPath;
         private Map<String, String> rootPath;
 
+
+        private String attachedFileDir;
+
+        private String dataFileDir;
+
         private String logPath;
 
         private String tempPath;

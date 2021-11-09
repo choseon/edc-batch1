@@ -1,6 +1,7 @@
 package kcs.edc.batch.jobs.opd.iac003l;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
+import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.opd.iac003l.vo.Iac003lVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +13,11 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,20 +47,20 @@ import java.util.zip.ZipInputStream;
 public class Iac003lTasklet extends CmmnJob implements Tasklet {
 
     private String crtfcKey;
-    private String rootPath;
-    private String dailyFilePath;
-    private static String strSep = "\\"; // 디렉토리를 구분하는 문자 (윈도우 \\ , 유닉스or리눅스 /)
 
     private List<String> companyCodeList;
+
+    @Value("${opd.callApiDelayTime}")
+    private int callApiDelayTime;
+
+    @Value("${opd.corpCodeUrl}")
+    private String corpCodeUrl;
 
     @SneakyThrows
     @Override
     public void beforeStep(StepExecution stepExecution) {
         super.beforeStep(stepExecution);
         this.crtfcKey = this.apiService.getJobPropHeader(getJobGroupId(), "crtfcKey");
-        this.rootPath = this.fileService.getRootPath();
-        this.dailyFilePath = makeDirectory(this.fileService.getRootPath());
-
     }
 
     @Override
@@ -75,6 +75,9 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
         this.writeCmmnLogStart();
 
         this.companyCodeList = getCompanyCodeList();
+        if(Objects.isNull(this.companyCodeList)) {
+            throw new NullPointerException("companyCodeList is null");
+        }
         log.info("CompanyCodeList.size(): {}", this.companyCodeList.size());
 
         for (String companyCode : this.companyCodeList) {
@@ -84,13 +87,13 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
             builder.replaceQueryParam("corp_code", companyCode);
             URI uri = builder.build().toUri();
 
-            Thread.sleep(50);
+            Thread.sleep(this.callApiDelayTime);
 
             Iac003lVO resultVO = this.apiService.sendApiForEntity(uri, Iac003lVO.class);
             log.info("resultVO: {}", resultVO);
             this.resultList.add(resultVO);
 
-            if(this.resultList.size() == 10) break; // test
+            if (this.resultList.size() == 10) break; // test
         }
 
         // 파일생성
@@ -101,38 +104,20 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
         return RepeatStatus.FINISHED;
     }
 
-    private String makeDirectory(String rootPath) {
-
-        SimpleDateFormat yyyy = new SimpleDateFormat("yyyy");
-        SimpleDateFormat MM = new SimpleDateFormat("MM");
-        SimpleDateFormat dd = new SimpleDateFormat("dd");
-
-        Calendar calendar = Calendar.getInstance();
-
-        Date dateObj = calendar.getTime();
-        String strYYYY = yyyy.format(dateObj);
-        String strMM = MM.format(dateObj);
-        String strDD = dd.format(dateObj);
-
-        File directory = new File(rootPath + strYYYY + strSep + strMM + strSep + strDD + strSep + "corp");
-
-        if (!directory.exists()) {
-            directory.mkdirs();
-        } else {
-
-            File parentFile = directory.getParentFile();
-            log.info("parentFile: {}", parentFile);
-            parentFile.delete();
-        }
-
-        return directory.getPath() + this.strSep;
-    }
-
-
+    /**
+     * 고유번호 압축 파일 다운로드 URL을 호출하여 기업고유번호 조회
+     *
+     * @return
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
     private List<String> getCompanyCodeList() throws IOException, ParserConfigurationException, SAXException {
 
-        String url = "https://opendart.fss.or.kr/api/corpCode.xml";
-        UriComponentsBuilder builder = UriComponentsBuilder.newInstance().fromHttpUrl(url);
+//        String url = "https://opendart.fss.or.kr/api/corpCode.xml";
+
+        // 고유번호 압축 파일 다운로드 URL
+        UriComponentsBuilder builder = UriComponentsBuilder.newInstance().fromHttpUrl(this.corpCodeUrl);
         builder.queryParam("crtfc_key", this.crtfcKey);
         URI uri = builder.build().toUri();
 
@@ -141,7 +126,7 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
         factory.setReadTimeout(5000);//타임아웃 설정 5초
         RestTemplate restTemplate = new RestTemplate(factory);
 
-        Path file = restTemplate.execute(uri.toString(), HttpMethod.GET, null, response -> {
+        Path tempFile = restTemplate.execute(uri.toString(), HttpMethod.GET, null, response -> {
             Path zipFile = Files.createTempFile("opendart-", ".zip");
             InputStream ins = response.getBody();
             byte[] bytes = IOUtils.toByteArray(ins);
@@ -149,38 +134,55 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
             return zipFile;
         });
 
-        // 압축 해제하여 xml파일 생성
-        String downloadFileName = "";
-        Path zipFile = file;
-        byte[] buf = Files.readAllBytes(zipFile);
+        // 압축 해제
+        String downloadFilePath = null;
+        byte[] buf = Files.readAllBytes(tempFile);
         ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(buf));
-        ZipEntry zipEntry = null;
 
-        if ((zipEntry = zipInputStream.getNextEntry()) != null) {
-            downloadFileName = this.dailyFilePath + zipEntry.getName(); //압축 해제하여 생성한 파일명
-            Files.copy(zipInputStream, Paths.get(downloadFileName));
+        ZipEntry zipEntry = zipInputStream.getNextEntry();
+        if(zipEntry != null) {
+            File dir = new File(this.fileService.getRootPath());
+            if(!dir.exists()) {
+                dir.mkdirs();
+            }
+            downloadFilePath = this.fileService.getRootPath() + zipEntry.getName(); //압축 해제하여 생성한 파일명
+            File downloadFile = new File(downloadFilePath);
+            if (downloadFile.exists()) { // 파일이 존재하면 삭제
+                Files.delete(downloadFile.toPath());
+            }
+            Files.copy(zipInputStream, Paths.get(downloadFilePath)); // 파일 복사
         }
         zipInputStream.closeEntry();
         zipInputStream.close();
 
-        return xmlParsing(downloadFileName);
+        return !ObjectUtils.isEmpty(downloadFilePath) ? xmlParsing(downloadFilePath) : null;
 
     }
 
-    //XML 파싱하여 기업 고유번호 추출
-    private List<String> xmlParsing(String dwnlFileNm) throws ParserConfigurationException, SAXException, IOException {
+    /**
+     * XML 파싱하여 기업 고유번호 추출
+     *
+     * @param xmlFilePath
+     * @return
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     */
+    private List<String> xmlParsing(String xmlFilePath) throws ParserConfigurationException, SAXException, IOException {
+        log.info("dwnlFileNm >> {}", xmlFilePath);
 
-        String lastModifyDt = getLastModifyDt(); //이전 배치를 실행한 날짜
+//        String lastModifyDt = getLastModifyDt(); //이전 배치를 실행한 날짜
+        String lastModifyDt = this.baseDt;
         String modifyDt = ""; //개황정보 수정일자
         String stockCd = ""; //거래소코드
 
         List<String> resultList = new ArrayList<>();
 
-        File file = new File(dwnlFileNm);
+        File xmlFile = new File(xmlFilePath);
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
-        Document document = db.parse(file);
+        Document document = db.parse(xmlFile);
         document.getDocumentElement().normalize();
 
         NodeList nList = document.getElementsByTagName("list");
@@ -203,6 +205,10 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
                 }
             }
         }
+
+        // 다운로드 파일 삭제
+        Files.delete(xmlFile.toPath());
+
         return resultList;
     }
 
@@ -217,7 +223,6 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
             calendar.add(Calendar.DATE, -1);
             String strYesterDay = dateFormat.format(calendar.getTime());
 
-
             Date yesterDay = dateFormat.parse(strYesterDay); //어제날짜
             Date lastModifyDate = dateFormat.parse(lastModifyDt);
             Date modifyDate = dateFormat.parse(modifyDt);
@@ -230,33 +235,4 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
         }
         return returnValue;
     }
-
-    //시작일자 가져오기  (이전 배치 실행시 적용한 종료일 항목값)
-    private String getLastModifyDt() {
-
-        File file = new File(this.rootPath + "corpLastModifyDate.txt");
-        String returnDate = "";
-
-        try {
-            if (file.exists()) {
-
-                BufferedReader inFile = new BufferedReader(new FileReader(file));
-                String sLine = null;
-
-                if ((sLine = inFile.readLine()) != null)
-                    returnDate = sLine;
-
-                inFile.close();
-
-            } else {
-                returnDate = "19000101";
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return returnDate;
-    }
-
-
 }

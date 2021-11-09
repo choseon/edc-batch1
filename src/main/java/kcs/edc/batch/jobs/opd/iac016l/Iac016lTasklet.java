@@ -38,17 +38,26 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
 
     private String crtfcKey;
 
+    private String attachFilePath;
+
     private String dailyFilePath;
 
-    private String rootPath;
+    @Value("${opd.callApiDelayTime}")
+    private int callApiDelayTime;
+
+    @Value("${opd.documentUrl}")
+    private String documentUrl;
+
+    @Value("${opd.pblntfTypeFileName}")
+    private String pblntfTypeFileName;
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
         super.beforeStep(stepExecution);
         this.crtfcKey = this.apiService.getJobPropHeader(getJobGroupId(), "crtfcKey");
         this.pblntfDetailList = getPblntfDetailTy();
-//        this.dailyFilePath = makeDirectory(this.fileService.getRootPath());
-        this.rootPath = this.fileService.getRootPath();
+        this.attachFilePath = this.fileService.getAttachedFilePath();
+        this.dailyFilePath = this.baseDt + "/";
 
     }
 
@@ -57,11 +66,13 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
 
         this.writeCmmnLogStart();
 
+
         for (String companyCode : this.companyCodeList) {
 
             for (String pblnt : this.pblntfDetailList) {
 
                 int pageNo = 1;
+                int totPageNo = 0;
 
                 String pblntf_ty = pblnt.substring(0, 1);
 
@@ -70,11 +81,9 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
                 builder.replaceQueryParam("copr_code", companyCode);
                 builder.replaceQueryParam("bgn_de", this.baseDt);
                 builder.replaceQueryParam("end_de", this.baseDt);
-                builder.replaceQueryParam("last_reprt_at", "Y");
                 builder.replaceQueryParam("pblntf_ty", pblntf_ty);
                 builder.replaceQueryParam("pblntf_detail_ty", pblnt);
                 builder.replaceQueryParam("page_no", pageNo++);
-                builder.replaceQueryParam("page_count", 100);
                 URI uri = builder.build().toUri();
 
                 Thread.sleep(50);
@@ -83,27 +92,36 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
                 if (!resultVO.getStatus().equals("000")) continue;
                 log.info("companyCode: {}, pblntf: {}, list: {} ", companyCode, pblnt, resultVO.getList().size());
 
-                int totalPage = Integer.parseInt(resultVO.getTotal_page());
+                totPageNo = Integer.parseInt(resultVO.getTotal_page());
+                if(totPageNo <= pageNo) continue;
 
                 for (Iac016lVO.Item item : resultVO.getList()) {
 
                     if (Objects.isNull(item.getStock_code())) continue;
 
+                    // 저장할 파일명
                     String saveFileNm = item.getRcept_no() + "_" + pblntf_ty + "_" + pblnt + ".zip";
 
                     //보고서 원문파일 download
-//                    downloadReportFile(item.getRcept_no(), this.dailyFilePath, saveFileNm);
+                    downloadReportFile(item.getRcept_no(), this.attachFilePath + this.dailyFilePath, saveFileNm);
+
+                    // 데이터가공
+                    item.setPblntf_ty(pblntf_ty);
+                    item.setPblntf_detail_ty(pblnt);
+                    item.setFile_path_nm(this.attachFilePath);
+                    item.setRcpn_file_path_nm(this.dailyFilePath); // 년월일
+                    item.setSrbk_file_nm(item.getReport_nm() + ".zip");
+                    item.setSorg_file_nm(saveFileNm);
 
                     this.resultList.add(item);
 
                 }
             }
-            if(this.resultList.size() > 5) break; // test
+            if (this.resultList.size() > 5) break; // test
         }
 
         // 파일생성
         this.fileService.makeFile(this.resultList);
-
 
         this.writeCmmnLogEnd();
 
@@ -114,24 +132,24 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
      * 보고서 원문 파일 다운받기
      *
      * @param rceptNo
-     * @param dailyFilePathNm
+     * @param
      * @param fileNm
      * @throws IOException
      */
-    public void downloadReportFile(String rceptNo, String dailyFilePathNm, String fileNm) throws IOException {
+    public void downloadReportFile(String rceptNo, String filePath, String fileNm) throws IOException {
 
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setConnectTimeout(5000); //타임아웃 설정 5초
         factory.setReadTimeout(5000);//타임아웃 설정 5초
         RestTemplate restTemplate = new RestTemplate(factory);
 
-        String url = "https://opendart.fss.or.kr/api/document.xml";
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+//        String url = "https://opendart.fss.or.kr/api/document.xml";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(this.documentUrl);
         builder.queryParam("crtfc_key", this.crtfcKey);
         builder.queryParam("rcept_no", rceptNo);
         URI uri = builder.build().toUri();
 
-        Path file = restTemplate.execute(uri, HttpMethod.GET, null, response -> {
+        Path tempFile = restTemplate.execute(uri, HttpMethod.GET, null, response -> {
             Path zipFile = Files.createTempFile("opendart-", ".zip");
             InputStream ins = response.getBody();
             byte[] bytes = IOUtils.toByteArray(ins);
@@ -139,33 +157,38 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
             return zipFile;
         });
 
-        Path zipFile = file;
-        byte[] buf = Files.readAllBytes(zipFile);
-
         //압축파일 저장하기
-        saveZipFile(dailyFilePathNm, fileNm, buf);
+        saveZipFile(filePath, fileNm, Files.readAllBytes(tempFile));
+
+        // Temp파일 삭제하기
+        Files.delete(tempFile);
 
     }
 
     /**
      * 압축파일 저장하기
      *
-     * @param dailyFilePathNm
+     * @param filePath
      * @param fileNm
      * @param buf
      */
-    public void saveZipFile(String dailyFilePathNm, String fileNm, byte[] buf) {
+    public void saveZipFile(String filePath, String fileNm, byte[] buf) {
 
-        if (buf != null) {
+        if (buf == null) return;
 
-            try {
-                File file = new File(this.rootPath + dailyFilePathNm + fileNm);
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(buf);
-                fos.close();
-            } catch (Throwable e) {
-                log.info(e.getMessage());
-            }
+        File dir = new File(filePath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        try {
+            File file = new File(filePath + fileNm);
+            log.info("saveFile: {}", file.getPath());
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(buf);
+            fos.close();
+        } catch (Throwable e) {
+            log.info(e.getMessage());
         }
 
     }
@@ -176,7 +199,7 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
 
         cd[0] = "A001"; //	사업보고서
         cd[1] = "A002"; //	반기보고서
-         cd[2] = "A003"; //	분기보고서
+        cd[2] = "A003"; //	분기보고서
         cd[3] = "A004"; //	등록법인결산서류(자본시장법이전)
         cd[4] = "A005"; //	소액공모법인결산서류
         cd[5] = "B001"; //	주요사항보고서

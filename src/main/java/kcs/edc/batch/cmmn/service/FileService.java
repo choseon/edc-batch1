@@ -89,6 +89,15 @@ public class FileService {
         return this.fileVO.getROOT_PATH();
     }
 
+    /**
+     * 첨부파일 경로
+     * @return
+     */
+    public String getAttachedFilePath() {
+        return this.fileVO.getAttachedFilePath();
+    }
+
+
 
 
     /**

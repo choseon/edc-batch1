@@ -41,6 +41,8 @@ file:
         kot: C:/dev/data_nas/anl_data/BA201/kotra/
       logPath: C:/dev/hdata/ht_log001m/
       tempPath: temp/
+      attachedFileDir: attached_file
+      dataFileDir: data
       prefixTableName: tb_bdp_
       logTableName: ht_log001m
       fileExtension: txt
@@ -85,6 +87,19 @@ scheduler:
     opd: "0 0 07 * * ?"
     uct: "0 52 16 * * ?"
 ---
+job:
+  group:
+    som: som001m, som002m, som003m, som004m, som005m
+    biz: biz001m
+    big: big001m, big002m, big003m, big004m
+    saf: saf001m, saf001l, saf002l, saf003l, saf004l
+    eba: eba001m
+    nav: nav001m, nav002m, nav003m, nav004m
+    kot: pit811m, pit812m
+    opd: iac003l, iac016l
+    uct: uct001m
+---
+
 # Open Api Information
 api:
   jobs:
@@ -227,9 +242,6 @@ api:
       param:
         crtfc_key:
         corp_code:
-        #      baseUrl: https://opendart.fss.or.kr/api/corpCode.xml
-        #      param:
-        #        crtfc_key:
     iac016l:
       baseUrl: https://opendart.fss.or.kr/api/list.json
       param:
@@ -242,10 +254,6 @@ api:
         pblntf_detail_ty:
         page_no:
         page_count: 100
-#      baseUrl: https://opendart.fss.or.kr/api/document.xml
-#      param:
-#        crtfc_key:
-#        rcept_no:
     pit811m:
       baseUrl: http://apis.data.go.kr/B410001/ovseaMrktNewsService/ovseaMrktNews
       param:
@@ -278,18 +286,22 @@ kot:
   subRootPath: BA201/kotra/
   scriptFileName: kot_img_download.sh
 opd:
-  subRootPath:
----
-job:
-  group:
-    som: som001m, som002m, som003m, som004m, som005m
-    biz: biz001m
-    big: big001m, big002m, big003m, big004m
-    saf: saf001m, saf001l, saf002l, saf003l, saf004l
-    eba: eba001m
-    nav: nav001m, nav002m, nav003m, nav004m
-    kot: pit811m, pit812m
-    opd: iac003l, iac016l
-    uct: uct001m
+  subRootPath: BA204/opendart/
+  corpLastUpdated: 20211107
+  reptLastUpdated: 20211107
+  callApiDelayTime: 50
+  corpCodeUrl: https://opendart.fss.or.kr/api/corpCode.xml # 고유번호 압축 파일 다운로드 URL
+  documentUrl: https://opendart.fss.or.kr/api/document.xml # 보고서 원문파일 다운로드 URL
+  pblntfTypeFileName: opd_pblntf_type.json # 공시상세유형 목록
+  corpLastModifyFileName:
+  reptLastModifyFileName:
+uct:
+  areaListFileName: uct_area.txt
+som:
+  somKcsKeywordFileName: som_kcs_keyword.txt
+big:
+  bigKcsKeywordFileName: kcs_keyword.txt
+
+
 
 
