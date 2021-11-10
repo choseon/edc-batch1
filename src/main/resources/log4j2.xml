@@ -2,7 +2,7 @@
 <Configuration>
     <Properties>
         <Property name="LOG_FORMAT">%d{yyyy-MM-dd HH:mm:ss} %p %m%n</Property>
-        <Property name="BASE_DIR">C:\dev\log</Property>
+        <Property name="BASE_DIR">../log</Property>
     </Properties>
 
     <Appenders>

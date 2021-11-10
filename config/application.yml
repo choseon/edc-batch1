@@ -105,7 +105,7 @@ scheduler:
     nav: "0 0 07 * * ?"
     kot: "0 0 07 * * ?"
     opd: "0 0 07 * * ?"
-    uct: "0 33 15 * * ?"
+    uct: "0 56 09 * * ?"
 ---
 job:
   group:
@@ -256,8 +256,8 @@ api:
       baseUrl: https://opendart.fss.or.kr/api/list.json
     opd:
       header:
-#        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4
-        crtfcKey: 8c45ec2be39327de0815ab43c7a766b1d47bbcd6
+#        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4 #운영
+        crtfcKey: 8c45ec2be39327de0815ab43c7a766b1d47bbcd6 #로컬
     iac003l:
       baseUrl: https://opendart.fss.or.kr/api/company.json
       param:
@@ -293,7 +293,7 @@ sftp:
       password: grunet2013!
       remoteFilePath: /opt/merge/HT_NAV003M/
       remoteFileName: HT_NAV003M
-      downloadFilePath: hdata/ht_nav003m/temp/
+      downloadFilePath: ../hdata/ht_nav003m/temp/
     nav004m:
       host: 210.114.22.185
       port: 16001
@@ -301,7 +301,7 @@ sftp:
       password: grunet2013!
       remoteFilePath: /opt/merge/HT_NAV004M/
       remoteFileName: HT_NAV004M
-      downloadFilePath: hdata/ht_nav004m/temp/
+      downloadFilePath: ../hdata/ht_nav004m/temp/
 ---
 kot:
   scriptFileName: kot_img_download.sh

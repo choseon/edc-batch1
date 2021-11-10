@@ -55,7 +55,7 @@ public class SftpService {
 
         try {
             String remoteFilePath = this.sftpProp.getRemoteFilePath().replaceAll("\\\\", "/");
-            log.info("remoteFilea: {}", remoteFilePath + fileName);
+            log.info("remoteFile: {}", remoteFilePath + fileName);
 
             channelSftp.cd(remoteFilePath);
             InputStream inputStream = channelSftp.get(fileName);
@@ -83,12 +83,12 @@ public class SftpService {
 
         } finally {
             try {
-                bis.close();
+                if (bis != null) bis.close();
             } catch (IOException e) {
                 log.info(e.getMessage());
             }
             try {
-                bos.close();
+                if (bos != null) bos.close();
             } catch (IOException e) {
                 log.info(e.getMessage());
             }

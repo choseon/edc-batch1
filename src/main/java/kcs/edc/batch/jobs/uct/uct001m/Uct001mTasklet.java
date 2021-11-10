@@ -62,6 +62,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                 if (r.equals(p)) continue;
 
+                int exceptionCnt = 0;
                 while (true) { // exception이 많이 발생하기 때문에 exception이 발생한 경우 결과 나올때까지 무한루프 돌린다.
 
                     try {
@@ -108,6 +109,8 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                         } else {
                             log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
                         }
+
+                        if(++exceptionCnt >= 20) break;
                     }
                 }
             }

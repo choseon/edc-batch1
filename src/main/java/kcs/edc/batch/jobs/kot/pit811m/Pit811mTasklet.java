@@ -74,7 +74,9 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
         Pit811mVO resultVO = this.apiService.sendApiForEntity(uri, Pit811mVO.class);
         if (!resultVO.getResultCode().equals("00")) {
             log.info("uri: {}", uri);
-            log.info("resultVO: {}", resultVO.toString());
+            log.info("resultVO: {}", resultVO.getResultMsg());
+            this.fileService.makeLogFile(resultVO.getResultMsg());
+            this.writeCmmnLogEnd();
             return null;
         }
 
@@ -232,7 +234,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
 
 
     /**
-     * 이미지파일 다운로드하는 script 파일 생성
+     * 이미지파일 다운로드 script 파일 생성
      */
     private void makeImgDownLoadScript(String scriptPath) {
         if (this.imgChangePaths.size() == this.imgURLsOrg.size()) {
@@ -264,7 +266,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
     }
 
     /**
-     * 이미지파일 다운로드하는 script 파일 실행
+     * 이미지파일 다운로드 script 파일 실행
      */
     private void runImageDownloadScript(String scriptPath) {
         try {

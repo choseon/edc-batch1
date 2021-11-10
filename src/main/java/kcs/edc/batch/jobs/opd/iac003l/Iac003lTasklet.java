@@ -79,7 +79,7 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
             log.info("companyCodeList is empty");
             return null;
         } else {
-            log.info("CompanyCodeList.size(): {}", this.companyCodeList.size());
+            log.info("companyCodeList.size(): {}", this.companyCodeList.size());
         }
 
         for (String companyCode : this.companyCodeList) {
@@ -92,8 +92,10 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
             Thread.sleep(this.callApiDelayTime);
 
             Iac003lVO resultVO = this.apiService.sendApiForEntity(uri, Iac003lVO.class);
-            log.info("resultVO: {}", resultVO);
             this.resultList.add(resultVO);
+
+            log.info("corpCode: {}, corpName: {}", resultVO.getCorp_code(), resultVO.getCorp_name());
+
         }
 
         // 파일생성
