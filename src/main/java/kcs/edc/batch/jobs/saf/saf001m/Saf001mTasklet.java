@@ -31,6 +31,15 @@ public class Saf001mTasklet extends CmmnJob implements Tasklet {
     private List<String> certNumList = new ArrayList<>();
 
     @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+
+        // certNum을 추출한 certNumList를 saf001l에 넘겨준다
+        this.jobExecutionContext.put("certNumList", this.certNumList);
+
+        return ExitStatus.COMPLETED;
+    }
+
+    @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart();
@@ -64,17 +73,9 @@ public class Saf001mTasklet extends CmmnJob implements Tasklet {
 
         // 파일생성
         this.fileService.makeFile(this.resultList);
+
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
-    }
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-
-        // certNum을 추출한 certNumList를 saf001l에 넘겨준다
-        this.jobExecutionContext.put("certNumList", this.certNumList);
-
-        return ExitStatus.COMPLETED;
     }
 }

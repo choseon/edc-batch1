@@ -35,7 +35,7 @@ public class CmmnJob implements StepExecutionListener {
     protected ExecutionContext jobExecutionContext;
 
     private String jobGroupId;
-    private String jobId;
+    protected String jobId;
 
 
     @Override
@@ -134,8 +134,12 @@ public class CmmnJob implements StepExecutionListener {
      * 배치 시작로그 출력
      */
     public void writeCmmnLogStart() {
+        writeCmmnLogStart(getCurrentJobId());
+    }
+
+    public void writeCmmnLogStart(String jobId) {
         log.info("##########################################################################");
-        log.info("START JOB :::: {} ", getCurrentJobId());
+        log.info("START JOB :::: {} ", jobId);
         log.info("##########################################################################");
         log.info("baseDt : {}", this.baseDt);
     }
@@ -144,8 +148,12 @@ public class CmmnJob implements StepExecutionListener {
      * 배치 종료로그 출력
      */
     public void writeCmmnLogEnd() {
+        writeCmmnLogEnd(getCurrentJobId());
+    }
+
+    public void writeCmmnLogEnd(String jobId) {
         log.info("##########################################################################");
-        log.info("END JOB :::: {}", getCurrentJobId());
+        log.info("END JOB :::: {}", jobId);
         log.info("##########################################################################");
     }
 
@@ -165,7 +173,7 @@ public class CmmnJob implements StepExecutionListener {
      *
      * @param threadNum 쓰레드번호
      */
-    public void writeCmmnLogEnd(String threadNum) {
+    public void writeCmmnLogEnd(String threadNum, int listSize) {
 //        log.info("##########################################################################");
         log.info("END JOB :::: {} #{}", getCurrentJobId(), threadNum);
         log.info("##########################################################################");

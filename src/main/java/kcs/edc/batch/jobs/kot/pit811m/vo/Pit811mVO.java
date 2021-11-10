@@ -1,15 +1,16 @@
-package kcs.edc.batch.jobs.kot.kot001m.vo;
+package kcs.edc.batch.jobs.kot.pit811m.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Setter
+@ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Pit811mVO {
 

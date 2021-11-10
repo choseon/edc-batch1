@@ -12,6 +12,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -66,58 +67,69 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
 
         this.writeCmmnLogStart();
 
+        if (ObjectUtils.isEmpty(this.companyCodeList)) {
+            log.info("companyCodeList is empty");
+            return null;
+        } else {
+            log.info("CompanyCodeList.size(): {}", this.companyCodeList.size());
+        }
 
-        for (String companyCode : this.companyCodeList) {
-
-            for (String pblnt : this.pblntfDetailList) {
+        for (String companyCode : this.companyCodeList) { // 고유번호 목록
+            for (String pblnt : this.pblntfDetailList) { // 공시상세유형 목록
 
                 int pageNo = 1;
                 int totPageNo = 0;
 
-                String pblntf_ty = pblnt.substring(0, 1);
+                do {
 
-                UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
-                builder.replaceQueryParam("crtfc_key", this.crtfcKey);
-                builder.replaceQueryParam("copr_code", companyCode);
-                builder.replaceQueryParam("bgn_de", this.baseDt);
-                builder.replaceQueryParam("end_de", this.baseDt);
-                builder.replaceQueryParam("pblntf_ty", pblntf_ty);
-                builder.replaceQueryParam("pblntf_detail_ty", pblnt);
-                builder.replaceQueryParam("page_no", pageNo++);
-                URI uri = builder.build().toUri();
+                    String pblntf_ty = pblnt.substring(0, 1);
 
-                Thread.sleep(50);
+                    UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
+                    builder.replaceQueryParam("crtfc_key", this.crtfcKey);
+                    builder.replaceQueryParam("copr_code", companyCode);
+                    builder.replaceQueryParam("bgn_de", this.baseDt);
+                    builder.replaceQueryParam("end_de", this.baseDt);
+                    builder.replaceQueryParam("pblntf_ty", pblntf_ty);
+                    builder.replaceQueryParam("pblntf_detail_ty", pblnt);
+                    builder.replaceQueryParam("page_no", pageNo);
+                    URI uri = builder.build().toUri();
 
-                Iac016lVO resultVO = this.apiService.sendApiForEntity(uri, Iac016lVO.class);
-                if (!resultVO.getStatus().equals("000")) continue;
-                log.info("companyCode: {}, pblntf: {}, list: {} ", companyCode, pblnt, resultVO.getList().size());
+                    Thread.sleep(this.callApiDelayTime);
 
-                totPageNo = Integer.parseInt(resultVO.getTotal_page());
-                if(totPageNo <= pageNo) continue;
+                    Iac016lVO resultVO = this.apiService.sendApiForEntity(uri, Iac016lVO.class);
+                    if (resultVO.getStatus().equals("000")) {
+                        log.info("companyCode: {}, pblntf: {}, list: {} ", companyCode, pblnt, resultVO.getList().size());
 
-                for (Iac016lVO.Item item : resultVO.getList()) {
+                        totPageNo = Integer.parseInt(resultVO.getTotal_page());
 
-                    if (Objects.isNull(item.getStock_code())) continue;
+                        for (Iac016lVO.Item item : resultVO.getList()) {
 
-                    // 저장할 파일명
-                    String saveFileNm = item.getRcept_no() + "_" + pblntf_ty + "_" + pblnt + ".zip";
+                            if (Objects.isNull(item.getStock_code())) continue;
 
-                    //보고서 원문파일 download
-                    downloadReportFile(item.getRcept_no(), this.attachFilePath + this.dailyFilePath, saveFileNm);
+                            // 저장할 파일명
+                            String saveFileNm = item.getRcept_no() + "_" + pblntf_ty + "_" + pblnt + ".zip";
 
-                    // 데이터가공
-                    item.setPblntf_ty(pblntf_ty);
-                    item.setPblntf_detail_ty(pblnt);
-                    item.setFile_path_nm(this.attachFilePath);
-                    item.setRcpn_file_path_nm(this.dailyFilePath); // 년월일
-                    item.setSrbk_file_nm(item.getReport_nm() + ".zip");
-                    item.setSorg_file_nm(saveFileNm);
+                            //보고서 원문파일 download
+                            downloadReportFile(item.getRcept_no(), this.attachFilePath + this.dailyFilePath, saveFileNm);
 
-                    this.resultList.add(item);
+                            // 데이터가공
+                            item.setPblntf_ty(pblntf_ty);
+                            item.setPblntf_detail_ty(pblnt);
+                            item.setFile_path_nm(this.attachFilePath);
+                            item.setRcpn_file_path_nm(this.dailyFilePath); // 년월일
+                            item.setSrbk_file_nm(item.getReport_nm() + ".zip");
+                            item.setSorg_file_nm(saveFileNm);
 
-                }
+                            this.resultList.add(item);
+                        }
+                        pageNo++;
+
+                    } else {
+                        totPageNo = 0;
+                    }
+
+                } while (totPageNo >= pageNo);
             }
-            if (this.resultList.size() > 5) break; // test
         }
 
         // 파일생성
@@ -143,7 +155,6 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
         factory.setReadTimeout(5000);//타임아웃 설정 5초
         RestTemplate restTemplate = new RestTemplate(factory);
 
-//        String url = "https://opendart.fss.or.kr/api/document.xml";
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(this.documentUrl);
         builder.queryParam("crtfc_key", this.crtfcKey);
         builder.queryParam("rcept_no", rceptNo);
@@ -195,7 +206,7 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
 
     //공시상세유형
     private String[] getPblntfDetailTy() {
-        String[] cd = new String[10];
+        String[] cd = new String[57];
 
         cd[0] = "A001"; //	사업보고서
         cd[1] = "A002"; //	반기보고서
@@ -207,7 +218,7 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
         cd[7] = "B003"; //	최대주주등과의거래신고(자본시장법 이전)
         cd[8] = "C001"; //	증권신고(지분증권)
         cd[9] = "C002"; //	증권신고(채무증권)
- /*      cd[10] = "C003"; //	증권신고(파생결합증권)
+        cd[10] = "C003"; //	증권신고(파생결합증권)
         cd[11] = "C004"; //	증권신고(합병등)
         cd[12] = "C005"; //	증권신고(기타)
         cd[13] = "C006"; //	소액공모(지분증권)
@@ -253,7 +264,7 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
         cd[53] = "J002"; //	대규모내부거래관련(구)
         cd[54] = "J004"; //	기업집단현황공시
         cd[55] = "J005"; //	비상장회사중요사항공시
-        cd[56] = "J006"; //	기타공정위공시*/
+        cd[56] = "J006"; //	기타공정위공시
 
         //A ", ); 정기공시
         //B ", ); 주요사항보고

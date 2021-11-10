@@ -18,7 +18,7 @@ public class SftpService {
 
     private SftpProperties.SftpProp sftpProp;
 
-    public void setJobId(String jobId) {
+    public void init(String jobId) {
         this.sftpProp = this.sftpProperties.getCurrentJobProp(jobId);
     }
 
@@ -55,7 +55,7 @@ public class SftpService {
 
         try {
             String remoteFilePath = this.sftpProp.getRemoteFilePath().replaceAll("\\\\", "/");
-            log.info("remote FilePath: {}", remoteFilePath + fileName);
+            log.info("remoteFilea: {}", remoteFilePath + fileName);
 
             channelSftp.cd(remoteFilePath);
             InputStream inputStream = channelSftp.get(fileName);
@@ -81,7 +81,7 @@ public class SftpService {
         } catch (SftpException | IOException e) {
             log.info(e.getMessage());
 
-/*        } finally {
+        } finally {
             try {
                 bis.close();
             } catch (IOException e) {
@@ -91,7 +91,7 @@ public class SftpService {
                 bos.close();
             } catch (IOException e) {
                 log.info(e.getMessage());
-            }*/
+            }
         }
         return file;
     }

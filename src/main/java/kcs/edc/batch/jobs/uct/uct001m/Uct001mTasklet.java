@@ -22,6 +22,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -61,11 +62,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                 if (r.equals(p)) continue;
 
-                while (true) {
-
-                    String suffixFileName = this.baseYear + "_" + r + "_" + p;
-                    boolean tempFileExsists = this.fileService.tempFileExsists(suffixFileName);
-                    if (tempFileExsists) break;
+                while (true) { // exception이 많이 발생하기 때문에 exception이 발생한 경우 결과 나올때까지 무한루프 돌린다.
 
                     try {
                         UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
@@ -76,14 +73,13 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                         Uct001mVO resultVO = this.apiService.sendApiForEntity(uri, Uct001mVO.class);
 
-                        if (Objects.isNull(resultVO)) break;
-                        if (resultVO.getValidation() == null) break;
-                        if (!"Ok".equals(resultVO.getValidation().getStatus().get("name"))) break;
-                        if ("0".equals(resultVO.getValidation().getCount().get("value"))) break;
+                        if (Objects.isNull(resultVO)) continue;
+                        if (resultVO.getValidation() == null) continue;
+                        if (!"Ok".equals(resultVO.getValidation().getStatus().get("name"))) continue;
+                        if ("0".equals(resultVO.getValidation().getCount().get("value"))) continue;
 
                         List<Uct001mVO.Item> dataset = resultVO.getDataset();
                         for (Uct001mVO.Item item : dataset) {
-                            this.resultList = new ArrayList<>();
 
                             // 결과값 체크
                             if (item.getYr().equals("0") || item.getRtCode().equals("0") ||
@@ -95,9 +91,12 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                             this.resultList.add(item);
                         }
 
+                        // temp파일 생성 후 리스트 초기화
+                        String suffixFileName = this.baseYear + "_" + r + "_" + p;
                         this.fileService.makeTempFile(this.resultList, suffixFileName);
+                        this.resultList.clear();
 
-                        break;
+                        break; // 무한루프를 종료한다.
 
                     } catch (Exception e) {
 
@@ -110,12 +109,11 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                             log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
                         }
                     }
-
                 }
             }
         }
 
-        this.writeCmmnLogEnd(this.threadNum);
+        this.writeCmmnLogEnd(this.threadNum, this.partitionList.size());
 
         return RepeatStatus.FINISHED;
     }

@@ -7,7 +7,6 @@ import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -32,7 +31,7 @@ public class Nav004mTasklet extends CmmnJob implements Tasklet {
         this.writeCmmnLogStart();
 
         // set JobId
-        this.sftpService.setJobId(getCurrentJobId());
+        this.sftpService.init(getCurrentJobId());
 
         // SFTP Connection
         ChannelSftp channelSftp = this.sftpService.connectSFTP();

@@ -35,6 +35,12 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
     private int index = 0;
 
     @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+        this.jobExecutionContext.put("list", this.resultList);
+        return super.afterStep(stepExecution);
+    }
+
+    @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart();
@@ -55,10 +61,12 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
             }
         }
 
-        if(this.resultList.size() == 0) return RepeatStatus.FINISHED;
-
-        // 파일 생성
-        this.fileService.makeFile(this.resultList);
+        if(this.resultList.size() == 0) {
+            log.info("resultList.size(): {}", resultList.size());
+        } else {
+            // 파일 생성
+            this.fileService.makeFile(this.resultList);
+        }
 
         this.writeCmmnLogEnd();
 
@@ -163,12 +171,5 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
             }
         }
         return resultList;
-    }
-
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-        this.jobExecutionContext.put("list", this.resultList);
-        return super.afterStep(stepExecution);
     }
 }

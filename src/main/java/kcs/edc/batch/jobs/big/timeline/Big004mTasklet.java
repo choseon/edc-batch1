@@ -56,6 +56,15 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     }
 
     @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+        this.jobExecutionContext.put("keywordList", kcsKeywordList);
+        this.jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
+        this.jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
+
+        return super.afterStep(stepExecution);
+    }
+
+    @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart();
@@ -66,7 +75,6 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
         queryVO.setAccess_key(this.accessKey);
         queryVO.getArgument().getPublished_at().setFrom(this.from);
         queryVO.getArgument().getPublished_at().setUntil(this.until);
-        log.info("from {} until {}", from, until);
 
         for(String keyword : this.kcsKeywordList) {
             queryVO.getArgument().setQuery(keyword);
@@ -90,15 +98,5 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
-    }
-
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-        this.jobExecutionContext.put("keywordList", kcsKeywordList);
-        this.jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
-        this.jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
-
-        return super.afterStep(stepExecution);
     }
 }

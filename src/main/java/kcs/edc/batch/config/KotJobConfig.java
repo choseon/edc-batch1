@@ -1,8 +1,7 @@
 package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.jobs.kot.kot001m.Pit811mTasklet;
-import kcs.edc.batch.jobs.kot.kot002m.Kot002mTasklet;
+import kcs.edc.batch.jobs.kot.pit811m.Pit811mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -21,7 +20,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Slf4j
 @Configuration
@@ -50,7 +48,6 @@ public class KotJobConfig {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_KOT + CmmnConst.POST_FIX_JOB)
                 .start(kot001mStep(null))
-//                .next(kot002mStep(null, null))
                 .build();
     }
 
@@ -72,23 +69,5 @@ public class KotJobConfig {
     @StepScope
     public Pit811mTasklet kot001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Pit811mTasklet();
-    }
-
-    @Bean
-    @JobScope
-    public Step kot002mStep(
-            @Value("#{jobParameters[baseDt]}") String baseDt,
-            @Value("#{jobExecutionContext[resultList]}") List<Object> resultList) {
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_PIT812M + CmmnConst.POST_FIX_STEP)
-                .tasklet(kot002mTasklet(baseDt, resultList))
-                .build();
-    }
-
-    @Bean
-    @StepScope
-    public Kot002mTasklet kot002mTasklet(
-            @Value("#{jobParameters[baseDt]}") String baseDt,
-            @Value("#{jobExecutionContext[resultList]}") List<Object> resultList) {
-        return new Kot002mTasklet();
     }
 }

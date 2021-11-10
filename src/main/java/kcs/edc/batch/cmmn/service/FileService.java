@@ -57,10 +57,11 @@ public class FileService {
         this.baseDt = baseDt;
         this.startTime = DateUtil.getCurrentTime();
 
-        init(this.jobId);
+        initFileVO(this.jobId);
+        log.info("FileService init() >> jobId: {}", this.jobId);
     }
 
-    public void init(String jobId) {
+    public void initFileVO(String jobId) {
         this.jobId = jobId;
 
         FileProperties.FileProp fileProp = this.fileProperties.getFileProp(getJobGrpName(this.jobId));
@@ -72,8 +73,6 @@ public class FileService {
         // 포털여부
         Boolean isPortalJobGroup = this.fileProperties.isPortalJobGroup(this.jobGroupId);
         this.fileVO = new CmmnFileVO(fileProp, isPortalJobGroup, this.jobGroupId, this.jobId);
-
-        log.info("FileService init() >> jobId: {}", jobId);
     }
 
     /**
@@ -98,22 +97,6 @@ public class FileService {
     }
 
 
-
-
-    /**
-     * 파일저장 경로
-     * @return
-     */
-//    public String getStorePath() {
-//
-//        String jobGrpName = getJobGrpName(this.jobId);
-//        if(jobGrpName.equals(CmmnConst.JOB_GRP_ID_KOT) || jobGrpName.equals(CmmnConst.JOB_GRP_ID_OPD)) {
-//            return this.fileProperties.getTiberoStorePath().get(jobGrpName);
-//        } else {
-//            return this.fileProperties.getHiveStorePath();
-//        }
-//    }
-
     /**
      * jobId로 jobGrpNm 추출
      * 클래스명 문자열을 잘라서 group name 추출 (Nav001Tasklet -> nav)
@@ -137,9 +120,9 @@ public class FileService {
 
 
 
-    /*****************************************************************************************************************
+    /*********************************************************************************************************
      * 파일생성
-     *****************************************************************************************************************/
+     *********************************************************************************************************/
 
     public <T> void makeFile(List<T> list, Boolean append) {
         makeFile(this.jobId, list, append);
@@ -158,7 +141,7 @@ public class FileService {
 //        hiveFileVO.setDataFileName(this.baseDt);
 
 //        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
-        init(jobId);
+        initFileVO(jobId);
         this.fileVO.setDataFileName(this.baseDt);
 
         if (list.size() == 0) {
@@ -183,23 +166,22 @@ public class FileService {
 
     private <T> void makeDataFile(List<T> list, CmmnFileVO fileVO, Boolean append) {
 
-        log.info("[{}] Data file make start", fileVO.getTableName());
-        log.info("[{}] count : {}", fileVO.getTableName(), list.size());
+//        log.info("[{}] Data file make start", fileVO.getTableName());
+
 
         FileUtil.makeTsvFile(fileVO.getDataFilePath(), fileVO.getDataFileName(), list, append);
 
-        log.info("[{}] completed : {}", fileVO.getTableName(), fileVO.getDataFilePath() + fileVO.getDataFileName());
+        log.info("[{}] DataFile : {}", fileVO.getTableName(), fileVO.getDataFilePath() + fileVO.getDataFileName());
+        log.info("[{}] DataFile listCnt : {}", fileVO.getTableName(), list.size());
     }
 
     /**
-     * 로그파일 생성
+     * 성공 로그파일 생성
      *
      * @param list
      * @param <T>
      */
     private <T> void makeLogFile(List<T> list, CmmnFileVO fileVO) {
-
-        log.info("[{}] Log file make start", fileVO.getTableName());
 
         Log001mVO logVO = new Log001mVO();
         logVO.setParamYmd(this.baseDt);
@@ -216,10 +198,14 @@ public class FileService {
         // 로그 파일 생성
         FileUtil.makeTsvFile(fileVO.getLogFilePath(), fileVO.getLogFileName(), arrayList);
 
-        log.info("[{}] completed :  {}", fileVO.getTableName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
+        log.info("[{}] LogFile :  {}", fileVO.getTableName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
     }
 
-    private void makeLogFile(String msg) {
+    /**
+     * 실패 로그파일 생성
+     * @param msg
+     */
+    public void makeLogFile(String msg) {
 
 //        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
 //        fileVO.setDataFileName(this.baseDt);
@@ -243,7 +229,7 @@ public class FileService {
         // 로그 파일 생성
         FileUtil.makeTsvFile(fileVO.getLogFilePath(), fileVO.getLogFileName(), arrayList);
 
-        log.info("[{}] completed :  {}", fileVO.getTableName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
+        log.info("[{}] LogFile :  {}", fileVO.getTableName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
 
     }
 
@@ -255,16 +241,16 @@ public class FileService {
      */
     public <T> void makeTempFile(List<T> list, String fileName) {
 
-//        if (list.size() == 0) {
-//            log.info("list is null");
-//            return;
-//        }
+        if (list.size() == 0) {
+            log.debug("list is null");
+            return;
+        }
 
 //        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
-//        fileVO.setTempFileName(fileName);
+        fileVO.setTempFileName(fileName);
 
 //        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
-        fileVO.setTempFileName(this.baseDt);
+//        fileVO.setTempFileName(this.baseDt);
 
 
         String tempFilePath = fileVO.getTempFilePath();
@@ -272,7 +258,7 @@ public class FileService {
 
         FileUtil.makeTsvFile(tempFilePath, tempFileName, list);
 
-        log.info("TempFile Completed :  {} ", tempFilePath + tempFileName);
+        log.info("TempFile:  {} ", tempFilePath + tempFileName);
 
     }
 
@@ -301,7 +287,11 @@ public class FileService {
     public void cleanTempFile(String jobId) {
 //        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), jobId);
 //        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
-        FileUtil.deleteFile(fileVO.getTempFilePath());
+
+        if(Objects.isNull(this.fileVO)) {
+            initFileVO(jobId);
+        }
+        FileUtil.deleteFile(this.fileVO.getTempFilePath());
     }
 
     public boolean tempFileExsists(String sufixFileName) {

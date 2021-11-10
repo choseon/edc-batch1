@@ -1,4 +1,4 @@
-package kcs.edc.batch.jobs.kot.kot001m.vo;
+package kcs.edc.batch.jobs.kot.pit811m.vo;
 
 import lombok.Getter;
 import lombok.Setter;

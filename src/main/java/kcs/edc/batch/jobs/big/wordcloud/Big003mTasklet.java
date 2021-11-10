@@ -13,6 +13,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ObjectUtils;
 
 import java.net.URI;
 import java.util.List;
@@ -48,6 +49,16 @@ public class Big003mTasklet extends CmmnJob implements Tasklet{
     }
 
     @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+
+        this.jobExecutionContext.put("keywordList", keywordList);
+        this.jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
+        this.jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
+
+        return super.afterStep(stepExecution);
+    }
+
+    @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart();
@@ -75,7 +86,7 @@ public class Big003mTasklet extends CmmnJob implements Tasklet{
                 this.resultList.add(item);
             }
 
-            log.info("{} >> keyword : {}, node.size: {}, KcsKeywordYn : {}",
+            log.info("{} >> keyword : {}, nodes.size: {}, KcsKeywordYn : {}",
                     getCurrentJobId(), keyword, nodes.size(), this.kcsRgrsYn);
         }
         // 파일생성
@@ -84,15 +95,4 @@ public class Big003mTasklet extends CmmnJob implements Tasklet{
 
         return RepeatStatus.FINISHED;
     }
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-
-        this.jobExecutionContext.put("keywordList", keywordList);
-        this.jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
-        this.jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
-
-        return super.afterStep(stepExecution);
-    }
-
 }

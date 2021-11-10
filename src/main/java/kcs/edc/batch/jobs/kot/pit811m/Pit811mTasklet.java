@@ -1,10 +1,10 @@
-package kcs.edc.batch.jobs.kot.kot001m;
+package kcs.edc.batch.jobs.kot.pit811m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.KOTFileUtil;
-import kcs.edc.batch.jobs.kot.kot001m.vo.Pit811mVO;
-import kcs.edc.batch.jobs.kot.kot001m.vo.Pit812mVO;
+import kcs.edc.batch.jobs.kot.pit811m.vo.Pit811mVO;
+import kcs.edc.batch.jobs.kot.pit811m.vo.Pit812mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
@@ -72,18 +72,20 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
         URI uri = builder.build(true).toUri();
 
         Pit811mVO resultVO = this.apiService.sendApiForEntity(uri, Pit811mVO.class);
-        if (Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
-
-        // {"resultCode":"3","resultMsg":"NODATA_ERROR"}
-        if (!resultVO.getResultCode().equals("00")) return RepeatStatus.FINISHED;
+        if (!resultVO.getResultCode().equals("00")) {
+            log.info("uri: {}", uri);
+            log.info("resultVO: {}", resultVO.toString());
+            return null;
+        }
 
         // 결과리스트 데이터 가공
         for (Pit811mVO.Item item : resultVO.getItems()) {
-            String htmlPath = item.getBbstxSn() + ".html";
+            String htmlPath = "bbstxSn_" + item.getBbstxSn() + ".html";
 
             if (Objects.isNull(item.getNewsBdt())) {
 
             } else {
+                // html 파일 생성
                 htmlPath = this.attachedFilePath + item.getBbstxSn() + "/" + htmlPath;
                 makeHtmlFile(htmlPath, item.getNewsBdt());
             }
@@ -105,13 +107,13 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
         this.fileService.makeFile(CmmnConst.JOB_ID_PIT812M, this.newsKeywordList);
 
         // html 파일생성
-        replaceImgURLtaskFolder();
+        replaceImgURLtaskFolder(this.attachedFilePath);
 
-        // script 파일생성
-        makeImgDownLoadScript();
+        // imageDownload script 파일생성
+        makeImgDownLoadScript(this.scriptPath + this.scriptFileName);
 
         // imageDownload script 파일 실행
-        runImageDownloadScript();
+        runImageDownloadScript(this.scriptPath + this.scriptFileName);
 
         this.writeCmmnLogEnd();
 
@@ -148,7 +150,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
      */
     private void makeHtmlFile(String htmlPath, String input) {
         try {
-            log.info("htmlPath: {}", htmlPath);
+            log.info("htmlFile: {}", htmlPath);
             BufferedWriter bw = KOTFileUtil.getBufferedWriter(htmlPath, this.encoding);
             bw.write(input);
             bw.close();
@@ -157,13 +159,13 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
         }
     }
 
-    private void replaceImgURLtaskFolder() {
+    private void replaceImgURLtaskFolder(String filePath) {
 
         // 초기화
         this.imgURLsOrg.clear();
         this.imgChangePaths.clear();
 
-        ArrayList<String> fileNames = KOTFileUtil.getFileNamesOfSearchTree(this.attachedFilePath, true);
+        ArrayList<String> fileNames = KOTFileUtil.getFileNamesOfSearchTree(filePath, true);
 
         int cnt = 0;
         for (String fileName : fileNames) {
@@ -207,10 +209,10 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
                         this.imgURLsOrg.add(imgURLOrg);
 
                         int idx = imgURLOrg.lastIndexOf('/');
-                        bw.write(temp[i].replace(imgURLOrg.substring(0, idx), parentFile + "/image") + " ");
-                        this.imgChangePaths.add(parentFile + "/image");
+                        bw.write(temp[i].replace(imgURLOrg.substring(0, idx), parentFile) + " ");
+                        this.imgChangePaths.add(parentFile);
 
-                        log.info("imagePath: {}", parentFile + "/image");
+                        log.debug("imagePath: {}", parentFile);
 
                     } else {
                         bw.write(temp[i] + " ");
@@ -232,10 +234,10 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
     /**
      * 이미지파일 다운로드하는 script 파일 생성
      */
-    private void makeImgDownLoadScript() {
+    private void makeImgDownLoadScript(String scriptPath) {
         if (this.imgChangePaths.size() == this.imgURLsOrg.size()) {
             try {
-                BufferedWriter bw = KOTFileUtil.getBufferedWriter(this.scriptPath + this.scriptFileName, encoding);
+                BufferedWriter bw = KOTFileUtil.getBufferedWriter(scriptPath, encoding);
                 bw.write("#!/bin/bash");
                 bw.newLine();
 
@@ -252,7 +254,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
                     bw.newLine();
                 }
                 bw.close();
-                log.info("makeImgDownLoadScript: {}", this.scriptPath + this.scriptFileName);
+                log.info("makeImgDownLoadScript: {}", scriptPath);
             } catch (Exception e) {
                 log.info(e.getMessage());
             }
@@ -264,10 +266,9 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
     /**
      * 이미지파일 다운로드하는 script 파일 실행
      */
-    private void runImageDownloadScript() {
-        String command = this.scriptPath + this.scriptFileName;
+    private void runImageDownloadScript(String scriptPath) {
         try {
-            Runtime.getRuntime().exec(command);
+            Runtime.getRuntime().exec(scriptPath);
         } catch (IOException e) {
             log.info(e.getMessage());
         }

@@ -43,6 +43,15 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     }
 
     @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+
+        this.jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
+        this.jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
+
+        return ExitStatus.COMPLETED;
+    }
+
+    @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart();
@@ -72,14 +81,5 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
-    }
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-
-        this.jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
-        this.jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
-
-        return ExitStatus.COMPLETED;
     }
 }

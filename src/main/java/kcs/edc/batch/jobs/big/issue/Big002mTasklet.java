@@ -44,6 +44,16 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
     }
 
     @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+
+        this.jobExecutionContext.put("newsClusterList", this.newsClusterList);
+        this.jobExecutionContext.put("kcsRgrsYn", this.kcsRgrsYn);
+        this.jobExecutionContext.put("issueSrwrYn", this.issueSrwrYn);
+
+        return super.afterStep(stepExecution);
+    }
+
+    @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart();
@@ -55,7 +65,7 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
         queryVO.getArgument().setDate(this.until);
 
         Big002mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big002mVO.class);
-        if(resultVO.getResult() != 0) return RepeatStatus.FINISHED;
+        if(resultVO.getResult() != 0) return null;
 
         List<Big002mVO.TopicItem> topics = resultVO.getReturn_object().getTopics();
         for (Big002mVO.TopicItem item : topics) {
@@ -90,15 +100,5 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
 
         String clusterStr = sb.toString();
         return clusterStr.substring(0, clusterStr.length() - 1) + "]";
-    }
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-
-        this.jobExecutionContext.put("newsClusterList", this.newsClusterList);
-        this.jobExecutionContext.put("kcsRgrsYn", this.kcsRgrsYn);
-        this.jobExecutionContext.put("issueSrwrYn", this.issueSrwrYn);
-
-        return super.afterStep(stepExecution);
     }
 }

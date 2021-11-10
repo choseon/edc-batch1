@@ -75,10 +75,12 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
         this.writeCmmnLogStart();
 
         this.companyCodeList = getCompanyCodeList();
-        if(Objects.isNull(this.companyCodeList)) {
-            throw new NullPointerException("companyCodeList is null");
+        if(ObjectUtils.isEmpty(this.companyCodeList)) {
+            log.info("companyCodeList is empty");
+            return null;
+        } else {
+            log.info("CompanyCodeList.size(): {}", this.companyCodeList.size());
         }
-        log.info("CompanyCodeList.size(): {}", this.companyCodeList.size());
 
         for (String companyCode : this.companyCodeList) {
 
@@ -92,8 +94,6 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
             Iac003lVO resultVO = this.apiService.sendApiForEntity(uri, Iac003lVO.class);
             log.info("resultVO: {}", resultVO);
             this.resultList.add(resultVO);
-
-            if (this.resultList.size() == 10) break; // test
         }
 
         // 파일생성
@@ -113,8 +113,6 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
      * @throws SAXException
      */
     private List<String> getCompanyCodeList() throws IOException, ParserConfigurationException, SAXException {
-
-//        String url = "https://opendart.fss.or.kr/api/corpCode.xml";
 
         // 고유번호 압축 파일 다운로드 URL
         UriComponentsBuilder builder = UriComponentsBuilder.newInstance().fromHttpUrl(this.corpCodeUrl);

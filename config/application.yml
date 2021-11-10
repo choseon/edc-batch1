@@ -14,39 +14,27 @@ spring:
       names: ${job.name:NONE}
 file:
   resourcePath: C:/dev/edc-batch/resources/
-  #  fileStorePath:
-  #    hive: C:/dev/hdata/
-  #    portal:
-  #      opd: C:/dev/data_nas/anl_data/BA204/opendart/
-  #      kot: C:/dev/data_nas/anl_data/BA201/kotra/
-  #    hiveStorePath: C:/dev/hdata/
-  #    tiberoStorePath:
-  #      opd: C:/dev/data_nas/anl_data/BA204/opendart/
-  #      kot: C:/dev/data_nas/anl_data/BA201/kotra/
   portalJobGroupIdList: opd, kot
   destination:
     hive:
-#      rootPath: C:/dev/hdata/
       rootPath:
         all: C:/dev/hdata/
       logPath: C:/dev/hdata/ht_log001m/
-      tempPath: temp/
+      tempPath: temp
       prefixTableName: ht_
       logTableName: ht_log001m
       fileExtension: txt
     portal:
-#      rootPath: C:/dev/data_nas/anl_data/
       rootPath:
-        opd: C:/dev/data_nas/anl_data/BA204/opendart/
-        kot: C:/dev/data_nas/anl_data/BA201/kotra/
+        opd: C:/dev/app_nas/anl_data/BA204/opendart/
+        kot: C:/dev/app_nas/anl_data/BA201/kotra/
       logPath: C:/dev/hdata/ht_log001m/
-      tempPath: temp/
-      attachedFileDir: attached_file
+      tempPath: temp
+      attachedFileDir: attach
       dataFileDir: data
       prefixTableName: tb_bdp_
       logTableName: ht_log001m
       fileExtension: txt
-
 ---
 spring:
   profiles: dev
@@ -54,12 +42,28 @@ spring:
     job:
       names: ${job.name:NONE}
 file:
-  path:
-    resourcePath: /app/ext-batch/dev/resources/
-    hiveStorePath: /app/ext-batch/dev/hdata/
-    tiberoStorePath:
-      opd: /app/ext-batch/dev/data_nas/anl_data/BA204/opendart/
-      kot: /app/ext-batch/dev/data_nas/anl_data/BA201/kotra/
+  resourcePath: /app/ext-batch/dev/resources/
+  portalJobGroupIdList: opd, kot
+  destination:
+    hive:
+      rootPath:
+        all: /app/ext-batch/dev/hdata/
+      logPath: /app/ext-batch/dev/hdata/ht_log001m/
+      tempPath: temp
+      prefixTableName: ht_
+      logTableName: ht_log001m
+      fileExtension: txt
+    portal:
+      rootPath:
+        opd: /app/ext-batch/dev/app_nas/anl_data/BA204/opendart/
+        kot: /app/ext-batch/dev/app_nas/anl_data/BA201/kotra/
+      logPath: /app/ext-batch/dev/hdata/ht_log001m/
+      tempPath: temp
+      attachedFileDir: attach
+      dataFileDir: data
+      prefixTableName: tb_bdp_
+      logTableName: ht_log001m
+      fileExtension: txt
 ---
 spring:
   profiles: prod
@@ -67,12 +71,28 @@ spring:
     job:
       names: ${job.name:NONE}
 file:
-  path:
-    resourcePath: /app/ext-batch/prod/resources/
-    hiveRootPath: /app/ext-batch/prod/hdata/
-    tiberoRootPath:
-      opd: /app/ext-batch/prod/data_nas/anl_data/BA204/opendart/
-      kot: /app/ext-batch/prod/data_nas/anl_data/BA201/kotra/
+  resourcePath: /app/ext-batch/dev/resources/
+  portalJobGroupIdList: opd, kot
+  destination:
+    hive:
+      rootPath:
+        all: /hdata/
+      logPath: /hdata/ht_log001m/
+      tempPath: temp
+      prefixTableName: ht_
+      logTableName: ht_log001m
+      fileExtension: txt
+    portal:
+      rootPath:
+        opd: /app_nas/anl_data/BA204/opendart/
+        kot: /app_nas/anl_data/BA201/kotra/
+      logPath: /hdata/ht_log001m/
+      tempPath: temp
+      attachedFileDir: attach
+      dataFileDir: data
+      prefixTableName: tb_bdp_
+      logTableName: ht_log001m
+      fileExtension: txt
 ---
 # Job Scheduler
 scheduler:
@@ -85,7 +105,7 @@ scheduler:
     nav: "0 0 07 * * ?"
     kot: "0 0 07 * * ?"
     opd: "0 0 07 * * ?"
-    uct: "0 52 16 * * ?"
+    uct: "0 33 15 * * ?"
 ---
 job:
   group:
@@ -99,7 +119,6 @@ job:
     opd: iac003l, iac016l
     uct: uct001m
 ---
-
 # Open Api Information
 api:
   jobs:
@@ -211,6 +230,8 @@ api:
         certNum:
     eba:
       baseUrl: https://svcs.ebay.com/services/search/FindingService/v1
+    eba001m:
+      baseUrl:
     nav001m:
       baseUrl: https://dev.apis.naver.com/customs-service/shopping-product-api/getOverseasProducts
     nav002m:
@@ -283,18 +304,12 @@ sftp:
       downloadFilePath: hdata/ht_nav004m/temp/
 ---
 kot:
-  subRootPath: BA201/kotra/
   scriptFileName: kot_img_download.sh
 opd:
-  subRootPath: BA204/opendart/
-  corpLastUpdated: 20211107
-  reptLastUpdated: 20211107
   callApiDelayTime: 50
   corpCodeUrl: https://opendart.fss.or.kr/api/corpCode.xml # 고유번호 압축 파일 다운로드 URL
   documentUrl: https://opendart.fss.or.kr/api/document.xml # 보고서 원문파일 다운로드 URL
   pblntfTypeFileName: opd_pblntf_type.json # 공시상세유형 목록
-  corpLastModifyFileName:
-  reptLastModifyFileName:
 uct:
   areaListFileName: uct_area.txt
 som:
