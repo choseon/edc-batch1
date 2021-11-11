@@ -34,14 +34,20 @@ public class BizJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
+    @Value("${scheduler.uct.isActive}")
+    private Boolean isActive;
+
     /**
      * 중소기업연구원 중소벤처기업부 기업마당 데이터수집 Batch Launcher 설정
      *
      * @throws Exception
      */
-    @Scheduled(cron = "${scheduler.cron.biz}")
+    @Scheduled(cron = "${scheduler.biz.cron}")
     public void launcher() throws Exception {
+
         log.info("BIZJobConfig launcher...");
+        log.info("isActive: {}", this.isActive);
+        if (!this.isActive) return;
 
         // 수집기준일 : D-1
         String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));

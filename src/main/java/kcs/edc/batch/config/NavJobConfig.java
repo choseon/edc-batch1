@@ -31,9 +31,15 @@ public class NavJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Scheduled(cron = "${scheduler.cron.nav}")
+    @Value("${scheduler.nav.isActive}")
+    private Boolean isActive;
+
+    @Scheduled(cron = "${scheduler.nav.cron}")
     public void launcher() throws Exception {
+
         log.info("NAVJobConfig launcher...");
+        log.info("isActive: {}", this.isActive);
+        if (!this.isActive) return;
 
         // D-4일 기준
         String baseDt = LocalDateTime.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));

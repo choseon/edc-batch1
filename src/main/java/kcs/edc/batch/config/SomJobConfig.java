@@ -50,12 +50,18 @@ public class SomJobConfig {
 
     private String currentJobId;
 
+    @Value("${scheduler.som.isActive}")
+    private Boolean isActive;
+
     /**
      * 바이브컴퍼티 썸트랜드 데이터수집 Batch Launcher 설정
      */
-    @Scheduled(cron = "${scheduler.cron.som}")
+    @Scheduled(cron = "${scheduler.som.cron}")
     public void launcher() {
+
         log.info("SomConfiguration launcher...");
+        log.info("isActive: {}", this.isActive);
+        if (!this.isActive) return;
 
         try {
             String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));

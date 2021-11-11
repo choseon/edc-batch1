@@ -35,14 +35,20 @@ public class OpdJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
+    @Value("${scheduler.opd.isActive}")
+    private Boolean isActive;
+
     /**
      * 금융감독원 OpenDart Job launcher
      *
      * @throws Exception
      */
-    @Scheduled(cron = "${scheduler.cron.opd}")
+    @Scheduled(cron = "${scheduler.opd.cron}")
     public void launcher() throws Exception {
+
         log.info("OpdJobConfig launcher...");
+        log.info("isActive: {}", this.isActive);
+        if (!this.isActive) return;
 
         // 수집기준일 : D-1
         String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));

@@ -34,13 +34,20 @@ public class SafJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
+    @Value("${scheduler.saf.isActive}")
+    private Boolean isActive;
+
     /**
      * 국가기술표준원 제품안전정보센터 데이터수집 Batch Launcher 설정
      *
      * @throws Exception
      */
-    @Scheduled(cron = "${scheduler.cron.saf}")
+    @Scheduled(cron = "${scheduler.saf.cron}")
     public void launcher() throws Exception {
+
+        log.info("SomConfiguration launcher...");
+        log.info("isActive: {}", this.isActive);
+        if (!this.isActive) return;
 
         String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         JobParameters jobParameters = new JobParametersBuilder()

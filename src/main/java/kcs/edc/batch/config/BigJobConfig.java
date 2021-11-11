@@ -38,15 +38,20 @@ public class BigJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-
     private final JobLauncher jobLauncher;
+
+    @Value("${scheduler.big.isActive}")
+    private Boolean isActive;
 
     /**
      * 한국언론진흥재단 빅카인드 데이터수집 Batch launcher 설정
      */
-    @Scheduled(cron = "${scheduler.cron.big}")
+    @Scheduled(cron = "${scheduler.big.cron}")
     public void launcher() {
+
         log.info("BigJobConfig launcher...");
+        log.info("isActive: {}", this.isActive);
+        if (!this.isActive) return;
 
         try {
             String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));

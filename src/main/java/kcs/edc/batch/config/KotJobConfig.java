@@ -30,9 +30,15 @@ public class KotJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Scheduled(cron = "${scheduler.cron.kot}")
+    @Value("${scheduler.kot.isActive}")
+    private Boolean isActive;
+
+    @Scheduled(cron = "${scheduler.kot.cron}")
     public void launcher() throws Exception {
+
         log.info("KotJobConfig launcher...");
+        log.info("isActive: {}", this.isActive);
+        if (!this.isActive) return;
 
         String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         JobParameters jobParameters = new JobParametersBuilder()

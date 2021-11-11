@@ -12,6 +12,17 @@ spring:
   batch:
     job:
       names: ${job.name:NONE}
+#files: #최종 ???
+#  resourcePath: C:/dev/edc-batch/resources/a
+#  dataPath: C:/dev/hdata/
+#  logPath: C:/dev/hdata/ht_log001m/
+#  tempDir: temp
+#  prefixTableName: ht_
+#  logTableName: ht_log001m
+#  fileExtension: txt
+#  attachPath:
+#    opd: C:/dev/app_nas/anl_data/BA204/opendart/
+#    kot: C:/dev/app_nas/anl_data/BA201/kotra/
 file:
   resourcePath: C:/dev/edc-batch/resources/
   portalJobGroupIdList: opd, kot
@@ -96,16 +107,33 @@ file:
 ---
 # Job Scheduler
 scheduler:
-  cron:
-    biz: "0 0 07 * * ?"
-    big: "0 0 07 * * ?"
-    som: "0 0 07 * * ?"
-    saf: "0 0 07 * * ?"
-    eba: "0 0 07 * * ?"
-    nav: "0 0 07 * * ?"
-    kot: "0 0 07 * * ?"
-    opd: "0 0 07 * * ?"
-    uct: "0 56 09 * * ?"
+    biz:
+      isActive: false
+      cron: "0 0 07 * * ?"
+    big:
+      isActive: false
+      cron: "0 0 07 * * ?"
+    som:
+      isActive: false
+      cron: "0 0 07 * * ?"
+    saf:
+      isActive: false
+      cron: "0 0 07 * * ?"
+    eba:
+      isActive: false
+      cron: "0 0 07 * * ?"
+    nav:
+      isActive: true
+      cron: "0 0 07 * * ?"
+    kot:
+      isActive: true
+      cron: "0 0 07 * * ?"
+    opd:
+      isActive: true
+      cron: "0 0 07 * * ?"
+    uct:
+      isActive: true
+      cron: "0 01 11 * * ?"
 ---
 job:
   group:

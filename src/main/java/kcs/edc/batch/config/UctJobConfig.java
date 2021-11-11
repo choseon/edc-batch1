@@ -43,14 +43,20 @@ public class UctJobConfig {
     private int GRID_SIZE = 10;
     private int POOL_SIZE = 10;
 
+    @Value("${scheduler.uct.isActive}")
+    private Boolean isActive;
+
     /**
      * UN Comtrade Batch launcher (월배치)
      * 매월 1일 전년도, 전전년도 2년치 데이터 수집하여
      * 15일 이전에 내부 hlo1db에서 데이터 조회되도록 스케쥴링 필요.
      */
-    @Scheduled(cron = "${scheduler.cron.uct}")
+    @Scheduled(cron = "${scheduler.uct.cron}")
     public void launcher() {
+
         log.info("UctConfiguration launcher...");
+        log.info("isActive: {}", this.isActive);
+        if (!this.isActive) return;
 
         // 수집기준일 : 오늘
         String baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
