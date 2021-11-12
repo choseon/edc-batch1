@@ -47,7 +47,13 @@ public class SftpService {
         return (ChannelSftp) channel;
     }
 
-    public File download(ChannelSftp channelSftp, String fileName) {
+    /**
+     *
+     * @param channelSftp
+     * @param remoteFileName
+     * @return
+     */
+    public File download(ChannelSftp channelSftp, String remoteFileName, String downloadPath) {
 
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
@@ -55,19 +61,19 @@ public class SftpService {
 
         try {
             String remoteFilePath = this.sftpProp.getRemoteFilePath().replaceAll("\\\\", "/");
-            log.info("remoteFile: {}", remoteFilePath + fileName);
+            log.info("remoteFile: {}", remoteFilePath + remoteFileName);
 
             channelSftp.cd(remoteFilePath);
-            InputStream inputStream = channelSftp.get(fileName);
+            InputStream inputStream = channelSftp.get(remoteFileName);
 
             bis = new BufferedInputStream(inputStream);
 
-            File dir = new File(this.sftpProp.getDownloadFilePath());
+            File dir = new File(downloadPath);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
 
-            String pathName = this.sftpProp.getDownloadFilePath() + fileName.toLowerCase();
+            String pathName = downloadPath + remoteFileName.toLowerCase();
             file = new File(pathName);
             bos = new BufferedOutputStream(new FileOutputStream(file));
 

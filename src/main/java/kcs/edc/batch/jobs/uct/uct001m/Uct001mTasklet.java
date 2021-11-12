@@ -10,7 +10,6 @@ import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
-import kcs.edc.batch.cmmn.vo.HiveFileVO;
 import kcs.edc.batch.jobs.uct.uct001m.vo.Uct001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
@@ -26,7 +25,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.*;

@@ -42,28 +42,24 @@ public class Nav003mTasklet extends CmmnJob implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
 
+        this.writeCmmnLogStart(jobId);
+
         for (String jobId : this.navJobList) {
 
-            this.writeCmmnLogStart(jobId);
-
             Map<String, Object> resultMap = downloadSFTP(jobId);
-
             if(resultMap.get("result").equals("fail")) {
                 this.fileService.makeLogFile(resultMap.get("msg").toString());
 
             } else {
-
                 List<Object[]> list = (List<Object[]>) resultMap.get("data");
-
                 // Make TSV File
                 this.fileService.makeFile(jobId, list);
-
                 // Download TempFile 삭제
                 this.fileService.cleanTempFile(jobId);
             }
-
-            this.writeCmmnLogEnd(jobId);
         }
+
+        this.writeCmmnLogEnd(jobId);
 
         return RepeatStatus.FINISHED;
     }
@@ -85,8 +81,9 @@ public class Nav003mTasklet extends CmmnJob implements Tasklet {
         }
 
         String fileName = String.format(this.fileNamePattern, jobId.toUpperCase(), this.baseDt);
+        String downloadPath = this.fileService.getTempPath(jobId);
         // File SFTP Download
-        File downloadFile = this.sftpService.download(channelSftp, fileName);
+        File downloadFile = this.sftpService.download(channelSftp, fileName, downloadPath);
         if (ObjectUtils.isEmpty(downloadFile)) {
             resultMap.put("result", "fail");
             resultMap.put("msg", "SFTP file download failed");

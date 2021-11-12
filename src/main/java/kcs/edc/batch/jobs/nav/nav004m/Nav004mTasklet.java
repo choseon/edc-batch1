@@ -28,7 +28,7 @@ public class Nav004mTasklet extends CmmnJob implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
 
-        this.writeCmmnLogStart();
+/*        this.writeCmmnLogStart();
 
         // set JobId
         this.sftpService.init(getCurrentJobId());
@@ -61,7 +61,7 @@ public class Nav004mTasklet extends CmmnJob implements Tasklet {
         // Download TempFile 삭제
         this.fileService.cleanTempFile(getCurrentJobId());
 
-        this.writeCmmnLogEnd();
+        this.writeCmmnLogEnd();*/
 
         return RepeatStatus.FINISHED;
     }

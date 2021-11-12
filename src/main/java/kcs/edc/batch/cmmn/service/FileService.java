@@ -1,12 +1,11 @@
 package kcs.edc.batch.cmmn.service;
 
 import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.cmmn.property.FileProperties;
-import kcs.edc.batch.cmmn.property.JobProperties;
+import kcs.edc.batch.cmmn.property.FileProperty;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.cmmn.vo.CmmnFileVO;
-import kcs.edc.batch.cmmn.vo.HiveFileVO;
+import kcs.edc.batch.cmmn.vo.FileVO;
 import kcs.edc.batch.cmmn.vo.Log001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class FileService {
     private String LOG_FILE_STEP = "EXT_FILE_CREATE";
 
     @Autowired
-    private FileProperties fileProperties;
+    private FileProperty fileProperty;
 
     private CmmnFileVO fileVO;
 
@@ -62,22 +61,25 @@ public class FileService {
         log.info("FileService init() >> jobId: {}", this.jobId);
     }
 
-/*    public void initFileVO(String jobId) {
-        this.jobId = jobId;
-
-        FileProperties.FileProp fileProp = this.fileProperties.getFileProp(getJobGrpName(this.jobId));
-
-        if(Objects.isNull(fileProp)) {
-            throw new NullPointerException("fileProperty is null");
-        }
-
-        // 포털여부
-        Boolean isPortalJobGroup = this.fileProperties.isPortalJobGroup(this.jobGroupId);
-        this.fileVO = new CmmnFileVO(fileProp, isPortalJobGroup, this.jobGroupId, this.jobId);
-    }*/
-
     public void initFileVO(String jobId) {
-        this.fileVO = new CmmnFileVO(fileProperties, this.jobId);
+        this.fileVO = new CmmnFileVO(this.fileProperty, this.jobId);
+
+/*        String fileRootPath = this.fileProperty.getFileRootPath();
+        String prefixTableName = this.fileProperty.getPrefixTableName();
+        String logDirName = this.fileProperty.getLogDirName();
+        String tempDirName = this.fileProperty.getTempDirName();
+        String fileExtension = this.fileProperty.getFileExtension();
+        // 데이터 디렉토리명
+        String dataDirName = prefixTableName + jobId;
+        // 로그파일명
+        String logFileName = dataDirName + "_" + DateUtil.getCurrentTime2() + "." + fileExtension;
+
+        FileVO dataFileVO = new FileVO(fileRootPath, dataDirName, null);
+        FileVO logFileVO = new FileVO(fileRootPath, logDirName, logFileName);
+        FileVO tempFileVO = new FileVO(fileRootPath + dataDirName, tempDirName, null);
+        if(this.fileProperty.getAttachPath().containsKey(this.jobGroupId)) {
+            String attachPath = this.fileProperty.getAttachPath().get(this.jobGroupId);
+        }*/
     }
 
     /**
@@ -86,11 +88,11 @@ public class FileService {
      * @return
      */
     public String getResourcePath() {
-        return this.fileProperties.getResourcePath();
+        return this.fileProperty.getResourcePath();
     }
 
     public String getRootPath() {
-        return this.fileVO.getROOT_PATH();
+        return this.fileVO.getFILE_ROOT_PATH();
     }
 
     /**
@@ -102,8 +104,9 @@ public class FileService {
         return this.fileVO.getAttachedFilePath();
     }
 
-    public String getTempFullPath(String suffixFileName) {
-        return this.fileVO.getTempFilePath() + this.fileVO.getTempFileName() + "_" + suffixFileName;
+    public String getTempPath(String jobId) {
+        initFileVO(jobId);
+        return this.fileVO.getTempFilePath();
     }
 
 
@@ -180,8 +183,8 @@ public class FileService {
 
         FileUtil.makeTsvFile(fileVO.getDataFilePath(), fileVO.getDataFileName(), list, append);
 
-        log.info("[{}] DataFile : {}", fileVO.getTableName(), fileVO.getDataFilePath() + fileVO.getDataFileName());
-        log.info("[{}] DataFile listCnt : {}", fileVO.getTableName(), list.size());
+        log.info("[{}] DataFile : {}", fileVO.getDataDirName(), fileVO.getDataFilePath() + fileVO.getDataFileName());
+        log.info("[{}] DataFile listCnt : {}", fileVO.getDataDirName(), list.size());
     }
 
     /**
@@ -195,7 +198,7 @@ public class FileService {
         Log001mVO logVO = new Log001mVO();
         logVO.setParamYmd(this.baseDt);
         logVO.setStep(this.LOG_FILE_STEP);
-        logVO.setTableName(fileVO.getTableName());
+        logVO.setTableName(fileVO.getDataDirName());
         logVO.setStartTime(this.startTime);
         logVO.setEndTime(DateUtil.getCurrentTime());
         logVO.setJobStat("Succeeded");
@@ -207,7 +210,7 @@ public class FileService {
         // 로그 파일 생성
         FileUtil.makeTsvFile(fileVO.getLogFilePath(), fileVO.getLogFileName(), arrayList);
 
-        log.info("[{}] LogFile :  {}", fileVO.getTableName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
+        log.info("[{}] LogFile :  {}", fileVO.getDataDirName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
     }
 
     /**
@@ -226,7 +229,7 @@ public class FileService {
         Log001mVO logVO = new Log001mVO();
         logVO.setParamYmd(this.baseDt);
         logVO.setStep(this.LOG_FILE_STEP);
-        logVO.setTableName(fileVO.getTableName());
+        logVO.setTableName(fileVO.getDataDirName());
         logVO.setStartTime(this.startTime);
         logVO.setEndTime(DateUtil.getCurrentTime());
         logVO.setJobStat("Fail");
@@ -239,7 +242,7 @@ public class FileService {
         // 로그 파일 생성
         FileUtil.makeTsvFile(fileVO.getLogFilePath(), fileVO.getLogFileName(), arrayList);
 
-        log.info("[{}] LogFile :  {}", fileVO.getTableName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
+        log.info("[{}] LogFile :  {}", fileVO.getDataDirName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
 
     }
 

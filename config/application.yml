@@ -12,40 +12,16 @@ spring:
   batch:
     job:
       names: ${job.name:NONE}
-file: #최종 ???
+file:
   resourcePath: C:/dev/edc-batch/resources/
-  dataPath: C:/dev/hdata/
-  logPath: C:/dev/hdata/ht_log001m/
+  fileRootPath: C:/dev/hdata/
+  logDirName: ht_log001m
   tempDirName: temp
   prefixTableName: ht_
-  logTableName: ht_log001m
   fileExtension: txt
   attachPath:
     opd: C:/dev/app_nas/anl_data/BA204/opendart/
     kot: C:/dev/app_nas/anl_data/BA201/kotra/
-#file:
-#  resourcePath: C:/dev/edc-batch/resources/
-#  portalJobGroupIdList: opd, kot
-#  destination:
-#    hive:
-#      rootPath:
-#        all: C:/dev/hdata/
-#      logPath: C:/dev/hdata/ht_log001m/
-#      tempPath: temp
-#      prefixTableName: ht_
-#      logTableName: ht_log001m
-#      fileExtension: txt
-#    portal:
-#      rootPath:
-#        opd: C:/dev/app_nas/anl_data/BA204/opendart/
-#        kot: C:/dev/app_nas/anl_data/BA201/kotra/
-#      logPath: C:/dev/hdata/ht_log001m/
-#      tempPath: temp
-#      attachedFileDir: attach
-#      dataFileDir: data
-#      prefixTableName: tb_bdp_
-#      logTableName: ht_log001m
-#      fileExtension: txt
 ---
 spring:
   profiles: dev
@@ -54,27 +30,14 @@ spring:
       names: ${job.name:NONE}
 file:
   resourcePath: /app/ext-batch/dev/resources/
-  portalJobGroupIdList: opd, kot
-  destination:
-    hive:
-      rootPath:
-        all: /app/ext-batch/dev/hdata/
-      logPath: /app/ext-batch/dev/hdata/ht_log001m/
-      tempPath: temp
-      prefixTableName: ht_
-      logTableName: ht_log001m
-      fileExtension: txt
-    portal:
-      rootPath:
-        opd: /app/ext-batch/dev/app_nas/anl_data/BA204/opendart/
-        kot: /app/ext-batch/dev/app_nas/anl_data/BA201/kotra/
-      logPath: /app/ext-batch/dev/hdata/ht_log001m/
-      tempPath: temp
-      attachedFileDir: attach
-      dataFileDir: data
-      prefixTableName: tb_bdp_
-      logTableName: ht_log001m
-      fileExtension: txt
+  fileRootPath: /app/ext-batch/dev/hdata/
+  logDirName: ht_log001m
+  tempDirName: temp
+  prefixTableName: ht_
+  fileExtension: txt
+  attachPath:
+    opd: /app/ext-batch/dev/app_nas/anl_data/BA204/opendart/
+    kot: /app/ext-batch/dev/app_nas/anl_data/BA201/kotra/
 ---
 spring:
   profiles: prod
@@ -82,70 +45,45 @@ spring:
     job:
       names: ${job.name:NONE}
 file:
-  resourcePath: /app/ext-batch/dev/resources/
-  portalJobGroupIdList: opd, kot
-  destination:
-    hive:
-      rootPath:
-        all: /hdata/
-      logPath: /hdata/ht_log001m/
-      tempPath: temp
-      prefixTableName: ht_
-      logTableName: ht_log001m
-      fileExtension: txt
-    portal:
-      rootPath:
-        opd: /app_nas/anl_data/BA204/opendart/
-        kot: /app_nas/anl_data/BA201/kotra/
-      logPath: /hdata/ht_log001m/
-      tempPath: temp
-      attachedFileDir: attach
-      dataFileDir: data
-      prefixTableName: tb_bdp_
-      logTableName: ht_log001m
-      fileExtension: txt
+  resourcePath: /app/ext-batch/prod/resources/
+  fileRootPath: /hdata/
+  logDirName: ht_log001m
+  tempDirName: temp
+  prefixTableName: ht_
+  fileExtension: txt
+  attachPath:
+    opd: /app_nas/anl_data/BA204/opendart/
+    kot: /app_nas/anl_data/BA201/kotra/
 ---
 # Job Scheduler
 scheduler:
     biz:
       isActive: false
-      cron: "0 0 07 * * ?"
+      cron: "* 0 07 * * ?"
     big:
       isActive: false
-      cron: "0 0 07 * * ?"
+      cron: "* 0 07 * * ?"
     som:
       isActive: false
-      cron: "0 0 07 * * ?"
+      cron: "* 0 07 * * ?"
     saf:
       isActive: false
-      cron: "0 0 07 * * ?"
+      cron: "* 0 07 * * ?"
     eba:
       isActive: false
-      cron: "0 0 07 * * ?"
+      cron: "* 0 07 * * ?"
     nav:
       isActive: true
-      cron: "0 0 07 * * ?"
+      cron: "0 07 10 * * ?"
     kot:
       isActive: true
-      cron: "0 0 07 * * ?"
+      cron: "* 0 07 * * ?"
     opd:
       isActive: true
-      cron: "0 47 13 * * ?"
+      cron: "* 55 09 * * ?"
     uct:
       isActive: true
-      cron: "* 41 16 * * ?"
----
-job:
-  group:
-    som: som001m, som002m, som003m, som004m, som005m
-    biz: biz001m
-    big: big001m, big002m, big003m, big004m
-    saf: saf001m, saf001l, saf002l, saf003l, saf004l
-    eba: eba001m
-    nav: nav001m, nav002m, nav003m, nav004m
-    kot: pit811m, pit812m
-    opd: iac003l, iac016l
-    uct: uct001m
+      cron: "* 21 09 * * ?"
 ---
 # Open Api Information
 api:
@@ -282,8 +220,8 @@ api:
         ps:
     opd:
       header:
-#        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4 #운영
-        crtfcKey: 8c45ec2be39327de0815ab43c7a766b1d47bbcd6 #로컬
+        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4 #운영
+#        crtfcKey: 8c45ec2be39327de0815ab43c7a766b1d47bbcd6 #로컬
     opd001m:
       baseUrl: https://opendart.fss.or.kr/api/company.json
       param:
@@ -328,6 +266,19 @@ sftp:
       remoteFilePath: /opt/merge/HT_NAV004M/
       remoteFileName: HT_NAV004M
       downloadFilePath: ../hdata/ht_nav004m/temp/
+
+sftp:
+    host: 210.114.22.185
+    port: 16001
+    user: root
+    password: grunet2013!
+    remoteFilePath: /opt/merge/HT_NAV003M/HT_NAV003M_%s
+    nav003m:
+      remoteDirName: HT_NAV003M
+      remoteFileName: HT_NAV003M_%s
+    nav004m:
+      remoteDirName: HT_NAV003M
+      remoteFileName: HT_NAV003M_%s
 ---
 kot:
   scriptFileName: kot_img_download.sh

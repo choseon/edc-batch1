@@ -1,7 +1,5 @@
 package kcs.edc.batch.cmmn.jobs;
 
-import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.cmmn.property.JobProperties;
 import kcs.edc.batch.cmmn.service.ApiService;
 import kcs.edc.batch.cmmn.service.FileService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,14 +11,13 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @StepScope
 public class CmmnJob implements StepExecutionListener {
-
-    @Autowired
-    private JobProperties jobProperties;
 
     @Autowired
     protected ApiService apiService;
@@ -67,53 +64,9 @@ public class CmmnJob implements StepExecutionListener {
         return ExitStatus.COMPLETED;
     }
 
-
-    public List<String> getJobId(String jobGroupId) {
-        return jobProperties.getGroup().get(jobGroupId);
-    }
-
-    public String getJobGroupId(String jobId) {
-
-        Map<String, List<String>> group = jobProperties.getGroup();
-        Iterator<String> iterator = group.keySet().iterator();
-
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            List<String> jobIds = group.get(key);
-            for (String id : jobIds) {
-                if(id.equals(jobId)) {
-                    return key;
-                }
-            }
-        }
-        return null;
-    }
-
     protected String getJobGroupId() {
-        return getJobGroupId(this.jobId);
+        return this.jobGroupId;
     }
-
-
-    /**
-     * 클래스명 문자열을 잘라서 group name 추출 (Nav001Tasklet -> nav)
-     *
-     * @return grpName 배치그룹명
-     */
-//    protected String getJobGrpName() {
-//
-//        String grpName = null;
-//        String className = this.getClass().getSimpleName();
-//
-//        if(className.startsWith("iac")) {
-//            grpName = CmmnConst.JOB_GRP_ID_OPD;
-//        } else if(className.startsWith("pit")) {
-//            grpName = CmmnConst.JOB_GRP_ID_KOT;
-//        } else {
-//            // 클래스명 문자열을 잘라서 group name 추출 (Nav001Tasklet -> nav)
-//            grpName = className.substring(0, 3).toLowerCase();
-//        }
-//        return grpName;
-//    }
 
     /**
      * ClassName에서 JobId 추출하여 return ex) Nav001mTasklet -> nav001m
@@ -124,7 +77,7 @@ public class CmmnJob implements StepExecutionListener {
 
         String className = this.getClass().getSimpleName();
         String jobId = null;
-        if (className.contains("Tasklet")) {
+        if (className.endsWith("Tasklet")) {
             jobId = className.replace("Tasklet", "").toLowerCase();
         } else {
             jobId = className;
@@ -133,7 +86,7 @@ public class CmmnJob implements StepExecutionListener {
     }
 
     protected String getCurrentJobGroupId(String jobId) {
-        return jobId.substring(0,3).toLowerCase();
+        return jobId.substring(0, 3).toLowerCase();
     }
 
     /**

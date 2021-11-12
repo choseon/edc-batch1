@@ -13,19 +13,19 @@ import java.util.Set;
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "file")
-public class FileProperties {
+public class FileProperty {
 
     private String resourcePath;
 
-    private String dataPath;
+    private String fileRootPath;
 
-    private String logPath;
+    private String logDirName;
 
     private String tempDirName;
 
     private String prefixTableName;
 
-    private String logTableName;
+//    private String logTableName;
 
     private String fileExtension;
 
