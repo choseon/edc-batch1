@@ -26,6 +26,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.*;
@@ -45,22 +46,41 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     @Value("#{jobParameters[baseYear]}")
     private String baseYear;
 
+    private List<String> reportList;
+    private List<String> partnerList;
+
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
-
+        if(!ObjectUtils.isEmpty(this.partnerList)) {
+            this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
+        } else {
+            this.writeCmmnLogStart(this.jobId);
+        }
         // apiService에  Custom RestTemplate Setting
         this.apiService.setRestTemplate(getRestTemplate());
 
-        // 국가목록 조회
-        List<String> areaList = getAreaList();
+        // 신고국가 목록
+        this.reportList = ObjectUtils.isEmpty(this.partnerList) ? getAreaList() : this.partitionList;
 
-        for (String r : this.partitionList) { // 신고국가
-            for (String p : areaList) { // 파트너국가
+        // 파트너국가 목록
+        this.partnerList = getAreaList();
+
+        int tempFileExsistsCnt = 0;
+
+        for (String r : this.reportList) { // 신고국가
+            for (String p : this.partnerList) { // 파트너국가
 
                 if (r.equals(p)) continue;
+
+                String suffixFileName = this.baseYear + "_" + r + "_" + p;
+                boolean tempFileExsists = this.fileService.tempFileExsists(suffixFileName);
+                if(tempFileExsists) {
+                    log.info("tempFileExsists: {}", suffixFileName);
+                    tempFileExsistsCnt++;
+                    continue;
+                }
 
                 int exceptionCnt = 0;
                 while (true) { // exception이 많이 발생하기 때문에 exception이 발생한 경우 결과 나올때까지 무한루프 돌린다.
@@ -74,10 +94,22 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                         Uct001mVO resultVO = this.apiService.sendApiForEntity(uri, Uct001mVO.class);
 
-                        if (Objects.isNull(resultVO)) continue;
-                        if (resultVO.getValidation() == null) continue;
-                        if (!"Ok".equals(resultVO.getValidation().getStatus().get("name"))) continue;
-                        if ("0".equals(resultVO.getValidation().getCount().get("value"))) continue;
+                        if (Objects.isNull(resultVO)) {
+                            log.info("resultVO is null: {}", suffixFileName);
+                            continue;
+                        }
+                        if (resultVO.getValidation() == null) {
+                            log.info("validation is null: {}", suffixFileName);
+                            continue;
+                        }
+                        if (!"Ok".equals(resultVO.getValidation().getStatus().get("name"))) {
+                            log.info("name is not ok: {}", suffixFileName);
+                            continue;
+                        }
+                        if ("0".equals(resultVO.getValidation().getCount().get("value"))) {
+                            log.info("value size is 0: {}", suffixFileName);
+                            continue;
+                        }
 
                         List<Uct001mVO.Item> dataset = resultVO.getDataset();
                         for (Uct001mVO.Item item : dataset) {
@@ -93,7 +125,6 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                         }
 
                         // temp파일 생성 후 리스트 초기화
-                        String suffixFileName = this.baseYear + "_" + r + "_" + p;
                         this.fileService.makeTempFile(this.resultList, suffixFileName);
                         this.resultList.clear();
 

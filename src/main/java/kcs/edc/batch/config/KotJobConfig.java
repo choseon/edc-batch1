@@ -1,7 +1,7 @@
 package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.jobs.kot.pit811m.Pit811mTasklet;
+import kcs.edc.batch.jobs.kot.kot001m.Kot001mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -73,7 +73,7 @@ public class KotJobConfig {
      */
     @Bean
     @StepScope
-    public Pit811mTasklet kot001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return new Pit811mTasklet();
+    public Kot001mTasklet kot001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+        return new Kot001mTasklet();
     }
 }

@@ -12,40 +12,40 @@ spring:
   batch:
     job:
       names: ${job.name:NONE}
-#files: #최종 ???
-#  resourcePath: C:/dev/edc-batch/resources/a
-#  dataPath: C:/dev/hdata/
-#  logPath: C:/dev/hdata/ht_log001m/
-#  tempDir: temp
-#  prefixTableName: ht_
-#  logTableName: ht_log001m
-#  fileExtension: txt
-#  attachPath:
-#    opd: C:/dev/app_nas/anl_data/BA204/opendart/
-#    kot: C:/dev/app_nas/anl_data/BA201/kotra/
-file:
+file: #최종 ???
   resourcePath: C:/dev/edc-batch/resources/
-  portalJobGroupIdList: opd, kot
-  destination:
-    hive:
-      rootPath:
-        all: C:/dev/hdata/
-      logPath: C:/dev/hdata/ht_log001m/
-      tempPath: temp
-      prefixTableName: ht_
-      logTableName: ht_log001m
-      fileExtension: txt
-    portal:
-      rootPath:
-        opd: C:/dev/app_nas/anl_data/BA204/opendart/
-        kot: C:/dev/app_nas/anl_data/BA201/kotra/
-      logPath: C:/dev/hdata/ht_log001m/
-      tempPath: temp
-      attachedFileDir: attach
-      dataFileDir: data
-      prefixTableName: tb_bdp_
-      logTableName: ht_log001m
-      fileExtension: txt
+  dataPath: C:/dev/hdata/
+  logPath: C:/dev/hdata/ht_log001m/
+  tempDirName: temp
+  prefixTableName: ht_
+  logTableName: ht_log001m
+  fileExtension: txt
+  attachPath:
+    opd: C:/dev/app_nas/anl_data/BA204/opendart/
+    kot: C:/dev/app_nas/anl_data/BA201/kotra/
+#file:
+#  resourcePath: C:/dev/edc-batch/resources/
+#  portalJobGroupIdList: opd, kot
+#  destination:
+#    hive:
+#      rootPath:
+#        all: C:/dev/hdata/
+#      logPath: C:/dev/hdata/ht_log001m/
+#      tempPath: temp
+#      prefixTableName: ht_
+#      logTableName: ht_log001m
+#      fileExtension: txt
+#    portal:
+#      rootPath:
+#        opd: C:/dev/app_nas/anl_data/BA204/opendart/
+#        kot: C:/dev/app_nas/anl_data/BA201/kotra/
+#      logPath: C:/dev/hdata/ht_log001m/
+#      tempPath: temp
+#      attachedFileDir: attach
+#      dataFileDir: data
+#      prefixTableName: tb_bdp_
+#      logTableName: ht_log001m
+#      fileExtension: txt
 ---
 spring:
   profiles: dev
@@ -130,10 +130,10 @@ scheduler:
       cron: "0 0 07 * * ?"
     opd:
       isActive: true
-      cron: "0 0 07 * * ?"
+      cron: "0 47 13 * * ?"
     uct:
       isActive: true
-      cron: "0 01 11 * * ?"
+      cron: "* 41 16 * * ?"
 ---
 job:
   group:
@@ -280,22 +280,20 @@ api:
         r:
         p:
         ps:
-    opd001m:
-      baseUrl: https://opendart.fss.or.kr/api/list.json
     opd:
       header:
 #        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4 #운영
         crtfcKey: 8c45ec2be39327de0815ab43c7a766b1d47bbcd6 #로컬
-    iac003l:
+    opd001m:
       baseUrl: https://opendart.fss.or.kr/api/company.json
       param:
         crtfc_key:
         corp_code:
-    iac016l:
+    opd002m:
       baseUrl: https://opendart.fss.or.kr/api/list.json
       param:
         crtfc_key:
-        copr_code:
+        corp_code:
         bgn_de:
         end_de:
         last_reprt_at: Y
@@ -303,7 +301,7 @@ api:
         pblntf_detail_ty:
         page_no:
         page_count: 100
-    pit811m:
+    kot001m:
       baseUrl: http://apis.data.go.kr/B410001/ovseaMrktNewsService/ovseaMrktNews
       param:
         serviceKey: 39AV7BHhz62j2L4GUFjSk%2FuwDQT9SZvJ1fcNGfiYXDdnMMb%2FE%2FhGqu%2FYF5qtfXwvBLc9UZjfbyn8aRMIUcS9RQ%3D%3D

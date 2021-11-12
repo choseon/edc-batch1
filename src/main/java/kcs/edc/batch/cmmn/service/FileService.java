@@ -47,6 +47,7 @@ public class FileService {
 
     /**
      * 초기화
+     *
      * @param jobGroupId
      * @param jobId
      * @param baseDt
@@ -61,7 +62,7 @@ public class FileService {
         log.info("FileService init() >> jobId: {}", this.jobId);
     }
 
-    public void initFileVO(String jobId) {
+/*    public void initFileVO(String jobId) {
         this.jobId = jobId;
 
         FileProperties.FileProp fileProp = this.fileProperties.getFileProp(getJobGrpName(this.jobId));
@@ -73,6 +74,10 @@ public class FileService {
         // 포털여부
         Boolean isPortalJobGroup = this.fileProperties.isPortalJobGroup(this.jobGroupId);
         this.fileVO = new CmmnFileVO(fileProp, isPortalJobGroup, this.jobGroupId, this.jobId);
+    }*/
+
+    public void initFileVO(String jobId) {
+        this.fileVO = new CmmnFileVO(fileProperties, this.jobId);
     }
 
     /**
@@ -90,10 +95,15 @@ public class FileService {
 
     /**
      * 첨부파일 경로
+     *
      * @return
      */
     public String getAttachedFilePath() {
         return this.fileVO.getAttachedFilePath();
+    }
+
+    public String getTempFullPath(String suffixFileName) {
+        return this.fileVO.getTempFilePath() + this.fileVO.getTempFileName() + "_" + suffixFileName;
     }
 
 
@@ -107,9 +117,9 @@ public class FileService {
 
         String grpName = null;
 
-        if(jobId.startsWith("iac")) {
+        if (jobId.startsWith("iac")) {
             grpName = CmmnConst.JOB_GRP_ID_OPD;
-        } else if(jobId.startsWith("pit")) {
+        } else if (jobId.startsWith("pit")) {
             grpName = CmmnConst.JOB_GRP_ID_KOT;
         } else {
             // 클래스명 문자열을 잘라서 group name 추출 (Nav001Tasklet -> nav)
@@ -117,7 +127,6 @@ public class FileService {
         }
         return grpName;
     }
-
 
 
     /*********************************************************************************************************
@@ -203,6 +212,7 @@ public class FileService {
 
     /**
      * 실패 로그파일 생성
+     *
      * @param msg
      */
     public void makeLogFile(String msg) {
@@ -233,6 +243,8 @@ public class FileService {
 
     }
 
+
+
     /**
      * 임시파일생성
      *
@@ -241,10 +253,10 @@ public class FileService {
      */
     public <T> void makeTempFile(List<T> list, String fileName) {
 
-        if (list.size() == 0) {
-            log.debug("list is null");
-            return;
-        }
+//        if (list.size() == 0) {
+//            log.debug("list is null");
+//            return;
+//        }
 
 //        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
         fileVO.setTempFileName(fileName);
@@ -272,10 +284,10 @@ public class FileService {
 //        fileVO.setDataFileName(this.baseDt);
 
 //        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
-        fileVO.setDataFileName(this.baseDt);
+        this.fileVO.setDataFileName(this.baseDt);
 
-        FileUtil.mergeFile(fileVO.getTempFilePath(), fileVO.getDataFilePath(), fileVO.getDataFileName());
-        FileUtil.deleteFile(fileVO.getTempFilePath());
+        FileUtil.mergeFile(this.fileVO.getTempFilePath(), this.fileVO.getDataFilePath(), this.fileVO.getDataFileName());
+        FileUtil.deleteFile(this.fileVO.getTempFilePath());
 
         // 로그파일 생성
 
@@ -288,21 +300,22 @@ public class FileService {
 //        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), jobId);
 //        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
 
-        if(Objects.isNull(this.fileVO)) {
+        if (Objects.isNull(this.fileVO)) {
             initFileVO(jobId);
         }
         FileUtil.deleteFile(this.fileVO.getTempFilePath());
     }
 
-    public boolean tempFileExsists(String sufixFileName) {
+    public boolean tempFileExsists(String suffixFileName) {
 //        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
 //        fileVO.setTempFileName(sufixFileName);
 
 //        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
-        fileVO.setTempFileName(this.baseDt);
+//        fileVO.setTempFileName(this.baseDt);
+        this.fileVO.setTempFileName(suffixFileName);
 
-        String tempFilePath = fileVO.getTempFilePath();
-        String tempFileName = fileVO.getTempFileName();
+        String tempFilePath = this.fileVO.getTempFilePath();
+        String tempFileName = this.fileVO.getTempFileName();
         File file = new File(tempFilePath + tempFileName);
 
         return file.exists();

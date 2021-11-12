@@ -1,8 +1,8 @@
 package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.jobs.opd.iac003l.Iac003lTasklet;
-import kcs.edc.batch.jobs.opd.iac016l.Iac016lTasklet;
+import kcs.edc.batch.jobs.opd.opd001m.Opd001mTasklet;
+import kcs.edc.batch.jobs.opd.opd002m.Opd002mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -97,8 +97,8 @@ public class OpdJobConfig {
      */
     @Bean
     @StepScope
-    public Iac003lTasklet iac003lTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return new Iac003lTasklet();
+    public Opd001mTasklet iac003lTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+        return new Opd001mTasklet();
     }
 
     /**
@@ -123,9 +123,9 @@ public class OpdJobConfig {
      */
     @Bean
     @StepScope
-    public Iac016lTasklet iac016lTasklet(
+    public Opd002mTasklet iac016lTasklet(
             @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[companyCodeList]}") List<String> companyCodeList) {
-        return new Iac016lTasklet();
+        return new Opd002mTasklet();
     }
 }

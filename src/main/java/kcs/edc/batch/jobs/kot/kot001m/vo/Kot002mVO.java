@@ -1,11 +1,11 @@
-package kcs.edc.batch.jobs.kot.pit811m.vo;
+package kcs.edc.batch.jobs.kot.kot001m.vo;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class Pit812mVO {
+public class Kot002mVO {
 
     private String bbstxSn; // 게시글 일련번호
 

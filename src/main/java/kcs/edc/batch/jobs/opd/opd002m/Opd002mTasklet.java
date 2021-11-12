@@ -1,7 +1,7 @@
-package kcs.edc.batch.jobs.opd.iac016l;
+package kcs.edc.batch.jobs.opd.opd002m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.jobs.opd.iac016l.vo.Iac016lVO;
+import kcs.edc.batch.jobs.opd.opd002m.vo.Opd002mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.batch.core.StepContribution;
@@ -30,7 +30,7 @@ import java.util.Objects;
  * 금융감독원 OpenDart 기업공시정보 데이터수집 Tasklet
  */
 @Slf4j
-public class Iac016lTasklet extends CmmnJob implements Tasklet {
+public class Opd002mTasklet extends CmmnJob implements Tasklet {
 
     @Value("#{jobExecutionContext[companyCodeList]}")
     private List<String> companyCodeList;
@@ -55,7 +55,7 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
     @Override
     public void beforeStep(StepExecution stepExecution) {
         super.beforeStep(stepExecution);
-        this.crtfcKey = this.apiService.getJobPropHeader(getJobGroupId(), "crtfcKey");
+        this.crtfcKey = this.apiService.getJobPropHeader(this.jobGroupId, "crtfcKey");
         this.pblntfDetailList = getPblntfDetailTy();
         this.attachFilePath = this.fileService.getAttachedFilePath();
         this.dailyFilePath = this.baseDt + "/";
@@ -86,7 +86,7 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
 
                     UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
                     builder.replaceQueryParam("crtfc_key", this.crtfcKey);
-                    builder.replaceQueryParam("copr_code", companyCode);
+                    builder.replaceQueryParam("corp_code", companyCode);
                     builder.replaceQueryParam("bgn_de", this.baseDt);
                     builder.replaceQueryParam("end_de", this.baseDt);
                     builder.replaceQueryParam("pblntf_ty", pblntf_ty);
@@ -94,30 +94,26 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
                     builder.replaceQueryParam("page_no", pageNo);
                     URI uri = builder.build().toUri();
 
-                    Thread.sleep(this.callApiDelayTime);
+//                    Thread.sleep(this.callApiDelayTime);
 
-                    Iac016lVO resultVO = this.apiService.sendApiForEntity(uri, Iac016lVO.class);
+                    Opd002mVO resultVO = this.apiService.sendApiForEntity(uri, Opd002mVO.class);
                     if (resultVO.getStatus().equals("000")) {
                         log.info("companyCode: {}, pblntf: {}, list: {} ", companyCode, pblnt, resultVO.getList().size());
 
                         totPageNo = Integer.parseInt(resultVO.getTotal_page());
 
-                        for (Iac016lVO.Item item : resultVO.getList()) {
+                        for (Opd002mVO.Item item : resultVO.getList()) {
 
                             if (Objects.isNull(item.getStock_code())) continue;
 
-                            // 저장할 파일명
-                            String saveFileNm = item.getRcept_no() + "_" + pblntf_ty + "_" + pblnt + ".zip";
-
-                            //보고서 원문파일 download
-                            downloadReportFile(item.getRcept_no(), this.attachFilePath + this.dailyFilePath, saveFileNm);
-
-                            // 데이터가공
                             item.setPblntf_ty(pblntf_ty);
                             item.setPblntf_detail_ty(pblnt);
                             item.setFile_path_nm(this.attachFilePath);
                             item.setRcpn_file_path_nm(this.dailyFilePath); // 년월일
                             item.setSrbk_file_nm(item.getReport_nm() + ".zip");
+
+                            // 저장할 파일명
+                            String saveFileNm = item.getRcept_no() + "_" + pblntf_ty + "_" + pblnt + ".zip";
                             item.setSorg_file_nm(saveFileNm);
 
                             this.resultList.add(item);
@@ -132,8 +128,14 @@ public class Iac016lTasklet extends CmmnJob implements Tasklet {
             }
         }
 
-        // 파일생성
+        // 데이터파일생성
         this.fileService.makeFile(this.resultList);
+
+        // 원문파일다운로드
+        for (Object o : this.resultList) {
+            Opd002mVO.Item item = (Opd002mVO.Item) o;
+            downloadReportFile(item.getRcept_no(), this.attachFilePath + this.dailyFilePath, item.getSorg_file_nm());
+        }
 
         this.writeCmmnLogEnd();
 

@@ -1,8 +1,7 @@
-package kcs.edc.batch.jobs.opd.iac003l;
+package kcs.edc.batch.jobs.opd.opd001m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.util.FileUtil;
-import kcs.edc.batch.jobs.opd.iac003l.vo.Iac003lVO;
+import kcs.edc.batch.jobs.opd.opd001m.vo.Opd001mVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -44,7 +43,7 @@ import java.util.zip.ZipInputStream;
  */
 @Slf4j
 @StepScope
-public class Iac003lTasklet extends CmmnJob implements Tasklet {
+public class Opd001mTasklet extends CmmnJob implements Tasklet {
 
     private String crtfcKey;
 
@@ -60,7 +59,7 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
     @Override
     public void beforeStep(StepExecution stepExecution) {
         super.beforeStep(stepExecution);
-        this.crtfcKey = this.apiService.getJobPropHeader(getJobGroupId(), "crtfcKey");
+        this.crtfcKey = this.apiService.getJobPropHeader(this.jobGroupId, "crtfcKey");
     }
 
     @Override
@@ -91,7 +90,7 @@ public class Iac003lTasklet extends CmmnJob implements Tasklet {
 
             Thread.sleep(this.callApiDelayTime);
 
-            Iac003lVO resultVO = this.apiService.sendApiForEntity(uri, Iac003lVO.class);
+            Opd001mVO resultVO = this.apiService.sendApiForEntity(uri, Opd001mVO.class);
             this.resultList.add(resultVO);
 
             log.info("corpCode: {}, corpName: {}", resultVO.getCorp_code(), resultVO.getCorp_name());

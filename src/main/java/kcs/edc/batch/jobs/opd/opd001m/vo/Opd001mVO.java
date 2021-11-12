@@ -1,4 +1,4 @@
-package kcs.edc.batch.jobs.opd.iac003l.vo;
+package kcs.edc.batch.jobs.opd.opd001m.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,7 +10,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Iac003lVO {
+public class Opd001mVO {
 
      @JsonProperty
      private String corp_code;

@@ -40,8 +40,8 @@ public class UctJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    private int GRID_SIZE = 10;
-    private int POOL_SIZE = 10;
+    private int GRID_SIZE = 5;
+    private int POOL_SIZE = 5;
 
     @Value("${scheduler.uct.isActive}")
     private Boolean isActive;
@@ -95,11 +95,21 @@ public class UctJobConfig {
     public Job uctJob() {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_JOB)
-                .start(uctFileCleanStep(null)) // temp 파일 삭제
-                .next(uct001mPartitionStep(null))
-                .next(uctFileMergeStep(null)) // temp 파일 병합
+//                .start(uctFileCleanStep(null)) // temp 파일 삭제
+//                .start(uct001mPartitionStep(null))
+                .start(uct001mStep())
+                    .on("COMPLETED")
+                    .to(uctFileMergeStep(null))
+                    .on("*")
+                    .end()
+                .from(uct001mPartitionStep(null))
+//                .on("*")
+//                .to(uctFileMergeStep(null))
+//                .next(uctFileMergeStep(null)) // temp 파일 병합
+                .end()
                 .build();
     }
+
 
     /**
      * uct001m Partition Step

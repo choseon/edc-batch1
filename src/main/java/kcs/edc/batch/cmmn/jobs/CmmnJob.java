@@ -34,7 +34,7 @@ public class CmmnJob implements StepExecutionListener {
     protected List<Object> resultList = new ArrayList<>(); // 최종결과리스트
     protected ExecutionContext jobExecutionContext;
 
-    private String jobGroupId;
+    protected String jobGroupId;
     protected String jobId;
 
 
@@ -45,7 +45,9 @@ public class CmmnJob implements StepExecutionListener {
             log.info("baseDt is null");
         }
         this.jobId = getCurrentJobId();
-        this.jobGroupId = getJobGroupId(this.jobId);
+        this.jobGroupId = getCurrentJobGroupId(this.jobId);
+//        this.jobGroupId = getJobGroupId(this.jobId);
+
 
         this.apiService.init(this.jobId);
         this.fileService.init(this.jobGroupId, this.jobId, this.baseDt);
@@ -128,6 +130,10 @@ public class CmmnJob implements StepExecutionListener {
             jobId = className;
         }
         return jobId;
+    }
+
+    protected String getCurrentJobGroupId(String jobId) {
+        return jobId.substring(0,3).toLowerCase();
     }
 
     /**

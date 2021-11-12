@@ -1,10 +1,10 @@
-package kcs.edc.batch.jobs.kot.pit811m;
+package kcs.edc.batch.jobs.kot.kot001m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.KOTFileUtil;
-import kcs.edc.batch.jobs.kot.pit811m.vo.Pit811mVO;
-import kcs.edc.batch.jobs.kot.pit811m.vo.Pit812mVO;
+import kcs.edc.batch.jobs.kot.kot001m.vo.Kot001mVO;
+import kcs.edc.batch.jobs.kot.kot001m.vo.Kot002mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
@@ -29,7 +29,7 @@ import java.util.Objects;
  * 대한무역투자진흥공사 해외시장 뉴스 수집 Tasklet
  */
 @Slf4j
-public class Pit811mTasklet extends CmmnJob implements Tasklet {
+public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
     private String encoding = "UTF-8";
 
@@ -43,7 +43,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
     private static List<String> imgURLsOrg = new ArrayList<String>();
     private static List<String> imgChangePaths = new ArrayList<String>();
 
-    private List<Pit812mVO> newsKeywordList = new ArrayList<>();
+    private List<Kot002mVO> newsKeywordList = new ArrayList<>();
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
@@ -71,7 +71,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
         // serviceKey에 encoding이 되어 있기 때문에 encoding을 하지 않는 설정으로 build한다.
         URI uri = builder.build(true).toUri();
 
-        Pit811mVO resultVO = this.apiService.sendApiForEntity(uri, Pit811mVO.class);
+        Kot001mVO resultVO = this.apiService.sendApiForEntity(uri, Kot001mVO.class);
         if (!resultVO.getResultCode().equals("00")) {
             log.info("uri: {}", uri);
             log.info("resultVO: {}", resultVO.getResultMsg());
@@ -81,7 +81,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
         }
 
         // 결과리스트 데이터 가공
-        for (Pit811mVO.Item item : resultVO.getItems()) {
+        for (Kot001mVO.Item item : resultVO.getItems()) {
             String htmlPath = "bbstxSn_" + item.getBbstxSn() + ".html";
 
             if (Objects.isNull(item.getNewsBdt())) {
@@ -97,7 +97,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
             this.resultList.add(item);
 
             if(Objects.nonNull(item.getKwrd())) {
-                List<Pit812mVO> keywordList = getKeywordList(item);
+                List<Kot002mVO> keywordList = getKeywordList(item);
                 this.newsKeywordList.addAll(keywordList);
             }
         }
@@ -127,14 +127,14 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
      * @param item
      * @return
      */
-    public List<Pit812mVO> getKeywordList(Pit811mVO.Item item) {
+    public List<Kot002mVO> getKeywordList(Kot001mVO.Item item) {
 
-        List<Pit812mVO> resultList = new ArrayList<>();
+        List<Kot002mVO> resultList = new ArrayList<>();
         String[] split = item.getKwrd().split(",");
         List<String> keywordList = Arrays.asList(split);
 
         for (String keyword : keywordList) {
-            Pit812mVO vo = new Pit812mVO();
+            Kot002mVO vo = new Kot002mVO();
             vo.setBbstxSn(item.getBbstxSn());
             vo.setKwrd(keyword);
             vo.setNewsWrtDt(item.getNewsWrtDt());
@@ -214,7 +214,7 @@ public class Pit811mTasklet extends CmmnJob implements Tasklet {
                         bw.write(temp[i].replace(imgURLOrg.substring(0, idx), parentFile) + " ");
                         this.imgChangePaths.add(parentFile);
 
-                        log.debug("imagePath: {}", parentFile);
+                        log.info("imagePath: {}", parentFile);
 
                     } else {
                         bw.write(temp[i] + " ");

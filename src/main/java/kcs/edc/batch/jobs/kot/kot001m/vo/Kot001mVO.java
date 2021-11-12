@@ -1,4 +1,4 @@
-package kcs.edc.batch.jobs.kot.pit811m.vo;
+package kcs.edc.batch.jobs.kot.kot001m.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Pit811mVO {
+public class Kot001mVO {
 
     private String pageNo;
     private String resultCode;

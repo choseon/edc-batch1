@@ -1,4 +1,4 @@
-package kcs.edc.batch.jobs.opd.iac016l.vo;
+package kcs.edc.batch.jobs.opd.opd002m.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Iac016lVO {
+public class Opd002mVO {
 
     private String status;
     private String message;

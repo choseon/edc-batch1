@@ -55,6 +55,8 @@ public class Uct001mPartitioner extends CmmnPartitioner {
                 String id = jsonObject.get("id").getAsString();
                 if (id.equals("all")) continue;
                 pList.add(id);
+
+                if(pList.size() == 5) break;
             }
 
         } catch (FileNotFoundException e) {
