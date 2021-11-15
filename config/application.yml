@@ -12,16 +12,28 @@ spring:
   batch:
     job:
       names: ${job.name:NONE}
+#file:
+#  resourcePath: C:/dev/edc-batch/resources/
+#  fileRootPath: C:/dev/hdata/
+#  logDirName: ht_log001m
+#  tempDirName: temp
+#  prefixTableName: ht_
+#  fileExtension: txt
+#  attachPath:
+#    opd: C:/dev/app_nas/anl_data/BA204/opendart/
+#    kot: C:/dev/app_nas/anl_data/BA201/kotra/
+
 file:
   resourcePath: C:/dev/edc-batch/resources/
   fileRootPath: C:/dev/hdata/
+  attachPath: C:/dev/app_nas/anl_data/
   logDirName: ht_log001m
   tempDirName: temp
-  prefixTableName: ht_
-  fileExtension: txt
-  attachPath:
-    opd: C:/dev/app_nas/anl_data/BA204/opendart/
-    kot: C:/dev/app_nas/anl_data/BA201/kotra/
+  dataFilePrefixName: ht_
+  dataFileExtension: txt
+  attachDirName:
+    opd: BA204/opendart
+    kot: BA201/kotra
 ---
 spring:
   profiles: dev
@@ -267,18 +279,18 @@ sftp:
       remoteFileName: HT_NAV004M
       downloadFilePath: ../hdata/ht_nav004m/temp/
 
-sftp:
-    host: 210.114.22.185
-    port: 16001
-    user: root
-    password: grunet2013!
-    remoteFilePath: /opt/merge/HT_NAV003M/HT_NAV003M_%s
-    nav003m:
-      remoteDirName: HT_NAV003M
-      remoteFileName: HT_NAV003M_%s
-    nav004m:
-      remoteDirName: HT_NAV003M
-      remoteFileName: HT_NAV003M_%s
+#sftp:
+#    host: 210.114.22.185
+#    port: 16001
+#    user: root
+#    password: grunet2013!
+#    remoteFilePath: /opt/merge/HT_NAV003M/HT_NAV003M_%s
+#    nav003m:
+#      remoteDirName: HT_NAV003M
+#      remoteFileName: HT_NAV003M_%s
+#    nav004m:
+#      remoteDirName: HT_NAV003M
+#      remoteFileName: HT_NAV003M_%s
 ---
 kot:
   scriptFileName: kot_img_download.sh

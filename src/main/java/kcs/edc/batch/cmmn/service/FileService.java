@@ -44,6 +44,11 @@ public class FileService {
      */
     public String startTime;
 
+    private FileVO dataFileVO;
+    private FileVO tempFileVO;
+    private FileVO logFileVO;
+    private FileVO attachFileVO;
+
     /**
      * 초기화
      *
@@ -64,22 +69,25 @@ public class FileService {
     public void initFileVO(String jobId) {
         this.fileVO = new CmmnFileVO(this.fileProperty, this.jobId);
 
-/*        String fileRootPath = this.fileProperty.getFileRootPath();
-        String prefixTableName = this.fileProperty.getPrefixTableName();
+        String fileRootPath = this.fileProperty.getFileRootPath();
+        String dataFilePrefixName = this.fileProperty.getDataFilePrefixName();
         String logDirName = this.fileProperty.getLogDirName();
         String tempDirName = this.fileProperty.getTempDirName();
-        String fileExtension = this.fileProperty.getFileExtension();
+        String dataFileExtension = this.fileProperty.getDataFileExtension();
         // 데이터 디렉토리명
-        String dataDirName = prefixTableName + jobId;
+        String dataDirName = dataFilePrefixName + jobId;
         // 로그파일명
-        String logFileName = dataDirName + "_" + DateUtil.getCurrentTime2() + "." + fileExtension;
+        String logFileName = dataDirName + "_" + DateUtil.getCurrentTime2() + "." + dataFileExtension;
 
         FileVO dataFileVO = new FileVO(fileRootPath, dataDirName, null);
         FileVO logFileVO = new FileVO(fileRootPath, logDirName, logFileName);
         FileVO tempFileVO = new FileVO(fileRootPath + dataDirName, tempDirName, null);
-        if(this.fileProperty.getAttachPath().containsKey(this.jobGroupId)) {
-            String attachPath = this.fileProperty.getAttachPath().get(this.jobGroupId);
-        }*/
+        // 첨부파일 경로
+        if(this.fileProperty.getAttachDirName().containsKey(this.jobGroupId)) {
+            String attachPath = this.fileProperty.getAttachPath();
+            String attachDirName = this.fileProperty.getAttachDirName().get(this.jobGroupId);
+            FileVO attachFileVO = new FileVO(attachPath, attachDirName, null);
+        }
     }
 
     /**
@@ -110,31 +118,18 @@ public class FileService {
     }
 
 
-    /**
-     * jobId로 jobGrpNm 추출
-     * 클래스명 문자열을 잘라서 group name 추출 (Nav001Tasklet -> nav)
-     *
-     * @return grpName 배치그룹명
-     */
-    protected String getJobGrpName(String jobId) {
-
-        String grpName = null;
-
-        if (jobId.startsWith("iac")) {
-            grpName = CmmnConst.JOB_GRP_ID_OPD;
-        } else if (jobId.startsWith("pit")) {
-            grpName = CmmnConst.JOB_GRP_ID_KOT;
-        } else {
-            // 클래스명 문자열을 잘라서 group name 추출 (Nav001Tasklet -> nav)
-            grpName = jobId.substring(0, 3).toLowerCase();
-        }
-        return grpName;
-    }
-
-
     /*********************************************************************************************************
      * 파일생성
      *********************************************************************************************************/
+
+    public <T> void makeFile2(String jobId, List<T> list, Boolean append) {
+
+        this.dataFileVO.setSuffixFileName(this.baseDt);
+
+        makeDataFile(list, fileVO, append);
+        makeLogFile(list, fileVO);
+
+    }
 
     public <T> void makeFile(List<T> list, Boolean append) {
         makeFile(this.jobId, list, append);

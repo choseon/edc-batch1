@@ -51,7 +51,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        if(!ObjectUtils.isEmpty(this.partnerList)) {
+        if (!ObjectUtils.isEmpty(this.partnerList)) {
             this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
         } else {
             this.writeCmmnLogStart(this.jobId);
@@ -66,6 +66,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
         this.partnerList = getAreaList();
 
         int tempFileExsistsCnt = 0;
+        int exceptionCnt = 0;
 
         for (String r : this.reportList) { // 신고국가
             for (String p : this.partnerList) { // 파트너국가
@@ -74,13 +75,13 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
                 String suffixFileName = this.baseYear + "_" + r + "_" + p;
                 boolean tempFileExsists = this.fileService.tempFileExsists(suffixFileName);
-                if(tempFileExsists) {
+                if (tempFileExsists) {
                     log.info("tempFileExsists: {}", suffixFileName);
                     tempFileExsistsCnt++;
                     continue;
                 }
 
-                int exceptionCnt = 0;
+
                 while (true) { // exception이 많이 발생하기 때문에 exception이 발생한 경우 결과 나올때까지 무한루프 돌린다.
 
                     try {
@@ -139,7 +140,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                             log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
                         }
 
-                        if(++exceptionCnt >= 20) break;
+                        if (++exceptionCnt >= 20) break;
                     }
                 }
             }

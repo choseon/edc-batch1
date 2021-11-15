@@ -19,21 +19,19 @@ public class FileProperty {
 
     private String fileRootPath;
 
+    private String attachPath;
+
     private String logDirName;
 
     private String tempDirName;
 
-    private String prefixTableName;
+    private String dataFilePrefixName;
 
-//    private String logTableName;
+    private String dataFileExtension;
 
-    private String fileExtension;
+    private Map<String, String> attachDirName;
 
-    private Map<String, String> attachPath;
 
-    private String getJobAttachPath(String jobId) {
-        return (attachPath.containsKey(jobId)) ? attachPath.get(jobId) : null;
-    }
 
 //    private String resourcePath;
 //

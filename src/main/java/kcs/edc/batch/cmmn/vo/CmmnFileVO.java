@@ -37,6 +37,10 @@ public class CmmnFileVO {
      */
     private String FILE_EXTENSION;
 
+    private String ATTACH_PATH;
+
+    private String ATTACH_DIR_NAME;
+
     /**
      * 배치잡ID ex) nav003m
      */
@@ -90,10 +94,11 @@ public class CmmnFileVO {
     public CmmnFileVO(FileProperty fileProp, String jobId) {
         this.jobId = jobId;
         this.FILE_ROOT_PATH = fileProp.getFileRootPath();
-        this.PRE_FIX_TABLE_NAME = fileProp.getPrefixTableName();
+        this.PRE_FIX_TABLE_NAME = fileProp.getDataFilePrefixName();
         this.LOG_DIR_NAME = fileProp.getLogDirName();
         this.TEMP_DIR_NAME = fileProp.getTempDirName();
-        this.FILE_EXTENSION = fileProp.getFileExtension();
+        this.FILE_EXTENSION = fileProp.getDataFileExtension();
+
 
         // 데이터 디렉토리명
         this.dataDirName = this.PRE_FIX_TABLE_NAME + this.jobId;
@@ -109,8 +114,10 @@ public class CmmnFileVO {
 
         // 첨부파일 경로
         String jobGroupId = jobId.substring(0,3);
-        if(fileProp.getAttachPath().containsKey(jobGroupId)) {
-            this.attachedFilePath = fileProp.getAttachPath().get(jobGroupId);
+        if(fileProp.getAttachDirName().containsKey(jobGroupId)) {
+            this.ATTACH_PATH = fileProp.getAttachPath();
+            this.ATTACH_DIR_NAME = fileProp.getAttachDirName().get(jobGroupId);
+            this.attachedFilePath = this.ATTACH_PATH + this.ATTACH_DIR_NAME + "/";
         }
 
         // 로그파일명
