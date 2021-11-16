@@ -33,9 +33,9 @@ public class Som002mTasklet extends CmmnJob implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        writeCmmnLogStart(threadNum, partitionList.size());
+        writeCmmnLogStart(this.threadNum, this.partitionList.size());
 
-        for (Som001mVO som001mVO : partitionList) {
+        for (Som001mVO som001mVO : this.partitionList) {
 
             UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
             builder.replaceQueryParam("startDate", som001mVO.getDate());
@@ -69,14 +69,14 @@ public class Som002mTasklet extends CmmnJob implements Tasklet {
                 item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
-                resultList.add(item);
+                this.resultList.add(item);
             }
         }
 
         String fileName = this.baseDt + "_" + this.threadNum;
         this.fileService.makeTempFile(this.resultList, fileName);
 
-        this.writeCmmnLogEnd(threadNum);
+        this.writeCmmnLogEnd(this.threadNum);
 
         return RepeatStatus.FINISHED;
     }

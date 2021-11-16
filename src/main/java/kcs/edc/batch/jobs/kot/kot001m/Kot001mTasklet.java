@@ -2,9 +2,11 @@ package kcs.edc.batch.jobs.kot.kot001m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.KOTFileUtil;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Kot001mVO;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Kot002mVO;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
@@ -20,6 +22,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,11 +45,15 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
     @Value("${kot.scriptFileName}")
     private String scriptFileName;
 
+    @Value("${kot.period}")
+    private int period;
+
     private static List<String> imgURLsOrg = new ArrayList<String>();
     private static List<String> imgChangePaths = new ArrayList<String>();
 
     private List<Kot002mVO> newsKeywordList = new ArrayList<>();
 
+    @SneakyThrows
     @Override
     public void beforeStep(StepExecution stepExecution) {
 
@@ -65,48 +74,55 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
         this.writeCmmnLogStart();
 
-        UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
-        builder.replaceQueryParam("search4", this.baseDt);
+        for (int i = 0; i < period; i++) {
 
-        // serviceKey에 encoding이 되어 있기 때문에 encoding을 하지 않는 설정으로 build한다.
-        URI uri = builder.build(true).toUri();
+            // 기준일부터 7일 기간동안 api 검색
+            String searchDate = DateUtil.getOffsetDate(this.baseDt, (i * -1));
+            log.info("searchDate: {}", searchDate);
 
-        Kot001mVO resultVO = this.apiService.sendApiForEntity(uri, Kot001mVO.class);
-        if (!resultVO.getResultCode().equals("00")) {
-            log.info("uri: {}", uri);
-            log.info("resultVO: {}", resultVO.getResultMsg());
-            this.fileService.makeLogFile(resultVO.getResultMsg());
-            this.writeCmmnLogEnd();
-            return null;
-        }
+            UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
+            builder.replaceQueryParam("search4", searchDate);
 
-        // 결과리스트 데이터 가공
-        for (Kot001mVO.Item item : resultVO.getItems()) {
-            String htmlPath = "bbstxSn_" + item.getBbstxSn() + ".html";
+            // serviceKey에 encoding이 되어 있기 때문에 encoding을 하지 않는 설정으로 build한다.
+            URI uri = builder.build(true).toUri();
 
-            if (Objects.isNull(item.getNewsBdt())) {
-
-            } else {
-                // html 파일 생성
-                htmlPath = this.attachedFilePath + item.getBbstxSn() + "/" + htmlPath;
-                makeHtmlFile(htmlPath, item.getNewsBdt());
+            Kot001mVO resultVO = this.apiService.sendApiForEntity(uri, Kot001mVO.class);
+            if (!resultVO.getResultCode().equals("00")) {
+                log.info("uri: {}", uri);
+                log.info("resultVO: {}", resultVO.getResultMsg());
+                this.fileService.makeLogFile(resultVO.getResultMsg());
+                continue;
             }
 
-            item.setNewsBdt(htmlPath);
-            item.setCletFileCtrnDt(this.baseDt);
-            this.resultList.add(item);
+            // 결과리스트 데이터 가공
+            for (Kot001mVO.Item item : resultVO.getItems()) {
+                String htmlPath = "bbstxSn_" + item.getBbstxSn() + ".html";
 
-            if(Objects.nonNull(item.getKwrd())) {
-                List<Kot002mVO> keywordList = getKeywordList(item);
-                this.newsKeywordList.addAll(keywordList);
+                if (Objects.isNull(item.getNewsBdt())) {
+
+                } else {
+                    // html 파일 생성
+                    htmlPath = this.attachedFilePath + item.getBbstxSn() + "/" + htmlPath;
+                    makeHtmlFile(htmlPath, item.getNewsBdt());
+                }
+
+                item.setNewsBdt(htmlPath);
+                item.setCletFileCtrnDt(this.baseDt);
+                this.resultList.add(item);
+
+                if (Objects.nonNull(item.getKwrd())) {
+                    List<Kot002mVO> keywordList = getKeywordList(item);
+                    this.newsKeywordList.addAll(keywordList);
+                }
             }
         }
 
-        // pit811m 파일생성
-        this.fileService.makeFile(CmmnConst.JOB_ID_PIT811M, this.resultList);
 
-        // pit812m 파일생성
-        this.fileService.makeFile(CmmnConst.JOB_ID_PIT812M, this.newsKeywordList);
+        // kot001m 파일생성
+        this.fileService.makeFile(CmmnConst.JOB_ID_KOT001M, this.resultList);
+
+        // kot002m 파일생성
+        this.fileService.makeFile(CmmnConst.JOB_ID_KOT002M, this.newsKeywordList);
 
         // html 파일생성
         replaceImgURLtaskFolder(this.attachedFilePath);
@@ -114,7 +130,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
         // imageDownload script 파일생성
         makeImgDownLoadScript(this.scriptPath + this.scriptFileName);
 
-        // imageDownload script 파일 실행
+        // imageDownload script 실행
         runImageDownloadScript(this.scriptPath + this.scriptFileName);
 
         this.writeCmmnLogEnd();
@@ -123,7 +139,6 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
     }
 
     /**
-     *
      * @param item
      * @return
      */

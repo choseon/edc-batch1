@@ -17,13 +17,30 @@ public class FileVO {
 
     private String fileName;
 
-    private String prefixFileName;
+    private String fullFilePath;
 
-    private String suffixFileName;
+    private String baseFileName;
 
-    public FileVO(String fileRootPath, String fileDirName, String fileName) {
+    private String fileExtension;
+
+    public FileVO(String fileRootPath, String fileDirName, String fileName, String fileExtension) {
         this.fileRootPath = fileRootPath;
         this.fileDirName = fileDirName;
+        this.baseFileName = fileName;
         this.fileName = fileName;
+        this.fileExtension = fileExtension;
+        this.filePath = fileRootPath + fileDirName + "/";
+    }
+
+    public void setAppendingFileName(String suffixFileName) {
+        this.fileName = this.baseFileName + "_" + suffixFileName;
+    }
+
+    public String getFileName() {
+        return this.fileName + "." + this.fileExtension;
+    }
+
+    public String getFullFilePath() {
+        return this.filePath + getFileName();
     }
 }

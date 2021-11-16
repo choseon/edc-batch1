@@ -74,7 +74,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         this.writeCmmnLogStart();
 
         this.companyCodeList = getCompanyCodeList();
-        if(ObjectUtils.isEmpty(this.companyCodeList)) {
+        if (ObjectUtils.isEmpty(this.companyCodeList)) {
             log.info("companyCodeList is empty");
             return null;
         } else {
@@ -94,7 +94,6 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
             this.resultList.add(resultVO);
 
             log.info("corpCode: {}, corpName: {}", resultVO.getCorp_code(), resultVO.getCorp_name());
-
         }
 
         // 파일생성
@@ -125,6 +124,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         factory.setReadTimeout(5000);//타임아웃 설정 5초
         RestTemplate restTemplate = new RestTemplate(factory);
 
+        // api 호출하여 압축파일 다운로드
         Path tempFile = restTemplate.execute(uri.toString(), HttpMethod.GET, null, response -> {
             Path zipFile = Files.createTempFile("opendart-", ".zip");
             InputStream ins = response.getBody();
@@ -138,13 +138,15 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         byte[] buf = Files.readAllBytes(tempFile);
         ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(buf));
 
+        // 압축파일 copy
+        String dataTempPath = this.fileService.getTempPath();
         ZipEntry zipEntry = zipInputStream.getNextEntry();
-        if(zipEntry != null) {
-            File dir = new File(this.fileService.getRootPath());
-            if(!dir.exists()) {
+        if (zipEntry != null) {
+            File dir = new File(dataTempPath);
+            if (!dir.exists()) {
                 dir.mkdirs();
             }
-            downloadFilePath = this.fileService.getRootPath() + zipEntry.getName(); //압축 해제하여 생성한 파일명
+            downloadFilePath = dataTempPath + zipEntry.getName(); //압축 해제하여 생성한 파일명
             File downloadFile = new File(downloadFilePath);
             if (downloadFile.exists()) { // 파일이 존재하면 삭제
                 Files.delete(downloadFile.toPath());
@@ -154,7 +156,19 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         zipInputStream.closeEntry();
         zipInputStream.close();
 
-        return !ObjectUtils.isEmpty(downloadFilePath) ? xmlParsing(downloadFilePath) : null;
+        // xml parsing
+        List<String> resultList = null;
+        if (!ObjectUtils.isEmpty(downloadFilePath)) {
+            resultList = xmlParsing(downloadFilePath);
+        }
+
+        // 압축파일 삭제
+        Files.delete(tempFile);
+        // 다운로드 파일 삭제
+//        Files.delete(Paths.get(tempPath));
+        this.fileService.cleanTempFile();
+
+        return resultList;
 
     }
 
@@ -189,25 +203,21 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         for (int temp = 0; temp < nList.getLength(); temp++) {
             Node nNode = nList.item(temp);
 
-            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) nNode;
-                //고유번호 가져오기
-                modifyDt = eElement.getElementsByTagName("modify_date").item(0).getTextContent();
-                stockCd = eElement.getElementsByTagName("stock_code").item(0).getTextContent();
-                stockCd = stockCd.trim();
+            if (nNode.getNodeType() != Node.ELEMENT_NODE) continue;
 
-                //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
-                if (getNewDataYN(lastModifyDt, modifyDt)) {
-                    if (!"".equals(stockCd)) {
-                        resultList.add(eElement.getElementsByTagName("corp_code").item(0).getTextContent());
-                    }
-                }
+            Element eElement = (Element) nNode;
+            //고유번호 가져오기
+            modifyDt = eElement.getElementsByTagName("modify_date").item(0).getTextContent();
+            stockCd = eElement.getElementsByTagName("stock_code").item(0).getTextContent();
+            stockCd = stockCd.trim();
+
+            if(ObjectUtils.isEmpty(stockCd)) continue;
+
+            //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
+            if (getNewDataYN(lastModifyDt, modifyDt)) {
+                resultList.add(eElement.getElementsByTagName("corp_code").item(0).getTextContent());
             }
         }
-
-        // 다운로드 파일 삭제
-        Files.delete(xmlFile.toPath());
-
         return resultList;
     }
 
@@ -231,6 +241,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
                 returnValue = true;
             }
         } catch (ParseException ex) {
+            log.info(ex.getMessage());
         }
         return returnValue;
     }

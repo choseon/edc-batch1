@@ -24,8 +24,8 @@ spring:
 #    kot: C:/dev/app_nas/anl_data/BA201/kotra/
 
 file:
-  resourcePath: C:/dev/edc-batch/resources/
-  fileRootPath: C:/dev/hdata/
+  resourcePath: C:/dev/edc-batch/resources/ee
+  rootPath: C:/dev/hdata/
   attachPath: C:/dev/app_nas/anl_data/
   logDirName: ht_log001m
   tempDirName: temp
@@ -232,8 +232,9 @@ api:
         ps:
     opd:
       header:
-        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4 #운영
+#        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4 #운영
 #        crtfcKey: 8c45ec2be39327de0815ab43c7a766b1d47bbcd6 #로컬
+        crtfcKey: f1f19f844829a7a7154088ee926b6a9085f7eaad #로컬
     opd001m:
       baseUrl: https://opendart.fss.or.kr/api/company.json
       param:
@@ -294,6 +295,7 @@ sftp:
 ---
 kot:
   scriptFileName: kot_img_download.sh
+  period: 7
 opd:
   callApiDelayTime: 50
   corpCodeUrl: https://opendart.fss.or.kr/api/corpCode.xml # 고유번호 압축 파일 다운로드 URL

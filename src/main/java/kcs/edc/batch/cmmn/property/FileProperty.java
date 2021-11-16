@@ -17,7 +17,7 @@ public class FileProperty {
 
     private String resourcePath;
 
-    private String fileRootPath;
+    private String rootPath;
 
     private String attachPath;
 

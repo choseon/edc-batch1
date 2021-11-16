@@ -93,7 +93,7 @@ public class CmmnFileVO {
 
     public CmmnFileVO(FileProperty fileProp, String jobId) {
         this.jobId = jobId;
-        this.FILE_ROOT_PATH = fileProp.getFileRootPath();
+        this.FILE_ROOT_PATH = fileProp.getRootPath();
         this.PRE_FIX_TABLE_NAME = fileProp.getDataFilePrefixName();
         this.LOG_DIR_NAME = fileProp.getLogDirName();
         this.TEMP_DIR_NAME = fileProp.getTempDirName();

@@ -1,6 +1,6 @@
 package kcs.edc.batch.cmmn.service;
 
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import io.micrometer.core.lang.Nullable;
 import kcs.edc.batch.cmmn.property.FileProperty;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
@@ -10,17 +10,19 @@ import kcs.edc.batch.cmmn.vo.Log001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Service
 public class FileService {
 
     private String LOG_FILE_STEP = "EXT_FILE_CREATE";
+    private String LOG_JOB_STAT_SUCCEEDED = "Succeeded";
+    private String LOG_JOB_STAT_FAIL = "Fail";
 
     @Autowired
     private FileProperty fileProperty;
@@ -50,7 +52,7 @@ public class FileService {
     private FileVO attachFileVO;
 
     /**
-     * 초기화
+     * FileService 초기화
      *
      * @param jobGroupId
      * @param jobId
@@ -66,27 +68,42 @@ public class FileService {
         log.info("FileService init() >> jobId: {}", this.jobId);
     }
 
+    /**
+     * fileVO 초기화
+     *
+     * @param jobId
+     */
     public void initFileVO(String jobId) {
         this.fileVO = new CmmnFileVO(this.fileProperty, this.jobId);
 
-        String fileRootPath = this.fileProperty.getFileRootPath();
+
+        String fileExtension = this.fileProperty.getDataFileExtension();
+
+        String fileRootPath = this.fileProperty.getRootPath();
         String dataFilePrefixName = this.fileProperty.getDataFilePrefixName();
-        String logDirName = this.fileProperty.getLogDirName();
-        String tempDirName = this.fileProperty.getTempDirName();
-        String dataFileExtension = this.fileProperty.getDataFileExtension();
         // 데이터 디렉토리명
         String dataDirName = dataFilePrefixName + jobId;
-        // 로그파일명
-        String logFileName = dataDirName + "_" + DateUtil.getCurrentTime2() + "." + dataFileExtension;
+        // 데이터 파일명
+        String dataFileName = dataDirName + "_" + this.baseDt;
+        this.dataFileVO = new FileVO(fileRootPath, dataDirName, dataFileName, fileExtension);
 
-        FileVO dataFileVO = new FileVO(fileRootPath, dataDirName, null);
-        FileVO logFileVO = new FileVO(fileRootPath, logDirName, logFileName);
-        FileVO tempFileVO = new FileVO(fileRootPath + dataDirName, tempDirName, null);
+        // 로그 디렉토리명
+        String logDirName = this.fileProperty.getLogDirName();
+        // 로그파일명
+        String logFileName = dataDirName + "_" + DateUtil.getCurrentTime2();
+        this.logFileVO = new FileVO(fileRootPath, logDirName, logFileName, fileExtension);
+
+        // 임시파일 디렉토리명
+        String tempRootPath = fileRootPath + dataDirName + "/";
+        String tempDirName = this.fileProperty.getTempDirName();
+        this.tempFileVO = new FileVO(tempRootPath, tempDirName, dataFileName, fileExtension);
+
         // 첨부파일 경로
-        if(this.fileProperty.getAttachDirName().containsKey(this.jobGroupId)) {
+        String jobGroupId = jobId.substring(0, 3);
+        if (this.fileProperty.getAttachDirName().containsKey(jobGroupId)) {
             String attachPath = this.fileProperty.getAttachPath();
-            String attachDirName = this.fileProperty.getAttachDirName().get(this.jobGroupId);
-            FileVO attachFileVO = new FileVO(attachPath, attachDirName, null);
+            String attachDirName = this.fileProperty.getAttachDirName().get(jobGroupId);
+            this.attachFileVO = new FileVO(attachPath, attachDirName, null, fileExtension);
         }
     }
 
@@ -99,10 +116,6 @@ public class FileService {
         return this.fileProperty.getResourcePath();
     }
 
-    public String getRootPath() {
-        return this.fileVO.getFILE_ROOT_PATH();
-    }
-
     /**
      * 첨부파일 경로
      *
@@ -112,100 +125,120 @@ public class FileService {
         return this.fileVO.getAttachedFilePath();
     }
 
+    /**
+     * 현재 jobId의 임시파일 경로
+     *
+     * @return
+     */
+    public String getTempPath() {
+        return getTempPath(this.jobId);
+    }
+
+    /**
+     * 파라미터로 넘어온 jobId의 임시파일 경로
+     *
+     * @param jobId
+     * @return
+     */
     public String getTempPath(String jobId) {
+
         initFileVO(jobId);
-        return this.fileVO.getTempFilePath();
+        return this.tempFileVO.getFilePath();
     }
 
+    /**************************************************************************************************
+     * 파일생성 관련
+     **************************************************************************************************/
 
-    /*********************************************************************************************************
-     * 파일생성
-     *********************************************************************************************************/
-
-    public <T> void makeFile2(String jobId, List<T> list, Boolean append) {
-
-        this.dataFileVO.setSuffixFileName(this.baseDt);
-
-        makeDataFile(list, fileVO, append);
-        makeLogFile(list, fileVO);
-
-    }
-
-    public <T> void makeFile(List<T> list, Boolean append) {
-        makeFile(this.jobId, list, append);
-    }
-
-    public <T> void makeFile(String jobId, List<T> list) {
-        makeFile(jobId, list, false);
-    }
-
+    /**
+     * 수집데이터파일 및 로그파일생성
+     *
+     * @param list
+     * @param <T>
+     */
     public <T> void makeFile(List<T> list) {
         makeFile(this.jobId, list, false);
     }
 
+    /**
+     * 수집데이터파일 및 로그파일생성
+     *
+     * @param list
+     * @param append
+     * @param <T>
+     */
+    public <T> void makeFile(List<T> list, Boolean append) {
+        makeFile(this.jobId, list, append);
+    }
+
+    /**
+     * 수집데이터파일 및 로그파일생성
+     *
+     * @param jobId
+     * @param list
+     * @param <T>
+     */
+    public <T> void makeFile(String jobId, List<T> list) {
+        makeFile(jobId, list, false);
+    }
+
+    /**
+     * 수집데이터파일 및 로그파일생성
+     *
+     * @param jobId
+     * @param list
+     * @param append
+     * @param <T>
+     */
     public <T> void makeFile(String jobId, List<T> list, Boolean append) {
-//        HiveFileVO hiveFileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), jobId);
-//        hiveFileVO.setDataFileName(this.baseDt);
 
-//        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
         initFileVO(jobId);
-        this.fileVO.setDataFileName(this.baseDt);
-
-        if (list.size() == 0) {
-            log.info("skip.... no data");
-            makeLogFile(list, fileVO);
-            return;
-        }
-        makeDataFile(list, fileVO, append);
-        makeLogFile(list, fileVO);
+        makeDataFile(list, this.dataFileVO, append);
+        makeLogFile(list, this.logFileVO);
     }
 
     /**
      * 수집데이터파일 생성
      *
      * @param list
+     * @param fileVO
+     * @param append
      * @param <T>
      */
-    private <T> void makeDataFile(List<T> list, CmmnFileVO fileVO) {
+    private <T> void makeDataFile(List<T> list, FileVO fileVO, Boolean append) {
 
-        makeDataFile(list, fileVO, false);
-    }
-
-    private <T> void makeDataFile(List<T> list, CmmnFileVO fileVO, Boolean append) {
-
-//        log.info("[{}] Data file make start", fileVO.getTableName());
-
-
-        FileUtil.makeTsvFile(fileVO.getDataFilePath(), fileVO.getDataFileName(), list, append);
-
-        log.info("[{}] DataFile : {}", fileVO.getDataDirName(), fileVO.getDataFilePath() + fileVO.getDataFileName());
-        log.info("[{}] DataFile listCnt : {}", fileVO.getDataDirName(), list.size());
+        if (ObjectUtils.isEmpty(list)) {
+            log.info("DataFile: listCnt is 0");
+        } else {
+            FileUtil.makeTsvFile(fileVO.getFilePath(), fileVO.getFileName(), list, append);
+            log.info("DataFile: {}, listCnt: {}", fileVO.getFullFilePath(), list.size());
+        }
     }
 
     /**
      * 성공 로그파일 생성
      *
      * @param list
+     * @param fileVO
      * @param <T>
      */
-    private <T> void makeLogFile(List<T> list, CmmnFileVO fileVO) {
+    private <T> void makeLogFile(List<T> list, FileVO fileVO) {
 
         Log001mVO logVO = new Log001mVO();
         logVO.setParamYmd(this.baseDt);
         logVO.setStep(this.LOG_FILE_STEP);
-        logVO.setTableName(fileVO.getDataDirName());
+        logVO.setTableName(fileVO.getFileDirName());
         logVO.setStartTime(this.startTime);
         logVO.setEndTime(DateUtil.getCurrentTime());
-        logVO.setJobStat("Succeeded");
+        logVO.setJobStat(LOG_JOB_STAT_SUCCEEDED);
         logVO.setTargSuccessRows(list.size());
 
         ArrayList<Object> arrayList = new ArrayList<>();
         arrayList.add(logVO);
 
         // 로그 파일 생성
-        FileUtil.makeTsvFile(fileVO.getLogFilePath(), fileVO.getLogFileName(), arrayList);
-
-        log.info("[{}] LogFile :  {}", fileVO.getDataDirName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
+        FileUtil.makeTsvFile(fileVO.getFilePath(), fileVO.getFileName(), arrayList);
+        log.info("logFile: {}", fileVO.getFullFilePath());
     }
 
     /**
@@ -215,113 +248,84 @@ public class FileService {
      */
     public void makeLogFile(String msg) {
 
-//        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
-//        fileVO.setDataFileName(this.baseDt);
-
-//        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
-        fileVO.setDataFileName(this.baseDt);
-
         Log001mVO logVO = new Log001mVO();
         logVO.setParamYmd(this.baseDt);
         logVO.setStep(this.LOG_FILE_STEP);
-        logVO.setTableName(fileVO.getDataDirName());
+        logVO.setTableName(this.logFileVO.getFileDirName());
         logVO.setStartTime(this.startTime);
         logVO.setEndTime(DateUtil.getCurrentTime());
-        logVO.setJobStat("Fail");
+        logVO.setJobStat(LOG_JOB_STAT_SUCCEEDED);
         logVO.setErrm(msg);
-        logVO.setTargSuccessRows(1);
+        logVO.setTargSuccessRows(0);
 
         ArrayList<Object> arrayList = new ArrayList<>();
         arrayList.add(logVO);
 
         // 로그 파일 생성
-        FileUtil.makeTsvFile(fileVO.getLogFilePath(), fileVO.getLogFileName(), arrayList);
-
-        log.info("[{}] LogFile :  {}", fileVO.getDataDirName(), fileVO.getLogFilePath() + fileVO.getLogFileName());
+        FileUtil.makeTsvFile(this.logFileVO.getFilePath(), this.logFileVO.getFileName(), arrayList);
+        log.info("logFile: {}", this.logFileVO.getFullFilePath());
 
     }
 
-
-
     /**
-     * 임시파일생성
+     * 임시파일 생성
      *
      * @param list
+     * @param fileName
      * @param <T>
      */
     public <T> void makeTempFile(List<T> list, String fileName) {
 
-//        if (list.size() == 0) {
-//            log.debug("list is null");
-//            return;
-//        }
+        this.tempFileVO.setAppendingFileName(fileName);
 
-//        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
-        fileVO.setTempFileName(fileName);
-
-//        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
-//        fileVO.setTempFileName(this.baseDt);
-
-
-        String tempFilePath = fileVO.getTempFilePath();
-        String tempFileName = fileVO.getTempFileName();
-
-        FileUtil.makeTsvFile(tempFilePath, tempFileName, list);
-
-        log.info("TempFile:  {} ", tempFilePath + tempFileName);
-
+        FileUtil.makeTsvFile(this.tempFileVO.getFilePath(), this.tempFileVO.getFileName(), list);
+        log.info("TempFile:  {} ", this.tempFileVO.getFullFilePath());
     }
 
-
     /**
-     * 임시파일 병합 (MultiThread로 생성된 임시파일)
+     * 임시파일 병합
+     *
+     * @param jobId
      */
     public void mergeTempFile(String jobId) {
 
-//        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), jobId);
-//        fileVO.setDataFileName(this.baseDt);
-
-//        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
-        this.fileVO.setDataFileName(this.baseDt);
-
-        FileUtil.mergeFile(this.fileVO.getTempFilePath(), this.fileVO.getDataFilePath(), this.fileVO.getDataFileName());
+        initFileVO(jobId);
+        FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileName());
         FileUtil.deleteFile(this.fileVO.getTempFilePath());
-
-        // 로그파일 생성
-
     }
 
     /**
      * 임시파일 제거
+     *
+     * @param jobId
      */
     public void cleanTempFile(String jobId) {
-//        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), jobId);
-//        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
 
-        if (Objects.isNull(this.fileVO)) {
-            initFileVO(jobId);
-        }
-        FileUtil.deleteFile(this.fileVO.getTempFilePath());
+        initFileVO(jobId);
+        FileUtil.deleteFile(this.tempFileVO.getFilePath());
     }
 
-    public boolean tempFileExsists(String suffixFileName) {
-//        HiveFileVO fileVO = new HiveFileVO(this.fileProperties.getHiveStorePath(), this.jobId);
-//        fileVO.setTempFileName(sufixFileName);
+    public void cleanTempFile() {
+        cleanTempFile(this.jobId);
+    }
 
-//        CmmnFileVO fileVO = new CmmnFileVO(this.fileProp, jobId);
-//        fileVO.setTempFileName(this.baseDt);
-        this.fileVO.setTempFileName(suffixFileName);
+    /**
+     * 임시파일 존재여부 체크
+     *
+     * @param suffixFileName
+     * @return
+     */
+    public boolean isTempFileExsists(String suffixFileName) {
 
-        String tempFilePath = this.fileVO.getTempFilePath();
-        String tempFileName = this.fileVO.getTempFileName();
-        File file = new File(tempFilePath + tempFileName);
+        this.tempFileVO.setAppendingFileName(suffixFileName);
+        File file = new File(this.tempFileVO.getFullFilePath());
 
         return file.exists();
-
     }
 
     public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
+
 
 }

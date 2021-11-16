@@ -74,7 +74,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 if (r.equals(p)) continue;
 
                 String suffixFileName = this.baseYear + "_" + r + "_" + p;
-                boolean tempFileExsists = this.fileService.tempFileExsists(suffixFileName);
+                boolean tempFileExsists = this.fileService.isTempFileExsists(suffixFileName);
                 if (tempFileExsists) {
                     log.info("tempFileExsists: {}", suffixFileName);
                     tempFileExsistsCnt++;

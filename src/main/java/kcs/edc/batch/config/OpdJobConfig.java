@@ -46,8 +46,7 @@ public class OpdJobConfig {
     @Scheduled(cron = "${scheduler.opd.cron}")
     public void launcher() throws Exception {
 
-        log.info("OpdJobConfig launcher...");
-        log.info("isActive: {}", this.isActive);
+        log.info("OpdJobConfig launcher ::: active: {}", this.isActive);
         if (!this.isActive) return;
 
         // 수집기준일 : D-1
@@ -70,8 +69,8 @@ public class OpdJobConfig {
     public Job opdJob() {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_OPD + CmmnConst.POST_FIX_JOB)
-                .start(iac003lStep())
-                .next(iac016lStep(null))
+                .start(opd001mStep())
+                .next(opd002mStep(null))
                 .build();
     }
 
@@ -82,10 +81,10 @@ public class OpdJobConfig {
      */
     @Bean
     @JobScope
-    public Step iac003lStep() {
+    public Step opd001mStep() {
 
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_IAC016l + CmmnConst.POST_FIX_STEP)
-                .tasklet(iac003lTasklet(null))
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_OPD001M + CmmnConst.POST_FIX_STEP)
+                .tasklet(opd001mTasklet(null))
                 .build();
     }
 
@@ -97,7 +96,7 @@ public class OpdJobConfig {
      */
     @Bean
     @StepScope
-    public Opd001mTasklet iac003lTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+    public Opd001mTasklet opd001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Opd001mTasklet();
     }
 
@@ -108,10 +107,10 @@ public class OpdJobConfig {
      */
     @Bean
     @JobScope
-    public Step iac016lStep(
+    public Step opd002mStep(
             @Value("#{jobExecutionContext[companyCodeList]}") List<String> companyCodeList) {
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_IAC003l + CmmnConst.POST_FIX_STEP)
-                .tasklet(iac016lTasklet(null, null))
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_OPD002M + CmmnConst.POST_FIX_STEP)
+                .tasklet(opd002mTasklet(null, null))
                 .build();
     }
 
@@ -123,7 +122,7 @@ public class OpdJobConfig {
      */
     @Bean
     @StepScope
-    public Opd002mTasklet iac016lTasklet(
+    public Opd002mTasklet opd002mTasklet(
             @Value("#{jobParameters[baseDt]}") String baseDt,
             @Value("#{jobExecutionContext[companyCodeList]}") List<String> companyCodeList) {
         return new Opd002mTasklet();

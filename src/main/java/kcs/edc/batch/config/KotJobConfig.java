@@ -63,7 +63,7 @@ public class KotJobConfig {
     @Bean
     @JobScope
     public Step kot001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_PIT811M + CmmnConst.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnConst.JOB_ID_KOT001M + CmmnConst.POST_FIX_STEP)
                 .tasklet(kot001mTasklet(baseDt))
                 .build();
     }

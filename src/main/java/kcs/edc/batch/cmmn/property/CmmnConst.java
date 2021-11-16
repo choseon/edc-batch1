@@ -47,11 +47,11 @@ public class CmmnConst {
 
     public static final String JOB_ID_UCT001M = "uct001m";
 
-    public static final String JOB_ID_IAC003l = "iac003l";
-    public static final String JOB_ID_IAC016l = "iac016l";
+    public static final String JOB_ID_OPD001M = "opd001m";
+    public static final String JOB_ID_OPD002M = "opd002m";
 
-    public static final String JOB_ID_PIT811M = "pit811m";
-    public static final String JOB_ID_PIT812M = "pit812m";
+    public static final String JOB_ID_KOT001M = "kot001m";
+    public static final String JOB_ID_KOT002M = "kot002m";
 
 
     /***********************************************************************************
