@@ -2,6 +2,7 @@ package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.jobs.uct.uct001m.Uct001mMergeTasklet;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mPartitioner;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +41,14 @@ public class UctJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    private int GRID_SIZE = 5;
-    private int POOL_SIZE = 5;
+    // multiThread 갯수를 application.yml에 설정
+    // API 호출시 1시간에 10,000번의 limit가 걸려 있기 때문에 적절하게 Thread 갯수 조정필요.
+    // 현재 3개로 설정했을때 limt 넘지 않으므로 limit 넘는 경우가 있다면 갯수를 줄여야함.
+    @Value("${uct.gridSize}")
+    private int GRID_SIZE;
+
+    @Value("${uct.gridSize}")
+    private int POOL_SIZE; // gridSize와 동일하게 적용
 
     @Value("${scheduler.uct.isActive}")
     private Boolean isActive;
@@ -58,11 +65,11 @@ public class UctJobConfig {
         log.info("isActive: {}", this.isActive);
         if (!this.isActive) return;
 
-        // 수집기준일 : 오늘
-        String baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        // 수집기준일 : 월배치 이므로 수집기준일은 금월로 설정한다
+        String baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
 
         // 수집기준년도 : 전년도, 전전년도 2년치
-        String baseYear = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
+        String baseYear = LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy"));
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)
@@ -73,13 +80,13 @@ public class UctJobConfig {
         try {
             jobLauncher.run(uctJob(), jobParameters);
         } catch (JobExecutionAlreadyRunningException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         } catch (JobRestartException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         } catch (JobInstanceAlreadyCompleteException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         } catch (JobParametersInvalidException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         }
     }
 
@@ -96,17 +103,18 @@ public class UctJobConfig {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_JOB)
 //                .start(uctFileCleanStep(null)) // temp 파일 삭제
-//                .start(uct001mPartitionStep(null))
-                .start(uct001mStep())
-                    .on("COMPLETED")
-                    .to(uctFileMergeStep(null))
-                    .on("*")
-                    .end()
-                .from(uct001mPartitionStep(null))
+                .start(uct001mPartitionStep(null))
+                .next(uctFileMergeStep(null, null))
+//                .start(uct001mStep())
+//                    .on("COMPLETED")
+//                    .to(uctFileMergeStep(null))
+//                    .on("*")
+//                    .end()
+//                .from(uct001mPartitionStep(null))
 //                .on("*")
 //                .to(uctFileMergeStep(null))
 //                .next(uctFileMergeStep(null)) // temp 파일 병합
-                .end()
+//                .end()
                 .build();
     }
 
@@ -181,10 +189,12 @@ public class UctJobConfig {
      */
     @Bean
     @JobScope
-    public Step uctFileMergeStep(@Value("#{jobExecutionContext[jobId]}") String jobId) {
+    public Step uctFileMergeStep(
+            @Value("#{jobExecutionContext[jobId]}") String jobId,
+            @Value("#{jobExecutionContext[baseYearList]}") List<String> baseYearList) {
 
         return stepBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_FILE_MERGE_STEP)
-                .tasklet(uctFileMergeTasklet(null))
+                .tasklet(uctFileMergeTasklet(null, null))
                 .build();
     }
 
@@ -196,8 +206,11 @@ public class UctJobConfig {
      */
     @Bean
     @StepScope
-    public CmmnFileTasklet uctFileMergeTasklet(@Value("#{jobExecutionContext[jobId]}") String jobId) {
-        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE);
+    public Uct001mMergeTasklet uctFileMergeTasklet(
+            @Value("#{jobExecutionContext[jobId]}") String jobId,
+            @Value("#{jobExecutionContext[baseYearList]}") List<String> baseYearList) {
+//        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE);
+        return new Uct001mMergeTasklet();
     }
 
     /**

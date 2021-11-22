@@ -4,17 +4,13 @@ import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.util.ZipUtil;
 import kcs.edc.batch.jobs.opd.opd002m.vo.Opd002mVO;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.*;
@@ -22,8 +18,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +36,6 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
 
     private String attachFilePath;
 
-    private String dailyDirName;
-
     @Value("${opd.callApiDelayTime}")
     private int callApiDelayTime;
 
@@ -59,9 +51,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
         super.beforeStep(stepExecution);
         this.crtfcKey = this.apiService.getJobPropHeader(this.jobGroupId, "crtfcKey");
         this.pblntfDetailList = getPblntfDetailTy();
-        this.attachFilePath = this.fileService.getAttachedFilePath();
-        this.dailyDirName = this.baseDt;
-
+        this.attachFilePath = this.fileService.getAttachedFilePath() + this.baseDt + File.separator;
     }
 
     @Override
@@ -76,45 +66,58 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
             log.info("CompanyCodeList.size(): {}", this.companyCodeList.size());
         }
 
+        // 로직 수정 필요
+        // 초기적재 실행시에는 companyList를 루프로 조회
+        // 당일 변경분 적재는 companyCode 필요없음.
+        this.companyCodeList.clear();
+        this.companyCodeList.add("");
+
+        int pageNo = 1;
+        int totPageNo = 0;
+
+        // 당일 변경적재분 호출
         for (String companyCode : this.companyCodeList) { // 고유번호 목록
             for (String pblnt : this.pblntfDetailList) { // 공시상세유형 목록
 
-                int pageNo = 1;
-                int totPageNo = 0;
-
                 do {
-
-                    String pblntf_ty = pblnt.substring(0, 1);
+                    String pblntfType = pblnt.substring(0, 1); // 공시유형코드
 
                     UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
                     builder.replaceQueryParam("crtfc_key", this.crtfcKey);
                     builder.replaceQueryParam("corp_code", companyCode);
                     builder.replaceQueryParam("bgn_de", this.baseDt);
                     builder.replaceQueryParam("end_de", this.baseDt);
-                    builder.replaceQueryParam("pblntf_ty", pblntf_ty);
+                    builder.replaceQueryParam("pblntf_ty", pblntfType);
                     builder.replaceQueryParam("pblntf_detail_ty", pblnt);
                     builder.replaceQueryParam("page_no", pageNo);
                     URI uri = builder.build().toUri();
 
-//                    Thread.sleep(this.callApiDelayTime);
+                    Thread.sleep(this.callApiDelayTime);
 
                     Opd002mVO resultVO = this.apiService.sendApiForEntity(uri, Opd002mVO.class);
                     if (resultVO.getStatus().equals("000")) {
-                        log.info("companyCode: {}, pblntf: {}, list: {} ", companyCode, pblnt, resultVO.getList().size());
+//                        log.info("companyCode: {}, pblntf: {}, list: {} ", companyCode, pblnt, resultVO.getList().size());
 
                         totPageNo = Integer.parseInt(resultVO.getTotal_page());
 
                         for (Opd002mVO.Item item : resultVO.getList()) {
 
-                            item.setPblntf_ty(pblntf_ty);
+                            item.setPblntf_ty(pblntfType);
                             item.setPblntf_detail_ty(pblnt);
-                            item.setFile_path_nm(this.attachFilePath);
-                            item.setRcpn_file_path_nm(this.dailyDirName); // 년월일
+                            item.setFile_path_nm(this.fileService.getAttachedFilePath());
+                            item.setRcpn_file_path_nm(this.baseDt + File.separator); // 년월일
                             item.setSrbk_file_nm("[" + item.getCorp_name() + "]" + item.getReport_nm() + ".zip");
 
-                            // 저장할 파일명
-                            String saveFileNm = item.getRcept_no() + "_" + pblntf_ty + "_" + pblnt + ".zip";
-                            item.setSorg_file_nm(saveFileNm);
+                            // 원문파일다운로드
+                            if(!ObjectUtils.isEmpty(item.getStock_code().trim())) {
+                                // 공시 뷰어에 접속하여 보고서 첨부파일 번호 목록 갖고 오기
+                                ArrayList<String> dcmNoList = getDcmNoList(item.getRcept_no());
+
+                                //압축파일명 = 첨부파일 다운로드 및 압축하기
+                                String saveFileNm = saveRptFile(dcmNoList, item.getRcept_no(), item.getPblntf_ty(), item.getPblntf_detail_ty(), item.getReport_nm());
+                                item.setSorg_file_nm(saveFileNm);
+                                log.info("download corpName: {}, saveFileNm: {}", item.getCorp_name(), saveFileNm);
+                            }
 
                             this.resultList.add(item);
                         }
@@ -132,164 +135,9 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
         // 데이터파일생성
         this.fileService.makeFile(this.resultList);
 
-        // 원문파일다운로드
-        for (Object o : this.resultList) {
-
-            Opd002mVO.Item item = (Opd002mVO.Item) o;
-            if (ObjectUtils.isEmpty(item.getStock_code())) continue;
-
-            // 공시 뷰어에 접속하여 보고서 첨부파일 번호 목록 갖고 오기
-            ArrayList<String> dcmNoList = getDcmNoList(item.getRcept_no());
-
-            //압축파일명 = 첨부파일 다운로드 및 압축하기
-            saveRptFile(dcmNoList, item.getRcept_no(), item.getPblntf_ty(), item.getPblntf_detail_ty(), item.getReport_nm());
-
-//            downloadReportFile(item.getRcept_no(), this.attachFilePath + this.dailyDirName, item.getSorg_file_nm());
-        }
-
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
-    }
-
-    /**
-     * 보고서 원문 파일 다운받기
-     *
-     * @param rceptNo
-     * @param
-     * @param fileNm
-     * @throws IOException
-     */
-    public void downloadReportFile(String rceptNo, String filePath, String fileNm) throws IOException {
-
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setConnectTimeout(5000); //타임아웃 설정 5초
-        factory.setReadTimeout(5000);//타임아웃 설정 5초
-        RestTemplate restTemplate = new RestTemplate(factory);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(this.documentUrl);
-        builder.queryParam("crtfc_key", this.crtfcKey);
-        builder.queryParam("rcept_no", rceptNo);
-        URI uri = builder.build().toUri();
-
-        Path tempFile = restTemplate.execute(uri, HttpMethod.GET, null, response -> {
-            Path zipFile = Files.createTempFile("opendart-", ".zip");
-            InputStream ins = response.getBody();
-            byte[] bytes = IOUtils.toByteArray(ins);
-            Files.write(zipFile, bytes);
-            return zipFile;
-        });
-
-        //압축파일 저장하기
-        saveZipFile(filePath, fileNm, Files.readAllBytes(tempFile));
-
-        // Temp파일 삭제하기
-        Files.delete(tempFile);
-
-    }
-
-    /**
-     * 압축파일 저장하기
-     *
-     * @param filePath
-     * @param fileNm
-     * @param buf
-     */
-    public void saveZipFile(String filePath, String fileNm, byte[] buf) {
-
-        if (buf == null) return;
-
-        File dir = new File(filePath);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
-        try {
-            File file = new File(filePath + fileNm);
-            log.info("saveFile: {}", file.getPath());
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(buf);
-            fos.close();
-        } catch (Throwable e) {
-            log.info(e.getMessage());
-        }
-
-    }
-
-    //공시상세유형
-    private String[] getPblntfDetailTy() {
-        String[] cd = new String[57];
-
-        cd[0] = "A001"; //	사업보고서
-        cd[1] = "A002"; //	반기보고서
-        cd[2] = "A003"; //	분기보고서
-        cd[3] = "A004"; //	등록법인결산서류(자본시장법이전)
-        cd[4] = "A005"; //	소액공모법인결산서류
-        cd[5] = "B001"; //	주요사항보고서
-        cd[6] = "B002"; //	주요경영사항신고(자본시장법 이전)
-        cd[7] = "B003"; //	최대주주등과의거래신고(자본시장법 이전)
-        cd[8] = "C001"; //	증권신고(지분증권)
-        cd[9] = "C002"; //	증권신고(채무증권)
-        cd[10] = "C003"; //	증권신고(파생결합증권)
-        cd[11] = "C004"; //	증권신고(합병등)
-        cd[12] = "C005"; //	증권신고(기타)
-        cd[13] = "C006"; //	소액공모(지분증권)
-        cd[14] = "C007"; //	소액공모(채무증권)
-        cd[15] = "C008"; //	소액공모(파생결합증권)
-        cd[16] = "C009"; //	소액공모(합병등)
-        cd[17] = "C010"; //	소액공모(기타)
-        cd[18] = "C011"; //	호가중개시스템을통한소액매출
-        cd[19] = "D001"; //	주식등의대량보유상황보고서
-        cd[20] = "D002"; //	임원ㆍ주요주주특정증권등소유상황보고서
-        cd[21] = "D003"; //	의결권대리행사권유
-        cd[22] = "D004"; //	공개매수
-        cd[23] = "E001"; //	자기주식취득/처분
-        cd[24] = "E002"; //	신탁계약체결/해지
-        cd[25] = "E003"; //	합병등종료보고서
-        cd[26] = "E004"; //	주식매수선택권부여에관한신고
-        cd[27] = "E005"; //	사외이사에관한신고
-        cd[28] = "E006"; //	주주총회소집공고
-        cd[29] = "E007"; //	시장조성/안정조작
-        cd[30] = "E008"; //	합병등신고서(자본시장법 이전)
-        cd[31] = "E009"; //	금융위등록/취소(자본시장법 이전)
-        cd[32] = "F001"; //	감사보고서
-        cd[33] = "F002"; //	연결감사보고서
-        cd[34] = "F003"; //	결합감사보고서
-        cd[35] = "F004"; //	회계법인사업보고서
-        cd[36] = "F005"; //	감사전재무제표미제출신고서
-        cd[37] = "G001"; //	증권신고(집합투자증권-신탁형)
-        cd[38] = "G002"; //	증권신고(집합투자증권-회사형)
-        cd[39] = "G003"; //	증권신고(집합투자증권-합병)
-        cd[40] = "H001"; //	자산유동화계획/양도등록
-        cd[41] = "H002"; //	사업/반기/분기보고서
-        cd[42] = "H003"; //	증권신고(유동화증권등)
-        cd[43] = "H004"; //	채권유동화계획/양도등록
-        cd[44] = "H005"; //	수시보고
-        cd[45] = "H006"; //	주요사항보고서
-        cd[46] = "I001"; //	수시공시
-        cd[47] = "I002"; //	공정공시
-        cd[48] = "I003"; //	시장조치/안내
-        cd[49] = "I004"; //	지분공시
-        cd[50] = "I005"; //	증권투자회사
-        cd[51] = "I006"; //	채권공시
-        cd[52] = "J001"; //	대규모내부거래관련
-        cd[53] = "J002"; //	대규모내부거래관련(구)
-        cd[54] = "J004"; //	기업집단현황공시
-        cd[55] = "J005"; //	비상장회사중요사항공시
-        cd[56] = "J006"; //	기타공정위공시
-
-        //A ", ); 정기공시
-        //B ", ); 주요사항보고
-        //C ", ); 발행공시
-        //D ", ); 지분공시
-        //E ", ); 기타공시
-        //F ", ); 외부감사관련
-        //G ", ); 펀드공시
-        //H ", ); 자산유동화
-        //I ", ); 거래소공시
-        //j ", ); 공정위공시
-
-        return cd;
     }
 
     /**
@@ -301,8 +149,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
     private ArrayList<String> getDcmNoList(String rcept_no) {
         // 공시 보고서 뷰어에 접속하여 html 파일 읽어오기 시작
         String viewerUrl = "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=" + rcept_no; // 뷰어 url
-        String viewerFilePath = this.attachFilePath + this.dailyDirName + File.separator;
-        String viewerFileNm = viewerFilePath + "viewerFileNm_" + rcept_no + ".txt"; //내려받을 파일명 지정
+        String viewerFileNm = this.attachFilePath + "viewerFileNm_" + rcept_no + ".txt"; //내려받을 파일명 지정
 
         ArrayList<String> returnArr = new ArrayList<String>();
 
@@ -316,7 +163,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
 
         try {
             URL url = new URL(viewerUrl);
-            File dir = new File(viewerFilePath);
+            File dir = new File(this.attachFilePath);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
@@ -452,7 +299,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
         fileType[2] = "zip"; //
 
         //다운로드 받은 파일을 압축하기 전 저장
-        File Folder = new File(this.attachFilePath + this.dailyDirName + File.separator + rcept_no + pblntf_ty + pblntf_dtl_ty);
+        File Folder = new File(this.attachFilePath + rcept_no + pblntf_ty + pblntf_dtl_ty);
 
         if (!Folder.exists()) {
             Folder.mkdir();
@@ -519,7 +366,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                     }
 
                 } else {
-                    System.out.println("No file to download. Server replied HTTP code: " + responseCode + "--" + url);
+                    log.info("No file to download. Server replied HTTP code: " + responseCode + "--" + url);
                 }
                 httpConn.disconnect();
                 Thread.sleep(callApiDelayTime);//1분에 1000건을 넘지 않기 위한 지연
@@ -529,11 +376,89 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
 
         //파일 압축하기
         //압축할 파일이 있는 디렉토리, 압축한 zip파일을 저장할 디렉토리, 압축zip파일명
-        ZipUtil.createZipFile(Folder.getPath(), this.attachFilePath + this.dailyDirName, zipFileNm);
+        ZipUtil.createZipFile(Folder.getPath(), this.attachFilePath, zipFileNm);
 
 
         return zipFileNm;
     }
+
+
+    //공시상세유형
+    private String[] getPblntfDetailTy() {
+        String[] cd = new String[57];
+
+        cd[0] = "A001"; //	사업보고서
+        cd[1] = "A002"; //	반기보고서
+        cd[2] = "A003"; //	분기보고서
+        cd[3] = "A004"; //	등록법인결산서류(자본시장법이전)
+        cd[4] = "A005"; //	소액공모법인결산서류
+        cd[5] = "B001"; //	주요사항보고서
+        cd[6] = "B002"; //	주요경영사항신고(자본시장법 이전)
+        cd[7] = "B003"; //	최대주주등과의거래신고(자본시장법 이전)
+        cd[8] = "C001"; //	증권신고(지분증권)
+        cd[9] = "C002"; //	증권신고(채무증권)
+        cd[10] = "C003"; //	증권신고(파생결합증권)
+        cd[11] = "C004"; //	증권신고(합병등)
+        cd[12] = "C005"; //	증권신고(기타)
+        cd[13] = "C006"; //	소액공모(지분증권)
+        cd[14] = "C007"; //	소액공모(채무증권)
+        cd[15] = "C008"; //	소액공모(파생결합증권)
+        cd[16] = "C009"; //	소액공모(합병등)
+        cd[17] = "C010"; //	소액공모(기타)
+        cd[18] = "C011"; //	호가중개시스템을통한소액매출
+        cd[19] = "D001"; //	주식등의대량보유상황보고서
+        cd[20] = "D002"; //	임원ㆍ주요주주특정증권등소유상황보고서
+        cd[21] = "D003"; //	의결권대리행사권유
+        cd[22] = "D004"; //	공개매수
+        cd[23] = "E001"; //	자기주식취득/처분
+        cd[24] = "E002"; //	신탁계약체결/해지
+        cd[25] = "E003"; //	합병등종료보고서
+        cd[26] = "E004"; //	주식매수선택권부여에관한신고
+        cd[27] = "E005"; //	사외이사에관한신고
+        cd[28] = "E006"; //	주주총회소집공고
+        cd[29] = "E007"; //	시장조성/안정조작
+        cd[30] = "E008"; //	합병등신고서(자본시장법 이전)
+        cd[31] = "E009"; //	금융위등록/취소(자본시장법 이전)
+        cd[32] = "F001"; //	감사보고서
+        cd[33] = "F002"; //	연결감사보고서
+        cd[34] = "F003"; //	결합감사보고서
+        cd[35] = "F004"; //	회계법인사업보고서
+        cd[36] = "F005"; //	감사전재무제표미제출신고서
+        cd[37] = "G001"; //	증권신고(집합투자증권-신탁형)
+        cd[38] = "G002"; //	증권신고(집합투자증권-회사형)
+        cd[39] = "G003"; //	증권신고(집합투자증권-합병)
+        cd[40] = "H001"; //	자산유동화계획/양도등록
+        cd[41] = "H002"; //	사업/반기/분기보고서
+        cd[42] = "H003"; //	증권신고(유동화증권등)
+        cd[43] = "H004"; //	채권유동화계획/양도등록
+        cd[44] = "H005"; //	수시보고
+        cd[45] = "H006"; //	주요사항보고서
+        cd[46] = "I001"; //	수시공시
+        cd[47] = "I002"; //	공정공시
+        cd[48] = "I003"; //	시장조치/안내
+        cd[49] = "I004"; //	지분공시
+        cd[50] = "I005"; //	증권투자회사
+        cd[51] = "I006"; //	채권공시
+        cd[52] = "J001"; //	대규모내부거래관련
+        cd[53] = "J002"; //	대규모내부거래관련(구)
+        cd[54] = "J004"; //	기업집단현황공시
+        cd[55] = "J005"; //	비상장회사중요사항공시
+        cd[56] = "J006"; //	기타공정위공시
+
+        //A ", ); 정기공시
+        //B ", ); 주요사항보고
+        //C ", ); 발행공시
+        //D ", ); 지분공시
+        //E ", ); 기타공시
+        //F ", ); 외부감사관련
+        //G ", ); 펀드공시
+        //H ", ); 자산유동화
+        //I ", ); 거래소공시
+        //j ", ); 공정위공시
+
+        return cd;
+    }
+
 
 
 }

@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * 파일 병합, 삭제와 관련된 공통 Tasklet
+ */
 @Slf4j
 @StepScope
 public class CmmnFileTasklet implements Tasklet {
@@ -44,11 +47,10 @@ public class CmmnFileTasklet implements Tasklet {
         log.info("START JOB :::: {} ", this.getClass().getSimpleName());
         log.info("####################################################");
         log.info("actionType : {}", this.actionType);
-        log.info("jobId: {}", this.jobId);
-
 
         if(this.actionType.equals(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE)) { // file merge
 
+            log.info("jobId: {}", this.jobId);
             this.fileService.mergeTempFile(this.jobId);
 
         } else if(this.actionType.equals(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN)) { // file clean
@@ -56,6 +58,7 @@ public class CmmnFileTasklet implements Tasklet {
             if(Objects.nonNull(this.jobList)) {
 
                 for (String jobId : this.jobList) {
+                    log.info("jobId: {}", jobId);
                     this.fileService.cleanTempFile(jobId);
                 }
             } else {

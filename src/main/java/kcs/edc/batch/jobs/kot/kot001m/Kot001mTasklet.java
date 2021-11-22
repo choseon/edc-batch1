@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -46,7 +47,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
     private String scriptFileName;
 
     @Value("${kot.period}")
-    private int period;
+    private int period; // 수집기간
 
     private static List<String> imgURLsOrg = new ArrayList<String>();
     private static List<String> imgChangePaths = new ArrayList<String>();
@@ -74,9 +75,9 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
         this.writeCmmnLogStart();
 
+        // 기준일부터 period 기간동안 api 호출
         for (int i = 0; i < period; i++) {
 
-            // 기준일부터 7일 기간동안 api 검색
             String searchDate = DateUtil.getOffsetDate(this.baseDt, (i * -1));
             log.info("searchDate: {}", searchDate);
 
@@ -96,18 +97,21 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
             // 결과리스트 데이터 가공
             for (Kot001mVO.Item item : resultVO.getItems()) {
-                String htmlPath = "bbstxSn_" + item.getBbstxSn() + ".html";
 
-                if (Objects.isNull(item.getNewsBdt())) {
+                item.setResultCode(resultVO.getResultCode());
+                item.setResultMsg(resultVO.getResultMsg());
+                item.setNumOfRows(resultVO.getNumOfRows());
+                item.setPageNo(resultVO.getPageNo());
+                item.setTotalCount(resultVO.getTotalCount());
 
-                } else {
-                    // html 파일 생성
-                    htmlPath = this.attachedFilePath + item.getBbstxSn() + "/" + htmlPath;
-                    makeHtmlFile(htmlPath, item.getNewsBdt());
-                }
+                // html 파일
+                String htmlFileName = "bbstxSn_" + item.getBbstxSn() + ".html";
+                String htmlPath = this.attachedFilePath + item.getBbstxSn() + "/" + htmlFileName;
+                makeHtmlFile(htmlPath, item.getNewsBdt());
 
                 item.setNewsBdt(htmlPath);
-                item.setCletFileCtrnDt(this.baseDt);
+                item.setLoadCmplDttm(DateUtil.getCurrentTime());
+                item.setCletFileCtrnDt(DateUtil.getCurrentDate());
                 this.resultList.add(item);
 
                 if (Objects.nonNull(item.getKwrd())) {
@@ -167,12 +171,12 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
      */
     private void makeHtmlFile(String htmlPath, String input) {
         try {
-            log.info("htmlFile: {}", htmlPath);
+            log.info("htmlPath: {}", htmlPath);
             BufferedWriter bw = KOTFileUtil.getBufferedWriter(htmlPath, this.encoding);
             bw.write(input);
             bw.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         }
     }
 
@@ -229,7 +233,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
                         bw.write(temp[i].replace(imgURLOrg.substring(0, idx), parentFile) + " ");
                         this.imgChangePaths.add(parentFile);
 
-                        log.info("imagePath: {}", parentFile);
+                        log.info("download imagePath: {}", imgURLOrg);
 
                     } else {
                         bw.write(temp[i] + " ");

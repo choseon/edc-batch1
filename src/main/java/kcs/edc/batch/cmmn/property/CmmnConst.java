@@ -77,6 +77,7 @@ public class CmmnConst {
     public static final String RESOURCE_FILE_NAME_SOM_KCS_KEWORD = "som_kcs_keyword.txt";
     public static final String RESOURCE_FILE_NAME_UCT_AREA = "uct_area.txt";
     public static final String RESOURCE_FILE_NAME_KCS_KEYWORD = "kcs_keyword.txt";
+    public static final String RESOURCE_FILE_NAME_UCT_SCRIPT = "uct_file_merge_script.sh";
 
     /***********************************************************************************
      * FILE ACTION TYPE

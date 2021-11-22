@@ -28,6 +28,11 @@ public class CmmnJob implements StepExecutionListener {
     @Value("#{jobParameters[baseDt]}")
     protected String baseDt; // 수집기준일
 
+    @Value("#{jobParameters[fromDt]}")
+    protected String fromDt; // 수집시작일
+
+    protected List<String> baseDtList; // 수집기준일 목록
+
     protected List<Object> resultList = new ArrayList<>(); // 최종결과리스트
     protected ExecutionContext jobExecutionContext;
 
@@ -43,11 +48,9 @@ public class CmmnJob implements StepExecutionListener {
         }
         this.jobId = getCurrentJobId();
         this.jobGroupId = getCurrentJobGroupId(this.jobId);
-//        this.jobGroupId = getJobGroupId(this.jobId);
-
 
         this.apiService.init(this.jobId);
-        this.fileService.init(this.jobGroupId, this.jobId, this.baseDt);
+        this.fileService.init(this.jobId, this.baseDt);
 
         // step간 파라미터 넘겨주기 위해 jobExcutionContext 초기화
         // afterStep에서 넘겨줄 값 셋팅해준다
@@ -79,6 +82,10 @@ public class CmmnJob implements StepExecutionListener {
         String jobId = null;
         if (className.endsWith("Tasklet")) {
             jobId = className.replace("Tasklet", "").toLowerCase();
+            if(jobId.length() > 7) {
+                jobId = jobId.substring(0,7);
+                log.info("jobId::::: {}", jobId);
+            }
         } else {
             jobId = className;
         }

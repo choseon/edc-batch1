@@ -12,6 +12,8 @@ spring:
   batch:
     job:
       names: ${job.name:NONE}
+server:
+  port: 8081
 #file:
 #  resourcePath: C:/dev/edc-batch/resources/
 #  fileRootPath: C:/dev/hdata/
@@ -24,9 +26,9 @@ spring:
 #    kot: C:/dev/app_nas/anl_data/BA201/kotra/
 
 file:
-  resourcePath: C:/dev/edc-batch/resources/ee
+  resourcePath: C:/dev/edc-batch/resources/
   rootPath: C:/dev/hdata/
-  attachPath: C:/dev/app_nas/anl_data/
+  attachRootPath: C:/dev/app_nas/anl_data/
   logDirName: ht_log001m
   tempDirName: temp
   dataFilePrefixName: ht_
@@ -40,32 +42,57 @@ spring:
   batch:
     job:
       names: ${job.name:NONE}
+server:
+  port: 8081
 file:
-  resourcePath: /app/ext-batch/dev/resources/
-  fileRootPath: /app/ext-batch/dev/hdata/
+  resourcePath: /data/edc-batch/dev/resources/
+  rootPath: /data/edc-batch/dev/hdata/
+  attachRootPath: /data/edc-batch/dev/app_nas/anl_data/
   logDirName: ht_log001m
   tempDirName: temp
-  prefixTableName: ht_
-  fileExtension: txt
-  attachPath:
-    opd: /app/ext-batch/dev/app_nas/anl_data/BA204/opendart/
-    kot: /app/ext-batch/dev/app_nas/anl_data/BA201/kotra/
+  dataFilePrefixName: ht_
+  dataFileExtension: txt
+  attachDirName:
+    opd: BA204/opendart
+    kot: BA201/kotra
+#  resourcePath: /app/ext-batch/dev/resources/
+#  fileRootPath: /app/ext-batch/dev/hdata/
+#  logDirName: ht_log001m
+#  tempDirName: temp
+#  prefixTableName: ht_
+#  fileExtension: txt
+#  attachPath:
+#    opd: /app/ext-batch/dev/app_nas/anl_data/BA204/opendart/
+#    kot: /app/ext-batch/dev/app_nas/anl_data/BA201/kotra/
 ---
 spring:
   profiles: prod
   batch:
     job:
       names: ${job.name:NONE}
+server:
+  port: 8080
 file:
-  resourcePath: /app/ext-batch/prod/resources/
-  fileRootPath: /hdata/
+  resourcePath: /data/edc-batch/prod/resources/
+  rootPath: /hdata/
+  attachRootPath: /app_nas/anl_data/
   logDirName: ht_log001m
   tempDirName: temp
-  prefixTableName: ht_
-  fileExtension: txt
-  attachPath:
-    opd: /app_nas/anl_data/BA204/opendart/
-    kot: /app_nas/anl_data/BA201/kotra/
+  dataFilePrefixName: ht_
+  dataFileExtension: txt
+  attachDirName:
+    opd: BA204/opendart
+    kot: BA201/kotra
+#  resourcePath: /app/ext-batch/prod/resources/
+#  fileRootPath: /hdata/
+#  logDirName: ht_log001m
+#  tempDirName: temp
+#  prefixTableName: ht_
+#  fileExtension: txt
+#  attachPath:
+#    opd: /app_nas/anl_data/BA204/opendart/
+#    kot: /app_nas/anl_data/BA201/kotra/
+
 ---
 # Job Scheduler
 scheduler:
@@ -294,15 +321,19 @@ sftp:
 #      remoteFileName: HT_NAV003M_%s
 ---
 kot:
-  scriptFileName: kot_img_download.sh
-  period: 7
+  scriptFileName: kot_img_download.sh # 이미지다운로드 스크립트 파일명
+  period: 7 # 데이터수집 기간(7일)
 opd:
-  callApiDelayTime: 50
+  callApiDelayTime: 70 # Api 호출시 DelayTime (1시간에 1000번 이하 limit)
   corpCodeUrl: https://opendart.fss.or.kr/api/corpCode.xml # 고유번호 압축 파일 다운로드 URL
   documentUrl: https://opendart.fss.or.kr/api/document.xml # 보고서 원문파일 다운로드 URL
+  viewerUrl: https://dart.fss.or.kr/dsaf001/main.do # 공시 보고서 뷰어 URL
   pblntfTypeFileName: opd_pblntf_type.json # 공시상세유형 목록
+  period: 10
 uct:
   areaListFileName: uct_area.txt
+  gridSize: 3 # multiThread 갯수
+  period: 2 # 데이터수집 기간 (2년)
 som:
   somKcsKeywordFileName: som_kcs_keyword.txt
 big:

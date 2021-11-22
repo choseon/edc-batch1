@@ -70,7 +70,7 @@ public class SftpService {
 
             File dir = new File(downloadPath);
             if (!dir.exists()) {
-                dir.mkdirs();
+                boolean mkdirs = dir.mkdirs();
             }
 
             String pathName = downloadPath + remoteFileName.toLowerCase();

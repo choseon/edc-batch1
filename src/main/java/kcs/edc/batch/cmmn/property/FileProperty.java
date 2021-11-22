@@ -15,74 +15,44 @@ import java.util.Set;
 @ConfigurationProperties(prefix = "file")
 public class FileProperty {
 
+    /**
+     * 리소스파일 경로
+     */
     private String resourcePath;
 
+    /**
+     * 파일 루트경로
+     */
     private String rootPath;
 
-    private String attachPath;
+    /**
+     * 첨부파일 루트경로
+     */
+    private String attachRootPath;
 
+    /**
+     * 로그파일 디렉토리명
+     */
     private String logDirName;
 
+    /**
+     * 임시파일 디렉토리명
+     */
     private String tempDirName;
 
+    /**
+     * 데이터파일 테이블명 접두어(ht_)
+     */
     private String dataFilePrefixName;
 
+    /**
+     * 파일 확장자
+     */
     private String dataFileExtension;
 
+    /**
+     * 첨부파일 디렉토리명
+     */
     private Map<String, String> attachDirName;
-
-
-
-//    private String resourcePath;
-//
-//    private List<String> portalJobGroupIdList;
-//
-//    private Map<String, FileProp> destination;
-////    private List<FileProp> destination;
-//
-//    @Getter
-//    @Setter
-//    public static class FileProp {
-//
-////        private String name;
-////        private String rootPath;
-////        private Map<String, Map<String, String>> rootPath;
-//        private Map<String, String> rootPath;
-//
-//
-//        private String attachedFileDir;
-//
-//        private String dataFileDir;
-//
-//        private String logPath;
-//
-//        private String tempPath;
-//
-//        private String prefixTableName;
-//
-//        private String logTableName;
-//
-//        private String fileExtension;
-//    }
-//
-//    public FileProp getFileProp(String jobGroupId) {
-//
-//        if(isPortalJobGroup(jobGroupId)) { // portal
-//            return destination.get("portal");
-//        } else { // hive
-//            return this.destination.get("hive");
-//        }
-//    }
-//
-//    public Boolean isPortalJobGroup(String jobGroupId) {
-//
-//        for (String grpNm : this.portalJobGroupIdList) {
-//            if(grpNm.equals(jobGroupId)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
 
 }

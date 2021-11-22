@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.File;
+
 @Getter
 @Setter
 @ToString
@@ -29,18 +31,18 @@ public class FileVO {
         this.baseFileName = fileName;
         this.fileName = fileName;
         this.fileExtension = fileExtension;
-        this.filePath = fileRootPath + fileDirName + "/";
+        this.filePath = fileRootPath + fileDirName + File.separator;
     }
 
-    public void setAppendingFileName(String suffixFileName) {
-        this.fileName = this.baseFileName + "_" + suffixFileName;
+    public void setAppendingFileName(String appendFileName) {
+        this.fileName = this.baseFileName + "_" + appendFileName;
     }
 
-    public String getFileName() {
+    public String getFileFullName() {
         return this.fileName + "." + this.fileExtension;
     }
 
     public String getFullFilePath() {
-        return this.filePath + getFileName();
+        return this.filePath + getFileFullName();
     }
 }

@@ -36,4 +36,7 @@ public class Log001mVO {
     /** 적재용량 */
     private int bytes;
 
+    /** 기준일 */
+    private String baseDt;
+
 }

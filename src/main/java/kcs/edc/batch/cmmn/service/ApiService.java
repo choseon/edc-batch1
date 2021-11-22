@@ -47,9 +47,6 @@ public class ApiService {
      */
     public UriComponentsBuilder getUriComponetsBuilder() {
 
-        // property loading
-//        jobProp = apiProperty.getJobProp(getCurrentJobId());
-
         // baseUrl setting
         String baseUrl = this.apiProp.getBaseUrl();
 

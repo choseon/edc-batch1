@@ -1,10 +1,8 @@
 package kcs.edc.batch.cmmn.service;
 
-import io.micrometer.core.lang.Nullable;
 import kcs.edc.batch.cmmn.property.FileProperty;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
-import kcs.edc.batch.cmmn.vo.CmmnFileVO;
 import kcs.edc.batch.cmmn.vo.FileVO;
 import kcs.edc.batch.cmmn.vo.Log001mVO;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +24,6 @@ public class FileService {
 
     @Autowired
     private FileProperty fileProperty;
-
-    private CmmnFileVO fileVO;
-
-    private String jobGroupId;
 
     /**
      * 배치잡ID ex) nav003m
@@ -54,12 +48,10 @@ public class FileService {
     /**
      * FileService 초기화
      *
-     * @param jobGroupId
      * @param jobId
      * @param baseDt
      */
-    public void init(String jobGroupId, String jobId, String baseDt) {
-        this.jobGroupId = jobGroupId;
+    public void init(String jobId, String baseDt) {
         this.jobId = jobId;
         this.baseDt = baseDt;
         this.startTime = DateUtil.getCurrentTime();
@@ -74,9 +66,9 @@ public class FileService {
      * @param jobId
      */
     public void initFileVO(String jobId) {
-        this.fileVO = new CmmnFileVO(this.fileProperty, this.jobId);
+//        this.fileVO = new CmmnFileVO(this.fileProperty, this.jobId);
 
-
+        // 파일 확장자
         String fileExtension = this.fileProperty.getDataFileExtension();
 
         String fileRootPath = this.fileProperty.getRootPath();
@@ -101,7 +93,7 @@ public class FileService {
         // 첨부파일 경로
         String jobGroupId = jobId.substring(0, 3);
         if (this.fileProperty.getAttachDirName().containsKey(jobGroupId)) {
-            String attachPath = this.fileProperty.getAttachPath();
+            String attachPath = this.fileProperty.getAttachRootPath();
             String attachDirName = this.fileProperty.getAttachDirName().get(jobGroupId);
             this.attachFileVO = new FileVO(attachPath, attachDirName, null, fileExtension);
         }
@@ -122,7 +114,7 @@ public class FileService {
      * @return
      */
     public String getAttachedFilePath() {
-        return this.fileVO.getAttachedFilePath();
+        return this.attachFileVO.getFilePath();
     }
 
     /**
@@ -210,7 +202,7 @@ public class FileService {
         if (ObjectUtils.isEmpty(list)) {
             log.info("DataFile: listCnt is 0");
         } else {
-            FileUtil.makeTsvFile(fileVO.getFilePath(), fileVO.getFileName(), list, append);
+            FileUtil.makeTsvFile(fileVO.getFilePath(), fileVO.getFileFullName(), list, append);
             log.info("DataFile: {}, listCnt: {}", fileVO.getFullFilePath(), list.size());
         }
     }
@@ -232,12 +224,13 @@ public class FileService {
         logVO.setEndTime(DateUtil.getCurrentTime());
         logVO.setJobStat(LOG_JOB_STAT_SUCCEEDED);
         logVO.setTargSuccessRows(list.size());
+        logVO.setBaseDt(this.baseDt);
 
         ArrayList<Object> arrayList = new ArrayList<>();
         arrayList.add(logVO);
 
         // 로그 파일 생성
-        FileUtil.makeTsvFile(fileVO.getFilePath(), fileVO.getFileName(), arrayList);
+        FileUtil.makeTsvFile(fileVO.getFilePath(), fileVO.getFileFullName(), arrayList);
         log.info("logFile: {}", fileVO.getFullFilePath());
     }
 
@@ -257,12 +250,13 @@ public class FileService {
         logVO.setJobStat(LOG_JOB_STAT_SUCCEEDED);
         logVO.setErrm(msg);
         logVO.setTargSuccessRows(0);
+        logVO.setBaseDt(this.baseDt);
 
         ArrayList<Object> arrayList = new ArrayList<>();
         arrayList.add(logVO);
 
         // 로그 파일 생성
-        FileUtil.makeTsvFile(this.logFileVO.getFilePath(), this.logFileVO.getFileName(), arrayList);
+        FileUtil.makeTsvFile(this.logFileVO.getFilePath(), this.logFileVO.getFileFullName(), arrayList);
         log.info("logFile: {}", this.logFileVO.getFullFilePath());
 
     }
@@ -271,16 +265,17 @@ public class FileService {
      * 임시파일 생성
      *
      * @param list
-     * @param fileName
+     * @param appendingFileName
      * @param <T>
      */
-    public <T> void makeTempFile(List<T> list, String fileName) {
+    public <T> void makeTempFile(List<T> list, String appendingFileName) {
 
-        this.tempFileVO.setAppendingFileName(fileName);
+        this.tempFileVO.setAppendingFileName(appendingFileName);
 
-        FileUtil.makeTsvFile(this.tempFileVO.getFilePath(), this.tempFileVO.getFileName(), list);
+        FileUtil.makeTsvFile(this.tempFileVO.getFilePath(), this.tempFileVO.getFileFullName(), list);
         log.info("TempFile:  {} ", this.tempFileVO.getFullFilePath());
     }
+
 
     /**
      * 임시파일 병합
@@ -290,8 +285,8 @@ public class FileService {
     public void mergeTempFile(String jobId) {
 
         initFileVO(jobId);
-        FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileName());
-        FileUtil.deleteFile(this.fileVO.getTempFilePath());
+        FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileFullName());
+        FileUtil.deleteFile(this.tempFileVO.getFilePath());
     }
 
     /**
@@ -327,5 +322,19 @@ public class FileService {
         this.startTime = startTime;
     }
 
+    public FileVO getDataFileVO() {
+        return dataFileVO;
+    }
 
+    public FileVO getTempFileVO() {
+        return tempFileVO;
+    }
+
+    public FileVO getLogFileVO() {
+        return logFileVO;
+    }
+
+    public FileVO getAttachFileVO() {
+        return attachFileVO;
+    }
 }

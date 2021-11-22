@@ -8,13 +8,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.uct.uct001m.vo.Uct001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -44,82 +45,105 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     @Value("#{jobParameters[baseYear]}")
     private String baseYear;
 
-    private List<String> reportList;
-    private List<String> partnerList;
+    @Value("${uct.period}")
+    private int period;
 
+    private List<String> baseYearList = new ArrayList<>();
+
+    @Override
+    public void beforeStep(StepExecution stepExecution) {
+        super.beforeStep(stepExecution);
+
+    }
+
+    @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+        this.jobExecutionContext.put("baseYearList", baseYearList);
+        return super.afterStep(stepExecution);
+    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-        if (!ObjectUtils.isEmpty(this.partnerList)) {
-            this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
-        } else {
-            this.writeCmmnLogStart(this.jobId);
-        }
+        this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
+
         // apiService에  Custom RestTemplate Setting
         this.apiService.setRestTemplate(getRestTemplate());
 
         // 신고국가 목록
-        this.reportList = ObjectUtils.isEmpty(this.partnerList) ? getAreaList() : this.partitionList;
+        List<String> rList = ObjectUtils.isEmpty(this.partitionList) ? getAreaList() : this.partitionList;
 
         // 파트너국가 목록
-        this.partnerList = getAreaList();
+        List<String> pList = getAreaList();
 
-        int tempFileExsistsCnt = 0;
-        int exceptionCnt = 0;
+        // 2년치 데이터 돌린 후 exceptionCnt 체크하여 반복
+        // 이미 생성된 파일은 체크하여 바로 넘어기 때문에 생성안된 파일만 다시 api 호출하여 파일생성하고 끝난다.
+        int resultCnt = 0;
+        do {
+            for (int i = 0; i < this.period; i++) {
+                String year = String.valueOf(Integer.parseInt(this.baseYear) - i);
+                this.baseYearList.add(year);
+                resultCnt = callApi(rList, pList, year);
+            }
+        } while (resultCnt != 0);
 
-        for (String r : this.reportList) { // 신고국가
-            for (String p : this.partnerList) { // 파트너국가
+
+        this.writeCmmnLogEnd(this.threadNum, this.partitionList.size());
+
+        return RepeatStatus.FINISHED;
+    }
+
+
+    /**
+     * API 호출
+     *
+     * @param ps          년도
+     * @param reportList  신고국가
+     * @param partnerList 파트너국가
+     */
+    private int callApi(List<String> reportList, List<String> partnerList, String ps) {
+        int resultCnt = 0;
+        for (String r : reportList) { // 신고국가
+            for (String p : partnerList) { // 파트너국가
 
                 if (r.equals(p)) continue;
 
-                String suffixFileName = this.baseYear + "_" + r + "_" + p;
+                String suffixFileName = ps + "_" + r + "_" + p;
                 boolean tempFileExsists = this.fileService.isTempFileExsists(suffixFileName);
                 if (tempFileExsists) {
                     log.info("tempFileExsists: {}", suffixFileName);
-                    tempFileExsistsCnt++;
                     continue;
                 }
 
-
+                int exceptionCnt = 0;
                 while (true) { // exception이 많이 발생하기 때문에 exception이 발생한 경우 결과 나올때까지 무한루프 돌린다.
 
                     try {
+
                         UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
                         builder.replaceQueryParam("r", r);
                         builder.replaceQueryParam("p", p);
-                        builder.replaceQueryParam("ps", this.baseYear);
+                        builder.replaceQueryParam("ps", ps);
                         URI uri = builder.build().encode().toUri();
 
                         Uct001mVO resultVO = this.apiService.sendApiForEntity(uri, Uct001mVO.class);
 
-                        if (Objects.isNull(resultVO)) {
-                            log.info("resultVO is null: {}", suffixFileName);
-                            continue;
-                        }
-                        if (resultVO.getValidation() == null) {
-                            log.info("validation is null: {}", suffixFileName);
-                            continue;
-                        }
-                        if (!"Ok".equals(resultVO.getValidation().getStatus().get("name"))) {
-                            log.info("name is not ok: {}", suffixFileName);
-                            continue;
-                        }
-                        if ("0".equals(resultVO.getValidation().getCount().get("value"))) {
-                            log.info("value size is 0: {}", suffixFileName);
-                            continue;
-                        }
+                        if (Objects.isNull(resultVO)) continue;
+                        if (resultVO.getValidation() == null) continue;
+                        if (!"Ok".equals(resultVO.getValidation().getStatus().get("name"))) continue;
+                        if ("0".equals(resultVO.getValidation().getCount().get("value"))) continue;
 
+                        List<Object> resultList = new ArrayList<>();
                         List<Uct001mVO.Item> dataset = resultVO.getDataset();
                         for (Uct001mVO.Item item : dataset) {
 
                             // 결과값 체크
                             if (item.getYr().equals("0") || item.getRtCode().equals("0") ||
                                     item.getPtTitle().equals("0") || item.getPtCode().equals("0")) {
-                                throw new Exception("result is '0'");
+                                throw new IllegalAccessException("result is '0'");
                             }
 
-                            item.setCletFileCtrnDt(DateUtil.getCurrentDate());
+                            item.setCletFileCtrnDt(this.baseDt);
                             this.resultList.add(item);
                         }
 
@@ -132,23 +156,20 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                     } catch (Exception e) {
 
                         if (e.getMessage().contains("500")) {
-                            log.debug("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
-                        } else if (e.getMessage().contains("409")) { // RATE LIMIT: You must wait 1 seconds.
-                            log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
-                            Thread.sleep(1000);
+                            log.debug("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, ps, e.getMessage());
                         } else {
-                            log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, this.baseYear, e.getMessage());
+                            log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, ps, e.getMessage());
+                            if (exceptionCnt++ >= 20) {
+                                resultCnt++;
+                                break;
+                            }
                         }
 
-                        if (++exceptionCnt >= 20) break;
                     }
                 }
             }
         }
-
-        this.writeCmmnLogEnd(this.threadNum, this.partitionList.size());
-
-        return RepeatStatus.FINISHED;
+        return resultCnt;
     }
 
     /**

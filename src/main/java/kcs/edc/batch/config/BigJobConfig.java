@@ -63,13 +63,13 @@ public class BigJobConfig {
             jobLauncher.run(bigJob(), jobParameters);
 
         } catch (JobExecutionAlreadyRunningException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         } catch (JobRestartException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         } catch (JobInstanceAlreadyCompleteException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         } catch (JobParametersInvalidException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 

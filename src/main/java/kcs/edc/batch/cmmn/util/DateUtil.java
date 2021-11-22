@@ -19,7 +19,7 @@ public class DateUtil {
 	 * @param offset 이동할 일수( -2147483648 ~ 2147483647 )
 	 * @return 변경된 날짜
 	 */
-	public static String getOffsetDate(String strDate, int offset) throws Exception {
+	public static String getOffsetDate(String strDate, int offset) throws ParseException {
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
 		Date date = fmt.parse(strDate);
 		return getOffsetDate(date, offset, "yyyyMMdd");

@@ -1,132 +1,58 @@
 #!/bin/bash
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191111
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191111
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191111
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191111
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191111
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191120
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191120
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191120
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191120
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191120
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191123
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191127
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191127
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191133
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191133
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191133
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191133
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191133
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191133
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191133
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191133
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191133
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191133
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191141
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191141
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191141
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191141
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191143
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191143
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191143
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191144
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191147
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191149
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191149
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191149
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191149
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191149
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191150
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191150
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191150
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191150
-mkdir -p C:\dev\data_nas\anl_data\BA201\kotra\attach\191150
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191838
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191838
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191852
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191852
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191853
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191854
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191854
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191866
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191867
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191921
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191921
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191921
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191921
+mkdir -p C:\dev\app_nas\anl_data\BA201\kotra\191924
 
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191111 "https://news.kotra.or.kr/crosseditor/binary/images/001583/20211001001825703_MZXWODYD.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191111 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001200512780_24FGGSGP.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191111 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001200715532_6EM3GNUW.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191111 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001200904724_7KXY61RP.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191111 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001200955322_ZFUTDQR9.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191120 "https://news.kotra.or.kr/crosseditor/binary/images/001584/20211001093501377_8HV7UVI1.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191120 "https://news.kotra.or.kr/crosseditor/binary/images/001584/20211001093501379_1TOAN3NY.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191120 "https://news.kotra.or.kr/crosseditor/binary/images/001584/20211001093501405_QXSBS8VV.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191120 "https://news.kotra.or.kr/crosseditor/binary/images/001584/20211001093501522_V5W6IMCT.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191120 "https://news.kotra.or.kr/crosseditor/binary/images/001584/20211001112044570_74YDMYKC.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191123 "https://news.kotra.or.kr/crosseditor/binary/images/001584/20211001105611440_Y4BHQ4SV.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191127 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001153706534_SGQBJ9R1.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191127 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001162208724_Y2VPR0GA.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191133 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001164337615_G2EHJKJV.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191133 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001164417115_DE0PX2KN.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191133 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001164432693_7ZX7JCQ1.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191133 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001164441358_Z71LWT5C.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191133 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001164446349_NF6DW51G.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191133 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001164453319_ZNZSLSGG.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191133 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001164458460_HI1GEM4W.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191133 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001164504595_8BWV9NZ8.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191133 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001164510860_5D19D6S1.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191133 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001164516111_3QEOXI52.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191141 "https://news.kotra.or.kr/crosseditor/binary/images/001587/20211003192620740_3W2CE7F7.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191141 "https://news.kotra.or.kr/crosseditor/binary/images/001587/20211003192630762_M55W6YF4.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191141 "https://news.kotra.or.kr/crosseditor/binary/images/001587/20211003192644830_E1FVE1OC.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191141 "https://news.kotra.or.kr/crosseditor/binary/images/001587/20211003192702856_T37UCLCO.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191143 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001184509231_DL3EE9J2.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191143 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001184507794_BLAVSNFG.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191143 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001184510124_VY6ACSGE.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001194232483_GNO6DW1T.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001194232990_8Z9E8YJL.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001194234107_HW4QRTUS.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001194233324_OYMQV9I7.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001194233867_ZJWQ5QLI.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001194234105_PFYRHEMM.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001194234409_IMLA181D.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001194234435_2WWL9U3E.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001587/20211005000857488_S1PSO64V.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001587/20211005000857492_NN3GAKIJ.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191144 "https://news.kotra.or.kr/crosseditor/binary/images/001585/20211001194235561_35RHZMYO.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001210959864_DAJ5J7KF.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001210959865_X3XLX7VO.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001211000465_VF1P3FZZ.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001211000500_864IJQCH.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001211000534_JCXQK8UZ.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001211000678_OCL9XS3G.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001212003909_U8U39D0E.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001212003921_S4G59MU1.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001211000229_G5IWYTY8.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001211000433_OU43BAQO.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001211000463_DL4HZNBT.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001211000495_E54HOVSH.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001211009328_VXFVSNII.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191147 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001211009566_M4ZC0EEL.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191149 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001224949214_8L362ZYJ.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191149 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001224949828_5AUVOAXX.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191149 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001224949526_O9M7JXBB.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191149 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001224949237_2O7NZJ71.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191149 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001224949533_67I2NVP1.jpg"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191150 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001225524733_JN8KPXKR.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191150 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001225531496_JIV0CTJY.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191150 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001225538815_DD68ECGW.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191150 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001225545130_9F9ITFIU.png"
-wget -P C:\dev\data_nas\anl_data\BA201\kotra\attach\191150 "https://news.kotra.or.kr/crosseditor/binary/images/001586/20211001225551707_2EZ0GR9M.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191838 "https://news.kotra.or.kr/crosseditor/binary/images/001633/20211112200841804_12ZNOIOX.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191838 "https://news.kotra.or.kr/crosseditor/binary/images/001632/20211112163816670_PCLC163F.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191852 "https://news.kotra.or.kr/crosseditor/binary/images/001633/20211112204114821_3CG1YWGQ.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191852 "https://news.kotra.or.kr/crosseditor/binary/images/001633/20211112204116146_647RCGR6.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001633/20211112204348368_Y6U9VYGE.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001633/20211112204348260_U2SNQXO6.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083804560_61GSHLTK.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083805572_71H1ITS3.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083807192_FHIWMSOD.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083804510_ZXGL1GPX.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083803954_GP1SKX7H.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083806208_CD5OMZS5.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083806217_ELXPWTPT.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083804302_2NM6RQ95.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083806872_LYMBNM9M.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083806208_3GZZBM6R.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083808830_ASIQ36TJ.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083809519_BA9BRXHC.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191853 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211115083810572_AXMDEPZR.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191854 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211113024000648_PGT0HMHA.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191854 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211113024342541_HDZ2LT2L.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191866 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211113044823330_30NADYW7.png"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191867 "https://news.kotra.or.kr/crosseditor/binary/images/001634/20211113051349947_T9Q1WX8Z.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191921 "https://news.kotra.or.kr/crosseditor/binary/images/001637/20211118035133220_12UTJPTW.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191921 "https://news.kotra.or.kr/crosseditor/binary/images/001637/20211118035153204_ORG7L574.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191921 "https://news.kotra.or.kr/crosseditor/binary/images/001637/20211118035404421_QJEQA22U.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191921 "https://news.kotra.or.kr/crosseditor/binary/images/001637/20211118035428692_MTYAW1ZL.jpg"
+wget -P C:\dev\app_nas\anl_data\BA201\kotra\191924 "https://news.kotra.or.kr/crosseditor/binary/images/001637/20211118074355994_9P6RADMK.png"

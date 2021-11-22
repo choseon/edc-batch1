@@ -20,7 +20,7 @@ public class ZipUtil {
 
         // 압축 파일을 저장할 디렉토리 경로 및 압축 파일 명
 
-        zipFileName = zipPath + File.separator + zipName;
+        zipFileName = zipPath + zipName;
 
         ZipOutputStream zos = null;
         FileInputStream in = null;

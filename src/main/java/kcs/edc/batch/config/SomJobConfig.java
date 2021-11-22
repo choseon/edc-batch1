@@ -73,13 +73,13 @@ public class SomJobConfig {
             jobLauncher.run(somJob(), jobParameters);
 
         } catch (JobExecutionAlreadyRunningException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         } catch (JobRestartException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         } catch (JobInstanceAlreadyCompleteException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         } catch (JobParametersInvalidException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         }
     }
 
