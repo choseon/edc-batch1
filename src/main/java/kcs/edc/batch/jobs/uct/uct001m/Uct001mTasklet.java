@@ -51,18 +51,6 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     private List<String> baseYearList = new ArrayList<>();
 
     @Override
-    public void beforeStep(StepExecution stepExecution) {
-        super.beforeStep(stepExecution);
-
-    }
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-        this.jobExecutionContext.put("baseYearList", baseYearList);
-        return super.afterStep(stepExecution);
-    }
-
-    @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart(this.threadNum, this.partitionList.size());

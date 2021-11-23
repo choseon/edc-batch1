@@ -34,7 +34,7 @@ public class BizJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.uct.isActive}")
+    @Value("${scheduler.biz.isActive}")
     private Boolean isActive;
 
     /**

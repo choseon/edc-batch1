@@ -45,8 +45,8 @@ public class SomJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    private int GRID_SIZE = 10;
-    private int POOL_SIZE = 10;
+    private int GRID_SIZE = 20;
+    private int POOL_SIZE = 20;
 
     private String currentJobId;
 

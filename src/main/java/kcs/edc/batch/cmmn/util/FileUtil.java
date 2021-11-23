@@ -55,16 +55,17 @@ public class FileUtil {
     }
 
     public static <T> void makeTsvFile(String filePath, String fileName, List<T> list, Boolean append) {
+        log.info("append: {}", append);
         File dir = new File(filePath);
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
-        Writer writer = null;
+        TsvWriter tsvWriter = null;
         try {
 
-            writer = new OutputStreamWriter(new FileOutputStream(filePath + fileName, append), StandardCharsets.UTF_8);
-            TsvWriter tsvWriter = new TsvWriter(writer, new TsvWriterSettings());
+            Writer writer = new OutputStreamWriter(new FileOutputStream(filePath + fileName, append), StandardCharsets.UTF_8);
+            tsvWriter = new TsvWriter(writer, new TsvWriterSettings());
 
             if(list.size() == 0) return;
             if (list.get(0) instanceof Object[]) {
@@ -86,10 +87,12 @@ public class FileUtil {
                 }
             }
 
-            tsvWriter.close();
-
         } catch (FileNotFoundException | IllegalAccessException e) {
             log.info(e.getMessage());
+        } finally {
+            if(tsvWriter != null) {
+                tsvWriter.close();
+            }
         }
 
     }

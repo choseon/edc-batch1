@@ -73,8 +73,8 @@ public class Som002mTasklet extends CmmnJob implements Tasklet {
             }
         }
 
-        String fileName = this.baseDt + "_" + this.threadNum;
-        this.fileService.makeTempFile(this.resultList, fileName);
+        String appendFileName = this.threadNum;
+        this.fileService.makeTempFile(this.resultList, appendFileName);
 
         this.writeCmmnLogEnd(this.threadNum);
 

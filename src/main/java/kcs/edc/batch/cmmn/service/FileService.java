@@ -82,7 +82,8 @@ public class FileService {
         // 로그 디렉토리명
         String logDirName = this.fileProperty.getLogDirName();
         // 로그파일명
-        String logFileName = dataDirName + "_" + DateUtil.getCurrentTime2();
+        //      String logFileName = dataDirName + "_" + DateUtil.getCurrentTime2();
+        String logFileName = dataFileName + "_" + DateUtil.getCurrentTime2();
         this.logFileVO = new FileVO(fileRootPath, logDirName, logFileName, fileExtension);
 
         // 임시파일 디렉토리명
@@ -247,7 +248,7 @@ public class FileService {
         logVO.setTableName(this.logFileVO.getFileDirName());
         logVO.setStartTime(this.startTime);
         logVO.setEndTime(DateUtil.getCurrentTime());
-        logVO.setJobStat(LOG_JOB_STAT_SUCCEEDED);
+        logVO.setJobStat(LOG_JOB_STAT_FAIL);
         logVO.setErrm(msg);
         logVO.setTargSuccessRows(0);
         logVO.setBaseDt(this.baseDt);
@@ -322,19 +323,8 @@ public class FileService {
         this.startTime = startTime;
     }
 
-    public FileVO getDataFileVO() {
-        return dataFileVO;
-    }
-
     public FileVO getTempFileVO() {
         return tempFileVO;
     }
 
-    public FileVO getLogFileVO() {
-        return logFileVO;
-    }
-
-    public FileVO getAttachFileVO() {
-        return attachFileVO;
-    }
 }

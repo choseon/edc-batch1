@@ -103,8 +103,8 @@ scheduler:
       isActive: false
       cron: "* 0 07 * * ?"
     som:
-      isActive: false
-      cron: "* 0 07 * * ?"
+      isActive: true
+      cron: "* 30 03 * * ?"
     saf:
       isActive: false
       cron: "* 0 07 * * ?"
@@ -113,16 +113,16 @@ scheduler:
       cron: "* 0 07 * * ?"
     nav:
       isActive: true
-      cron: "0 07 10 * * ?"
+      cron: "0 10 12 * * ?"
     kot:
       isActive: true
-      cron: "* 0 07 * * ?"
+      cron: "0 10 12 * * ?"
     opd:
       isActive: true
-      cron: "* 55 09 * * ?"
+      cron: "0 10 12 * * ?"
     uct:
       isActive: true
-      cron: "* 21 09 * * ?"
+      cron: "0 0 07-23 1-14 * ?"
 ---
 # Open Api Information
 api:
