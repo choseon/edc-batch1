@@ -12,90 +12,80 @@ import java.util.Date;
 @Slf4j
 public class DateUtil {
 
-	/**
-	 *  지정된 날짜에서 원하는 일수 만큼 이동된 날짜를 반환한다.(디폴트형식 yyyyMMdd)
-	 *
-	 * @param strDate 지정된 일자(String)
-	 * @param offset 이동할 일수( -2147483648 ~ 2147483647 )
-	 * @return 변경된 날짜
-	 */
-	public static String getOffsetDate(String strDate, int offset) throws ParseException {
-		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-		Date date = fmt.parse(strDate);
-		return getOffsetDate(date, offset, "yyyyMMdd");
-	}
+    /**
+     * 지정된 날짜에서 원하는 일수 만큼 이동된 날짜를 반환한다.(디폴트형식 yyyyMMdd)
+     *
+     * @param strDate 지정된 일자(String)
+     * @param offset  이동할 일수( -2147483648 ~ 2147483647 )
+     * @return 변경된 날짜
+     */
+    public static String getOffsetDate(String strDate, int offset) throws ParseException {
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+        Date date = fmt.parse(strDate);
+        return getOffsetDate(date, offset, "yyyyMMdd");
+    }
 
-	/**
-	 *  지정된 날짜에서 원하는 일수 만큼 이동된 날짜를 반환한다.(형식 지정)
-	 *
-	 * @param strDate 지정된 일자(String)
-	 * @param offset 이동할 일수( -2147483648 ~ 2147483647 )
-	 * @return 변경된 날짜
-	 */
-	public static String getOffsetDate(String strDate, int offset, String pFormat) {
-		SimpleDateFormat fmt = new SimpleDateFormat(pFormat);
-		Date date = null;
-		try {
-			date = fmt.parse(strDate);
-		} catch (ParseException e) {
-			log.error(e.getMessage());
-		}
-		return getOffsetDate(date, offset, pFormat);
-	}
+    /**
+     * 지정된 날짜에서 원하는 일수 만큼 이동된 날짜를 반환한다.(형식 지정)
+     *
+     * @param strDate 지정된 일자(String)
+     * @param offset  이동할 일수( -2147483648 ~ 2147483647 )
+     * @return 변경된 날짜
+     */
+    public static String getOffsetDate(String strDate, int offset, String pFormat) {
+        SimpleDateFormat fmt = new SimpleDateFormat(pFormat);
+        String result = null;
+        try {
+            Date date = fmt.parse(strDate);
+            result = getOffsetDate(date, offset, pFormat);
+        } catch (ParseException e) {
+            log.error(e.getMessage());
+        }
+        return result;
+    }
 
-	/**
-	 *  지정된 날짜에서 원하는 일수 만큼 이동된 날짜를 반환한다.(형식 지정)
-	 *
-	 * @param pDate Date 객체
-	 * @param offset 이동할 일수( -2147483648 ~ 2147483647 )
-	 * @param pFormat 날짜형식
-	 * @return 변경된 날짜
-	 */
-	public static String getOffsetDate(Date pDate, int offset, String pFormat) {
-		SimpleDateFormat fmt = new SimpleDateFormat(pFormat);
-		Calendar c = Calendar.getInstance();
-		String ret = "";
+    /**
+     * 지정된 날짜에서 원하는 일수 만큼 이동된 날짜를 반환한다.(형식 지정)
+     *
+     * @param pDate   Date 객체
+     * @param offset  이동할 일수( -2147483648 ~ 2147483647 )
+     * @param pFormat 날짜형식
+     * @return 변경된 날짜
+     */
+    public static String getOffsetDate(Date pDate, int offset, String pFormat) {
+        SimpleDateFormat fmt = new SimpleDateFormat(pFormat);
+        Calendar c = Calendar.getInstance();
 
-		try {
-			c.setTime(pDate);
-			c.add(Calendar.DAY_OF_MONTH, offset);
-			ret = fmt.format(c.getTime());
-		}
-		catch(Exception e) {
-			log.error(e.getMessage());
-		}
-		return ret;
-	}
+        c.setTime(pDate);
+        c.add(Calendar.DAY_OF_MONTH, offset);
+        String ret = fmt.format(c.getTime());
 
-	/**
-	 *  오늘 날짜를 구한다.
-	 * @return
-	 */
-	public static String getToday(String format) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-		return dateFormat.format(cal.getTime());
-	}
+        return ret;
+    }
 
-	public static String getCurrentTime() {
-		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-	}
+    public static String getCurrentTime() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
 
-	public static String getCurrentTime2() {
-		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-	}
+    public static String getCurrentTime2() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+    }
 
-	public static String getCurrentDate() {
-		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-	}
+    public static String getCurrentDate() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
 
-	public static String getFormatDate(String strDate) throws Exception {
-		SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-		Date date = fmt.parse(strDate);
-		return getOffsetDate(date, 0, "yyyy-MM-dd");
-	}
-
+    public static String getFormatDate(String strDate) {
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+        String result = null;
+        try {
+            Date date = fmt.parse(strDate);
+            result = getOffsetDate(date, 0, "yyyy-MM-dd");
+        } catch (ParseException e) {
+            log.error(e.getMessage());
+        }
+        return result;
+    }
 }
 
 

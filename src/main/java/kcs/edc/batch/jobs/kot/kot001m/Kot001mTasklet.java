@@ -170,13 +170,21 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
      * @param input    내용
      */
     private void makeHtmlFile(String htmlPath, String input) {
+        log.info("htmlPath: {}", htmlPath);
+        BufferedWriter bw = null;
         try {
-            log.info("htmlPath: {}", htmlPath);
-            BufferedWriter bw = KOTFileUtil.getBufferedWriter(htmlPath, this.encoding);
+            bw = KOTFileUtil.getBufferedWriter(htmlPath, this.encoding);
             bw.write(input);
-            bw.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.info(e.getMessage());
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
         }
     }
 
@@ -201,14 +209,17 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
     }
 
     private void replaceImgURLtaskFile(String fileName, String tempFileName, String encoding) {
+        BufferedReader br = KOTFileUtil.getBufferedReader(fileName, encoding);
+        BufferedWriter bw = KOTFileUtil.getBufferedWriter(tempFileName, encoding);
+
+        String parentFile = KOTFileUtil.getParentFolder(fileName);
+
         try {
-            BufferedReader br = KOTFileUtil.getBufferedReader(fileName, encoding);
-            BufferedWriter bw = KOTFileUtil.getBufferedWriter(tempFileName, encoding);
-
-            String parentFile = KOTFileUtil.getParentFolder(fileName);
-
             String line = null;
-            while ((line = br.readLine()) != null) {
+            while (true) {
+
+                if (!((line = br.readLine()) != null)) break;
+
                 if (ObjectUtils.isEmpty(line)) {
                     bw.newLine();
                     continue;
@@ -240,25 +251,42 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
                     }
                 }
             }
-            br.close();
-            bw.close();
 
-            KOTFileUtil.rmFile(fileName);
-            KOTFileUtil.renameFile(tempFileName, fileName);
+            Boolean rmFile = KOTFileUtil.rmFile(fileName);
+            if(!rmFile) {
+                log.info("파일 삭제 오류");
+            } else {
+                Boolean renameFile = KOTFileUtil.renameFile(tempFileName, fileName);
+                if(!renameFile) log.info("파일명 변경 오류");
+            }
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.info(e.getMessage());
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
         }
     }
-
 
     /**
      * 이미지파일 다운로드 script 파일 생성
      */
     private void makeImgDownLoadScript(String scriptPath) {
         if (this.imgChangePaths.size() == this.imgURLsOrg.size()) {
+            BufferedWriter bw = KOTFileUtil.getBufferedWriter(scriptPath, encoding);
             try {
-                BufferedWriter bw = KOTFileUtil.getBufferedWriter(scriptPath, encoding);
                 bw.write("#!/bin/bash");
                 bw.newLine();
 
@@ -274,10 +302,18 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
                     bw.write("\"" + this.imgURLsOrg.get(i) + "\"");
                     bw.newLine();
                 }
-                bw.close();
                 log.info("makeImgDownLoadScript: {}", scriptPath);
-            } catch (Exception e) {
+
+            } catch (IOException e) {
                 log.info(e.getMessage());
+            } finally {
+                if (bw != null) {
+                    try {
+                        bw.close();
+                    } catch (IOException e) {
+                        log.info(e.getMessage());
+                    }
+                }
             }
         } else {
             log.info("KotraWriter.imgDownLoadScriptWrite imgpath size diff : ");
@@ -288,12 +324,12 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
      * 이미지파일 다운로드 script 파일 실행
      */
     private void runImageDownloadScript(String scriptPath) {
+        if (ObjectUtils.isEmpty(scriptPath)) return;
         try {
             Runtime.getRuntime().exec(scriptPath);
         } catch (IOException e) {
             log.info(e.getMessage());
         }
     }
-
 
 }

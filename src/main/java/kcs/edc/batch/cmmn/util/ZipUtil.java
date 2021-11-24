@@ -1,15 +1,16 @@
 package kcs.edc.batch.cmmn.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+@Slf4j
 public class ZipUtil {
 
     //파일 압축하기
-    public static void createZipFile(String dirPath, String zipPath, String zipName) throws Exception {
+    public static void createZipFile(String dirPath, String zipPath, String zipName) {
 
         // 압축할 파일 디렉토리 경로
         File[] fileList = null;
@@ -19,7 +20,6 @@ public class ZipUtil {
         fileList = f.listFiles();
 
         // 압축 파일을 저장할 디렉토리 경로 및 압축 파일 명
-
         zipFileName = zipPath + zipName;
 
         ZipOutputStream zos = null;
@@ -51,18 +51,29 @@ public class ZipUtil {
             }
             //압축 대상 파일이 있던 폴더도 삭제
             File folder = new File(dirPath);
-            if(folder.exists()) {
+            if (folder.exists()) {
                 folder.delete();
             }
 
-            zos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            log.info(e.getMessage());
+        } catch (IOException e) {
+            log.info(e.getMessage());
         } finally {
-            if (zos != null)
-                zos.close();
-            if (in != null)
-                in.close();
+            if (zos != null) {
+                try {
+                    zos.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
         }
 
     }

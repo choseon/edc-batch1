@@ -126,7 +126,7 @@ public class BigJobConfig {
             @Value("#{jobExecutionContext[keywordList]}") List<Object> keywordList,
             @Value("#{jobExecutionContext[kcsRgrsYn]}") List<Object> kcsRgrsYn,
             @Value("#{jobExecutionContext[issueSrwrYn]}") List<Object> issueSrwrYn,
-            @Value("#{jobExecutionContext[newsClusterList]}") List<Object> newsClusterList) {
+            @Value("#{jobExecutionContext[newsClusterList]}") List<List<Object>> newsClusterList) {
 
         return stepBuilderFactory.get("big001mStep")
                 .tasklet(big001mTasklet(null, null, null, null, null))
@@ -149,7 +149,7 @@ public class BigJobConfig {
             @Value("#{jobExecutionContext[keywordList]}") List<Object> keywordList,
             @Value("#{jobExecutionContext[kcsRgrsYn]}") List<Object> kcsRgrsYn,
             @Value("#{jobExecutionContext[issueSrwrYn]}") List<Object> issueSrwrYn,
-            @Value("#{jobExecutionContext[newsClusterList]}") List<Object> newsClusterList) {
+            @Value("#{jobExecutionContext[newsClusterList]}") List<List<Object>> newsClusterList) {
         return new Big001mTasklet();
     }
 

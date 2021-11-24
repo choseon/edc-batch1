@@ -25,8 +25,8 @@ import java.util.List;
 public class Big002mTasklet extends CmmnJob implements Tasklet {
 
     private String kcsRgrsYn = "N";
-    private String issueSrwrYn = "N";
-    private List<String> newsClusterList = new ArrayList<>();
+    private String issueSrwrYn = "Y";
+    private List<List<String>> newsClusterList = new ArrayList<>();
 
     private String from;
     private String until;
@@ -46,6 +46,7 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
 
+
         this.jobExecutionContext.put("newsClusterList", this.newsClusterList);
         this.jobExecutionContext.put("kcsRgrsYn", this.kcsRgrsYn);
         this.jobExecutionContext.put("issueSrwrYn", this.issueSrwrYn);
@@ -58,20 +59,24 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
 
         this.writeCmmnLogStart();
 
-        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-
         IssueRankQueryVO queryVO = new IssueRankQueryVO();
         queryVO.setAccess_key(this.accessKey);
-        queryVO.getArgument().setDate(this.until);
+        queryVO.getArgument().setDate(this.until); // ex) 2019-01-01
 
+        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
         Big002mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big002mVO.class);
-        if(resultVO.getResult() != 0) return null;
+        if(resultVO.getResult() != 0) {
+            log.info("resultVO.getResult(): {}", resultVO.getReason());
+            return null;
+        }
 
         List<Big002mVO.TopicItem> topics = resultVO.getReturn_object().getTopics();
         for (Big002mVO.TopicItem item : topics) {
 
             List<String> newsCluster = item.getNewsCluster();
-            this.newsClusterList.addAll(newsCluster);
+            log.info("newsCluster: {}", newsCluster);
+            this.newsClusterList.add(newsCluster);
+            log.info("this.newsClusterList.size(): {}", this.newsClusterList.size());
 
             item.setArtcListCn(convertNesClusterListToString(newsCluster));
             item.setArtcPblsDt(this.baseDt);

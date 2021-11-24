@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class Big001mVO {
 
     @Getter
     @Setter
+    @ToString
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DocumentItem {
 
@@ -116,5 +118,15 @@ public class Big001mVO {
          * last_chng_dtl_dttm	최종변경상세일시
          **/
         private String lastChngDtlDttm;
+
+        /**
+         * bsqp_clsf_sytm_nm 업무분류체계명 (신규컬럼추가)
+         */
+        private List<String> category; // 뉴스통합분류체계
+
+        /**
+         * tech_clsf_sytm_nm 기술분류체계명 (신규컬럼추가)
+         */
+        private List<String> category_incident; // 뉴스사건/사고 분류체계
     }
 }

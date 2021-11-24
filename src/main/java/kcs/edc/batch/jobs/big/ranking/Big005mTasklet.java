@@ -16,6 +16,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,12 +25,14 @@ import java.util.List;
 @Slf4j
 public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionListener {
 
-    private String kcsRgrsYn = "Y";
+    private String kcsRgrsYn = "N";
     private String issueSrwrYn = "N";
 
     private String from;
     private String until;
     private String accessKey;
+
+    private List<String> keywordList = new ArrayList<>();
 
     @SneakyThrows
     @Override
@@ -47,6 +50,7 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
         this.jobExecutionContext.put("kcsRgrsYn", kcsRgrsYn);
         this.jobExecutionContext.put("issueSrwrYn", issueSrwrYn);
+        this.jobExecutionContext.put("keywordList", keywordList);
 
         return ExitStatus.COMPLETED;
     }
@@ -73,8 +77,9 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
             item.setLastChngDtlDttm(DateUtil.getCurrentTime());
 
             this.resultList.add(item);
+            this.keywordList.add(item.getQuery());
 
-            log.info("{} >> query : {}, KcsKeywordYn : {}", getCurrentJobId(), item.getSrchQuesWordNm(), this.kcsRgrsYn);
+            log.info("{} >> query : {}, KcsKeywordYn : {}", getCurrentJobId(), item.getQuery(), this.kcsRgrsYn);
         }
         // 파일생성
         this.fileService.makeFile(CmmnConst.JOB_ID_BIG004M, resultList, true);

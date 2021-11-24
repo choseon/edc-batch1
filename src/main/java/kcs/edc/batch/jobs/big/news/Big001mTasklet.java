@@ -7,6 +7,7 @@ import kcs.edc.batch.jobs.big.news.vo.Big001mVO;
 import kcs.edc.batch.jobs.big.news.vo.NewsQueryVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
@@ -14,6 +15,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ObjectUtils;
 
 import java.net.URI;
 import java.util.List;
@@ -35,7 +37,7 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     private String issueSrwrYn;
 
     @Value("#{jobExecutionContext[newsClusterList]}")
-    private List<String> newsClusterList;
+    private List<List<String>> newsClusterList;
 
     private String from;
     private String until;
@@ -53,11 +55,19 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     }
 
     @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+
+//        this.keywordList.clear();
+//        this.kcsRgrsYn = null;
+//        this.issueSrwrYn = null;
+
+        return super.afterStep(stepExecution);
+    }
+
+    @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         writeCmmnLogStart();
-
-        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
 
         NewsQueryVO queryVO = new NewsQueryVO();
         queryVO.setAccess_key(this.accessKey);
@@ -66,31 +76,38 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
         NewNationWideComCode code = new NewNationWideComCode();
 
-        if (!Objects.isNull(this.newsClusterList)) { // 뉴스상세검색
+        if (!ObjectUtils.isEmpty(this.newsClusterList)) { // 뉴스상세검색
 
-            queryVO.getArgument().setNewsIds(this.newsClusterList);
-            Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
+            for (List<String> nesClusters : this.newsClusterList) {
+                queryVO.getArgument().setNewsIds(nesClusters);
 
-            List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
-            for (Big001mVO.DocumentItem item : documents) {
-                item.setSrchQuesWordNm(queryVO.getArgument().getQuery());
-                item.setOxprClsfNm(code.getNewsNationName(item.getOxprNm()));
-                item.setIssueSrwrYn(this.issueSrwrYn);
-                item.setKcsRgrsYn(this.kcsRgrsYn);
-                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
-                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+                URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
+                Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
 
-                this.resultList.add(item);
+                List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
+                for (Big001mVO.DocumentItem item : documents) {
+                    item.setSrchQuesWordNm(queryVO.getArgument().getQuery());
+                    item.setOxprClsfNm(code.getNewsNationName(item.getOxprNm()));
+                    item.setIssueSrwrYn(this.issueSrwrYn);
+                    item.setKcsRgrsYn(this.kcsRgrsYn);
+                    item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                    item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+
+                    this.resultList.add(item);
+                }
+                log.info("{} >> newsClusterList.size : {}, documents.size: {}, KcsKeywordYn : {}",
+                        getCurrentJobId(), nesClusters.size(), documents.size(), this.kcsRgrsYn);
+
             }
-            log.info("{} >> newsClusterList.size : {}, documents.size: {}, KcsKeywordYn : {}",
-                    getCurrentJobId(), this.newsClusterList.size(), documents.size(), this.kcsRgrsYn);
 
 
-        } else if (!Objects.isNull(this.keywordList)) { // 뉴스 키워드 검색
+//        } else if (!ObjectUtils.isEmpty(this.keywordList)) { // 뉴스 키워드 검색
+        } else {
 
             for (String keyword : this.keywordList) {
                 queryVO.getArgument().setQuery(keyword);
 
+                URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
                 Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
                 if (resultVO.getResult() != 0) continue;
 

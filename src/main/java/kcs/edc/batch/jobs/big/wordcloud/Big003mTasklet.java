@@ -68,17 +68,16 @@ public class Big003mTasklet extends CmmnJob implements Tasklet{
         queryVO.getArgument().getPublished_at().setFrom(this.from);
         queryVO.getArgument().getPublished_at().setUntil(this.until);
 
-        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-
         for (String keyword : this.keywordList) {
             queryVO.getArgument().setQuery(keyword);
 
+            URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
             Big003mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big003mVO.class);
             if(resultVO.getResult() != 0) continue;
 
             List<Big003mVO.NodeItem> nodes = resultVO.getReturn_object().getNodes();
             for (Big003mVO.NodeItem item : nodes) {
-                item.setArtcPblsDt(this.until);
+                item.setArtcPblsDt(this.baseDt);
                 item.setSrchQuesWordNm(keyword);
                 item.setKcsRgrsYn(this.kcsRgrsYn);
                 item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());

@@ -101,8 +101,6 @@ public class ApiService {
      */
     public <T> T sendApiPostForObject(URI uri, Object request, Class<T> targetClass) {
 
-        log.debug("uri {}", uri);
-
         String resultJson = this.restTemplate.postForObject(uri, request, String.class);
 
         if (Objects.isNull(resultJson)) {
@@ -110,6 +108,7 @@ public class ApiService {
             log.info("resultJson is null");
             return null;
         } else {
+            log.debug("uri {}", uri);
             log.debug("resultJson {}", resultJson);
         }
 

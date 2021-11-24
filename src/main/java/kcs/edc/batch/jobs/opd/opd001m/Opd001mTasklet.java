@@ -194,6 +194,8 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         File xmlFile = new File(xmlFilePath);
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        // XML DOCTYPE 선언 비활성화
+        dbf.setFeature("http://apache.org/xml/feature/disallow-doctype-decl", true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.parse(xmlFile);
         document.getDocumentElement().normalize();

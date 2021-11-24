@@ -5,15 +5,15 @@ import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.biz.biz001m.Biz001mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +43,7 @@ public class BizJobConfig {
      * @throws Exception
      */
     @Scheduled(cron = "${scheduler.biz.cron}")
-    public void launcher() throws Exception {
+    public void launcher() {
 
         log.info("BIZJobConfig launcher...");
         log.info("isActive: {}", this.isActive);
@@ -57,7 +57,17 @@ public class BizJobConfig {
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
-        jobLauncher.run(bizJob(), jobParameters);
+        try {
+            jobLauncher.run(bizJob(), jobParameters);
+        } catch (JobExecutionAlreadyRunningException e) {
+            log.info(e.getMessage());
+        } catch (JobRestartException e) {
+            log.info(e.getMessage());
+        } catch (JobInstanceAlreadyCompleteException e) {
+            log.info(e.getMessage());
+        } catch (JobParametersInvalidException e) {
+            log.info(e.getMessage());
+        }
     }
 
     /**

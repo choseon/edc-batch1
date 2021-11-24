@@ -69,8 +69,6 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
         this.writeCmmnLogStart();
 
-        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-
         TimelineQueryVO queryVO = new TimelineQueryVO();
         queryVO.setAccess_key(this.accessKey);
         queryVO.getArgument().getPublished_at().setFrom(this.from);
@@ -79,6 +77,7 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
         for(String keyword : this.kcsKeywordList) {
             queryVO.getArgument().setQuery(keyword);
 
+            URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
             Big004mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big004mVO.class);
             if(resultVO.getResult() != 0) continue;
 

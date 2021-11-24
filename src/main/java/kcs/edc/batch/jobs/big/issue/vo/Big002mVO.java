@@ -15,6 +15,7 @@ import java.util.List;
 public class Big002mVO {
 
     private int result;
+    private String reason;
     private ReturnObjectVO return_object;
 
 

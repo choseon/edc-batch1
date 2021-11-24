@@ -274,7 +274,7 @@ public class FileService {
         this.tempFileVO.setAppendingFileName(appendingFileName);
 
         FileUtil.makeTsvFile(this.tempFileVO.getFilePath(), this.tempFileVO.getFileFullName(), list);
-        log.info("TempFile:  {} ", this.tempFileVO.getFullFilePath());
+        log.info("TempFile: {}, listCnt: {} ", this.tempFileVO.getFullFilePath(), list.size());
     }
 
 

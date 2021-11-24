@@ -1,6 +1,5 @@
 package kcs.edc.batch.jobs.big.issue.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 

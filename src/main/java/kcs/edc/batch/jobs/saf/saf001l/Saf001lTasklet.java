@@ -203,12 +203,12 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
      */
     private byte[] getByteArray(String imageUrl) {
 
+        byte[] result = null;
         ByteArrayOutputStream baos = null;
         InputStream is = null;
         try {
             URL image = new URL(imageUrl);
-            URLConnection ucon = null;
-            ucon = image.openConnection();
+            URLConnection ucon = image.openConnection();
             is = ucon.getInputStream();
             baos = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
@@ -222,6 +222,8 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
                 }
             }
             baos.flush();
+            result = baos.toByteArray();
+
         } catch (MalformedURLException e) {
             log.info(e.getMessage());
         } catch (IOException e) {
@@ -242,7 +244,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
                 }
             }
         }
-        return baos.toByteArray();
+        return result;
     }
 
 }

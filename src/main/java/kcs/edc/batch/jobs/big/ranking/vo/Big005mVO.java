@@ -28,14 +28,14 @@ public class Big005mVO {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class QueryItem {
 
-        @JsonProperty("query")
-        private String srchQuesWordNm;
+        @JsonProperty
+        private String query;
 
-        @JsonProperty("date")
-        private String artcPblsDt;
+        @JsonProperty
+        private String date;
 
-        @JsonProperty("count")
-        private String srchDocGcnt;
+        @JsonProperty
+        private String count;
 
         private String KcsRgrsYn;
 

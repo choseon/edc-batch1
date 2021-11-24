@@ -14,10 +14,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,13 +55,6 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart();
-
-        if (ObjectUtils.isEmpty(this.companyCodeList)) {
-            log.info("companyCodeList is empty");
-            return null;
-        } else {
-            log.info("CompanyCodeList.size(): {}", this.companyCodeList.size());
-        }
 
         // 로직 수정 필요
         // 초기적재 실행시에는 companyList를 루프로 조회
@@ -109,7 +99,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                             item.setSrbk_file_nm("[" + item.getCorp_name() + "]" + item.getReport_nm() + ".zip");
 
                             // 원문파일다운로드
-                            if(!ObjectUtils.isEmpty(item.getStock_code().trim())) {
+                            if (!ObjectUtils.isEmpty(item.getStock_code().trim())) {
                                 // 공시 뷰어에 접속하여 보고서 첨부파일 번호 목록 갖고 오기
                                 ArrayList<String> dcmNoList = getDcmNoList(item.getRcept_no());
 
@@ -154,34 +144,33 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
         ArrayList<String> returnArr = new ArrayList<String>();
 
         OutputStream out = null;
-        URLConnection conn = null;
         InputStream in = null;
+        BufferedReader reader = null;
 
         String rcpNo = "";
         String rcpNo2 = "";
         String rcpNo3 = "";
 
         try {
+
             URL url = new URL(viewerUrl);
+
             File dir = new File(this.attachFilePath);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
             out = new BufferedOutputStream(new FileOutputStream(viewerFileNm));
-            conn = url.openConnection();
-
-            in = conn.getInputStream();
+            in = url.openConnection().getInputStream();
 
             byte[] buffer = new byte[1024 * 100];
 
             int numRead;
-
             while ((numRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, numRead);
             }
 
             //파일에서 dcmNo 추출하기 시작
-            BufferedReader reader = new BufferedReader(new FileReader(viewerFileNm));
+            reader = new BufferedReader(new FileReader(viewerFileNm));
 
             String strHtmlLine = "";
             String dcmNo = "";
@@ -257,10 +246,6 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                     }
                 }
             }
-            in.close();
-            out.close();
-            reader.close();
-
 
             File delFile = new File(viewerFileNm);
             //이제 필요 없어진 뷰어 html 삭제
@@ -268,18 +253,31 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                 delFile.delete();
             }
 
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (MalformedURLException | FileNotFoundException e) {
+            log.info(e.getMessage());
+        } catch (IOException e) {
+            log.info(e.getMessage());
         } finally {
-            try {
-                if (in != null) {
+            if (in != null) {
+                try {
                     in.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
                 }
-                if (out != null) {
+            }
+            if (out != null) {
+                try {
                     out.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
                 }
-            } catch (IOException ioe) {
+            }
+            if(reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
             }
         }
         return returnArr;
@@ -458,7 +456,6 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
 
         return cd;
     }
-
 
 
 }

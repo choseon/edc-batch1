@@ -18,44 +18,33 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 public class FileUtil {
 
+
     /**
-     * 파일생성
+     * tsv 파일 생성
      *
-     * @param filePath
-     * @param fileName
-     * @param list
+     * @param filePath 파일경로
+     * @param fileName 파일명
+     * @param list     리스트
      * @param <T>
-     * @throws FileNotFoundException
-     * @throws IllegalAccessException
      */
-//    public static <T> void makeFile(String filePath, String fileName, List<T> list){
-//        makeTsvFile(filePath, fileName, list);
-//    }
-
-
+    public static <T> void makeTsvFile(String filePath, String fileName, List<T> list) {
+        makeTsvFile(filePath, fileName, list, false);
+    }
 
     /**
      * tsv 파일생성
      *
-     * @param filePath
-     * @param fileName
-     * @param list
+     * @param filePath 파일경로
+     * @param fileName 파일명
+     * @param list     리스트
+     * @param append   이어쓰기여부
      * @param <T>
-     * @throws FileNotFoundException
-     * @throws IllegalAccessException
      */
-    public static <T> void makeTsvFile(String filePath, String fileName, List<T> list) {
-
-        makeTsvFile(filePath, fileName, list, false);
-    }
-
     public static <T> void makeTsvFile(String filePath, String fileName, List<T> list, Boolean append) {
-        log.info("append: {}", append);
         File dir = new File(filePath);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -67,7 +56,7 @@ public class FileUtil {
             Writer writer = new OutputStreamWriter(new FileOutputStream(filePath + fileName, append), StandardCharsets.UTF_8);
             tsvWriter = new TsvWriter(writer, new TsvWriterSettings());
 
-            if(list.size() == 0) return;
+            if (list.size() == 0) return;
             if (list.get(0) instanceof Object[]) {
                 tsvWriter.writeRows((Collection<Object[]>) list);
             } else {
@@ -90,7 +79,7 @@ public class FileUtil {
         } catch (FileNotFoundException | IllegalAccessException e) {
             log.info(e.getMessage());
         } finally {
-            if(tsvWriter != null) {
+            if (tsvWriter != null) {
                 tsvWriter.close();
             }
         }
@@ -183,6 +172,8 @@ public class FileUtil {
     }
 
     /**
+     * json 파일을 읽어 리스트로 변환하여 반환
+     *
      * @param filePath
      * @param objName
      * @return
@@ -197,26 +188,19 @@ public class FileUtil {
     }
 
     /**
+     * txt파일을 읽어 리스트로 변환하여 반환
+     *
      * @param filePath
      * @return
      * @throws IOException
      */
     public static List<String> readTextFile(String filePath) throws IOException {
-//        ClassPathResource resource = new ClassPathResource(filePath);
-//        Path path = Paths.get(resource.getURI());
 
         Path path = Paths.get(filePath);
         log.info("readTextFile filePath {}", path);
         List<String> list = Files.readAllLines(path);
         return list;
     }
-
-/*    public static List<String> readTextFile(String resourceName) throws IOException {
-        URL resource = getClass().getClassLoader().getResource(resourceName);
-        Path path = new File(resource.getPath()).toPath();
-        List<String> list = Files.readAllLines(path);
-        return list;
-    }*/
 
     /**
      * csv 파일을 리스트로 변환
@@ -225,7 +209,6 @@ public class FileUtil {
      * @return
      */
     public static List<Object[]> readCsvFile(String filePath) {
-//        List<List<String>> csvList = new ArrayList<List<String>>();
         List<Object[]> rows = new ArrayList<>();
         File csv = new File(filePath);
         BufferedReader br = null;
@@ -236,85 +219,20 @@ public class FileUtil {
             while ((line = br.readLine()) != null) { // readLine()은 파일에서 개행된 한 줄의 데이터를 읽어온다.
                 List<String> aLine = new ArrayList<String>();
                 String[] lineArr = line.split(","); // 파일의 한 줄을 ,로 나누어 배열에 저장 후 리스트로 변환한다.
-//                aLine = Arrays.asList(lineArr);
-//                csvList.add(aLine);
                 rows.add(lineArr);
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         } finally {
             try {
                 if (br != null) {
                     br.close(); // 사용 후 BufferedReader를 닫아준다.
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                log.info(e.getMessage());
             }
-        }
-        return rows;
-    }
-
-
-    /**
-     * @param filePath
-     * @return
-     * @throws IOException
-     */
-    public static StringBuffer readTsvFile(String filePath) throws IOException {
-
-        File dir = new File(filePath);
-        if (dir == null) return null;
-        File[] files = dir.listFiles();
-        if (files == null || files.length == 0) return null;
-
-        String line = "";
-        StringBuffer sb = new StringBuffer();
-        FileInputStream fis;
-        BufferedReader inFiles = null;
-        for (File file : files) {
-
-            fis = new FileInputStream(file.getPath());
-            inFiles = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
-            while ((line = inFiles.readLine()) != null) {
-                if (line.trim().length() > 0) {
-//                    sb += line + "\n";
-                    sb.append(line + "\r\n");
-                }
-            }
-        }
-        if (inFiles != null) {
-            inFiles.close();
-        }
-
-        log.info("sb {}", sb);
-        return sb;
-    }
-
-
-    /**
-     * temp 폴더에서 tsv 파일을 읽어 List로 변화하여 리턴
-     *
-     * @param filePath
-     * @return
-     */
-    public static List<Object[]> getListFromTsvFile(String filePath) {
-        File dir = new File(filePath);
-        File[] files = dir.listFiles();
-        List<Object[]> rows = new ArrayList<>();
-
-        TsvParserSettings settings = new TsvParserSettings();
-        settings.setMaxCharsPerColumn(1000000);
-
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) continue;
-                TsvParser parser = new TsvParser(settings);
-                rows.addAll(parser.parseAll(file));
-                file.delete(); // 파일삭제
-            }
-            dir.delete(); // 폴더 삭제
         }
         return rows;
     }
