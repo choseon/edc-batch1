@@ -66,7 +66,7 @@ public class Uct001mVO {
         private String tradeValue; // 미화가격
 
 
-        private String CletFileCtrnDt; // 수집파일생성일자
+        private String CletFileCrtnDt; // 수집파일생성일자
     }
 
 }

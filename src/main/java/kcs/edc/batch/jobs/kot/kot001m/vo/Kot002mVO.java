@@ -13,5 +13,5 @@ public class Kot002mVO {
 
     private String kwrd; // 키워드
 
-    private String CletFileCtrnDttm; // 수집일자
+    private String CletFileCrtnDt; // 수집일자
 }

@@ -59,7 +59,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
             Saf001lVO.Item resultData = resultVO.getResultData();
             resultList.add(resultData);
 
-            log.info("certNum: {}, derivationModels: {}, similarCertifications: {}, factories: {}, certificationImageUrls: {}",
+            log.info("certNum: {}, saf001l: {}, saf002l: {}, saf003l: {}, saf004l: {}",
                     certNum, resultData.getDerivationModels().size(), resultData.getSimilarCertifications().size(),
                     resultData.getFactories().size(), resultData.getCertificationImageUrls().size());
         }
@@ -108,7 +108,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                 resultList.add(item);
 
-                log.info("saf001l >> DerivationModelItem >> certInfoId : {} model : {}", crtfInfoId, model);
+                log.info("saf001l >> certInfoId : {} model : {}", crtfInfoId, model);
             }
         }
         return resultList;
@@ -132,7 +132,8 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                 resultList.add(item);
 
-                log.info("saf002l >> SimilarCertItem >> certInfoId : {}, certState : {}", crtfInfoId, item.getCertState());
+                log.info("saf002l >> certInfoId : {}, certUid: {}, certNm: {}",
+                        crtfInfoId, item.getCertUid(), item.getCertNum());
             }
         }
         return resultList;
@@ -156,7 +157,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                 resultList.add(item);
 
-                log.info("saf003l >> FatoryItem >> certInfoId : {}, markNm : {}", crtfInfoId, item.getMakerName());
+                log.info("saf003l >> certInfoId : {}, markNm : {}", crtfInfoId, item.getMakerName());
             }
         }
         return resultList;
@@ -188,7 +189,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
                 item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                 resultList.add(item);
 
-                log.info("saf004l >> CertificationImageUrlItem >> certInfoId : {}, imageUrl : {}", crtfInfoId, imageUrl);
+                log.info("saf004l >> certInfoId : {}, imageUrl : {}", crtfInfoId, imageUrl);
             }
         }
         return resultList;

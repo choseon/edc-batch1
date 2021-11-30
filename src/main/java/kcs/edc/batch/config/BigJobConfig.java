@@ -54,7 +54,10 @@ public class BigJobConfig {
         if (!this.isActive) return;
 
         try {
+
+            // 기준일 (D-1)
             String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("baseDt", baseDt)
                     .addLong("time", System.currentTimeMillis())

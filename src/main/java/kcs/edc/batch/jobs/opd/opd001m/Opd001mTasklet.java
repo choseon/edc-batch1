@@ -1,6 +1,7 @@
 package kcs.edc.batch.jobs.opd.opd001m;
 
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.opd.opd001m.vo.Opd001mVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -88,16 +89,19 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
             builder.replaceQueryParam("corp_code", companyCode);
             URI uri = builder.build().toUri();
 
-            Thread.sleep(this.callApiDelayTime);
-
             Opd001mVO resultVO = this.apiService.sendApiForEntity(uri, Opd001mVO.class);
+            resultVO.setCletFileCrtnDt(DateUtil.getCurrentDate());
             this.resultList.add(resultVO);
 
-            log.info("corpCode: {}, corpName: {}", resultVO.getCorp_code(), resultVO.getCorp_name());
+            Thread.sleep(this.callApiDelayTime); //1분에 1000건을 넘지 않기 위한 지연
+            log.info("corpCode: {}, corpName: {}", resultVO.getStock_code(), resultVO.getCorp_name());
         }
 
         // 파일생성
         this.fileService.makeFile(this.resultList);
+
+        // 다운로드 Temp파일 삭제
+        this.fileService.cleanTempFile();
 
         this.writeCmmnLogEnd();
 
@@ -144,7 +148,10 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         if (zipEntry != null) {
             File dir = new File(dataTempPath);
             if (!dir.exists()) {
-                dir.mkdirs();
+                if(!dir.mkdirs()) {
+                    log.info("폴더 생성 실패", dir.getPath());
+                    return null;
+                }
             }
             downloadFilePath = dataTempPath + zipEntry.getName(); //압축 해제하여 생성한 파일명
             File downloadFile = new File(downloadFilePath);
@@ -166,7 +173,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         Files.delete(tempFile);
         // 다운로드 파일 삭제
 //        Files.delete(Paths.get(tempPath));
-        this.fileService.cleanTempFile();
+
 
         return resultList;
 
@@ -195,7 +202,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         // XML DOCTYPE 선언 비활성화
-        dbf.setFeature("http://apache.org/xml/feature/disallow-doctype-decl", true);
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document document = db.parse(xmlFile);
         document.getDocumentElement().normalize();

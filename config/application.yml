@@ -323,8 +323,11 @@ sftp:
 kot:
   scriptFileName: kot_img_download.sh # 이미지다운로드 스크립트 파일명
   period: 7 # 데이터수집 기간(7일)
+  imageDownAllowUrl: https://news.kotra.or.kr # 이미지 다운로드시 방화벽 포트 등록된 url
+#    - https://news.kotra.or.kr
 opd:
   callApiDelayTime: 70 # Api 호출시 DelayTime (1시간에 1000번 이하 limit)
+  callApiViewerDownDelayTime: 100
   corpCodeUrl: https://opendart.fss.or.kr/api/corpCode.xml # 고유번호 압축 파일 다운로드 URL
   documentUrl: https://opendart.fss.or.kr/api/document.xml # 보고서 원문파일 다운로드 URL
   viewerUrl: https://dart.fss.or.kr/dsaf001/main.do # 공시 보고서 뷰어 URL

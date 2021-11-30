@@ -76,14 +76,14 @@ public class FileService {
         // 데이터 디렉토리명
         String dataDirName = dataFilePrefixName + jobId;
         // 데이터 파일명
-        String dataFileName = dataDirName + "_" + this.baseDt;
+        String dataFileName = dataDirName + "_" + this.baseDt + "_" + DateUtil.getCurrentTime2();
         this.dataFileVO = new FileVO(fileRootPath, dataDirName, dataFileName, fileExtension);
 
         // 로그 디렉토리명
         String logDirName = this.fileProperty.getLogDirName();
         // 로그파일명
         //      String logFileName = dataDirName + "_" + DateUtil.getCurrentTime2();
-        String logFileName = dataFileName + "_" + DateUtil.getCurrentTime2();
+        String logFileName = dataDirName + "_" + this.baseDt + "_" + DateUtil.getCurrentTime2();
         this.logFileVO = new FileVO(fileRootPath, logDirName, logFileName, fileExtension);
 
         // 임시파일 디렉토리명
@@ -327,4 +327,7 @@ public class FileService {
         return tempFileVO;
     }
 
+    public FileVO getAttachFileVO() {
+        return attachFileVO;
+    }
 }

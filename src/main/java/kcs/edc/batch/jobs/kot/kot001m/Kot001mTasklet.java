@@ -3,6 +3,7 @@ package kcs.edc.batch.jobs.kot.kot001m;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
+import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.cmmn.util.KOTFileUtil;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Kot001mVO;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Kot002mVO;
@@ -18,18 +19,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 대한무역투자진흥공사 해외시장 뉴스 수집 Tasklet
@@ -44,10 +43,15 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
     private String scriptPath;
 
     @Value("${kot.scriptFileName}")
-    private String scriptFileName;
+    private String scriptFileName; // script 파일명
+
+    private List<String> changingImageList = new ArrayList<>();
 
     @Value("${kot.period}")
     private int period; // 수집기간
+
+    @Value("${kot.imageDownAllowUrl}")
+    private List<String> imageDownAllowUrl; // 이미지다운로드시 방화벽 허용된 url 목록
 
     private static List<String> imgURLsOrg = new ArrayList<String>();
     private static List<String> imgChangePaths = new ArrayList<String>();
@@ -89,9 +93,8 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
             Kot001mVO resultVO = this.apiService.sendApiForEntity(uri, Kot001mVO.class);
             if (!resultVO.getResultCode().equals("00")) {
-                log.info("uri: {}", uri);
+//                log.info("uri: {}", uri);
                 log.info("resultVO: {}", resultVO.getResultMsg());
-                this.fileService.makeLogFile(resultVO.getResultMsg());
                 continue;
             }
 
@@ -104,20 +107,30 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
                 item.setPageNo(resultVO.getPageNo());
                 item.setTotalCount(resultVO.getTotalCount());
 
-                // html 파일
-                String htmlFileName = "bbstxSn_" + item.getBbstxSn() + ".html";
-                String htmlPath = this.attachedFilePath + item.getBbstxSn() + "/" + htmlFileName;
-                makeHtmlFile(htmlPath, item.getNewsBdt());
+                String source = item.getNewsBdt(); // html소스
 
-                item.setNewsBdt(htmlPath);
-                item.setLoadCmplDttm(DateUtil.getCurrentTime());
-                item.setCletFileCtrnDt(DateUtil.getCurrentDate());
+                // html DB 셋팅경로 : BA201/kotra/html/bbstxSn_뉴스번호.html
+                String fileDirName = this.fileService.getAttachFileVO().getFileDirName();
+                String htmlFileName = "bbstxSn_" + item.getBbstxSn() + ".html";
+                String htmlPath = fileDirName + "/html/" + htmlFileName;
+                item.setNewsBdt(htmlPath); // htmlPath 셋팅
+
+                // 시간 포맷 변환하여 셋팅 (yyyy-MM-dd HH:mm:ss -> yyyyMMddHHmmss)
+                item.setNewsWrtDt(DateUtil.convertDateFormat(item.getNewsWrtDt()));
+                item.setRegDt(DateUtil.convertDateFormat(item.getRegDt()));
+                item.setUpdDt(DateUtil.convertDateFormat(item.getUpdDt()));
+
+                item.setCletFileCrtnDt(DateUtil.getCurrentDate());
                 this.resultList.add(item);
 
                 if (Objects.nonNull(item.getKwrd())) {
                     List<Kot002mVO> keywordList = getKeywordList(item);
                     this.newsKeywordList.addAll(keywordList);
                 }
+
+                // html 실제파일경로 : /app_nas/anl_data/BA201/kotra/html/bbstxSn_뉴스번호.html
+                String htmlFilePath = this.attachedFilePath + "html/" + htmlFileName;
+                makeHtmlFile(htmlFilePath, source);
             }
         }
 
@@ -128,14 +141,19 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
         // kot002m 파일생성
         this.fileService.makeFile(CmmnConst.JOB_ID_KOT002M, this.newsKeywordList);
 
-        // html 파일생성
-        replaceImgURLtaskFolder(this.attachedFilePath);
+        // 이미지파일 다운로드 실행
+        execImageDownload();
 
-        // imageDownload script 파일생성
-        makeImgDownLoadScript(this.scriptPath + this.scriptFileName);
 
-        // imageDownload script 실행
-        runImageDownloadScript(this.scriptPath + this.scriptFileName);
+
+//        // html 이미지 경로 변경
+//        replaceImgURLtaskFolder(this.attachedFilePath);
+//
+//        // imageDownload script 파일생성
+//        makeImgDownLoadScript(this.scriptPath + this.scriptFileName);
+//
+//        // imageDownload script 실행
+//        runImageDownloadScript(this.scriptPath + this.scriptFileName);
 
         this.writeCmmnLogEnd();
 
@@ -143,8 +161,10 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
     }
 
     /**
+     * 키워드 리스트 추출
+     *
      * @param item
-     * @return
+     * @return ","를 잘라서 리스트로 리턴
      */
     public List<Kot002mVO> getKeywordList(Kot001mVO.Item item) {
 
@@ -157,7 +177,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
             vo.setBbstxSn(item.getBbstxSn());
             vo.setKwrd(keyword);
             vo.setNewsWrtDt(item.getNewsWrtDt());
-            vo.setCletFileCtrnDttm(item.getCletFileCtrnDt());
+            vo.setCletFileCrtnDt(item.getCletFileCrtnDt());
             resultList.add(vo);
         }
         return resultList;
@@ -171,10 +191,145 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
      */
     private void makeHtmlFile(String htmlPath, String input) {
         log.info("htmlPath: {}", htmlPath);
-        BufferedWriter bw = null;
+
+        String source = replaceImageUrlPath(input);
+        FileUtil.makeHtmlFile(htmlPath, source);
+    }
+
+    /**
+     * 소스에서 src 추출
+     *
+     * @param source html 소스
+     * @return
+     */
+    private List<String> findImageUrlPath(String source) {
+
+        // src를 추출하는 정규식
+        Pattern regex = Pattern.compile("<*src=[\"']?([^>\"']+)[\"']?[^>]*>");
+        Matcher matcher = regex.matcher(source);
+
+        List<String> result = new ArrayList<>();
+        while (matcher.find()) {
+            String group = matcher.group(1);
+            result.add(group);
+            this.changingImageList.add(group);
+        }
+        return result;
+    }
+
+    /**
+     * 소스에서 url 변환
+     *
+     * @param source html소스
+     * @return
+     */
+    private String replaceImageUrlPath(String source) {
+        String result = null;
+
+        List<String> imageUrlPath = findImageUrlPath(source);
+        for (String url : imageUrlPath) {
+            String changeSourceImageUrlPath = getChangeImageUrlPath(url, "anl_data/BA201/kotra/");
+            log.info("url: {}", url);
+            log.info("changeUrl: {}", changeSourceImageUrlPath);
+
+            result = source.replace(url, changeSourceImageUrlPath);
+        }
+
+        return result;
+    }
+
+    /**
+     * 변환할 url 리턴
+     *
+     * @param url
+     * @return
+     */
+    private String getChangeImageUrlPath(String url, String changeUrl) {
+        int startIdx = 0;
+        int endIdx = url.lastIndexOf("/") + 1;
+        String substring = url.substring(startIdx, endIdx);
+        String replace = url.replace(substring, changeUrl);
+
+        return replace;
+
+    }
+
+    private Boolean isAllowUrl(String url) {
+        for (String allowUrl : this.imageDownAllowUrl) {
+            if(allowUrl.contains(url)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Boolean isImageFile(String url) {
+        File file = new File(url);
         try {
-            bw = KOTFileUtil.getBufferedWriter(htmlPath, this.encoding);
-            bw.write(input);
+            BufferedImage readImage = ImageIO.read(file);
+            return readImage != null;
+        } catch (IOException e) {
+            log.info(e.getMessage());
+        }
+        return false;
+    }
+
+    private void execImageDownload() {
+        if (ObjectUtils.isEmpty(this.scriptPath)) return;
+
+        BufferedWriter bw = KOTFileUtil.getBufferedWriter(this.scriptPath, this.encoding);
+        try {
+            bw.write("#!/bin/bash");
+            bw.newLine();
+
+            for (String path : this.changingImageList) {
+
+                if(!isAllowUrl(path)) continue;
+                if(!isImageFile(path)) continue;
+
+                String.format("wget -P %s %s", this.attachedFilePath, path);
+                bw.newLine();
+            }
+
+            Runtime.getRuntime().exec(this.scriptPath);
+
+        } catch (IOException e) {
+            log.info(e.getMessage());
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
+        }
+    }
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * script 생성
+     *
+     * @param scriptPath
+     * @param changePath
+     * @param originPath
+     */
+    private void makeScript(String scriptPath, String changePath, List<String> originPath) {
+        BufferedWriter bw = KOTFileUtil.getBufferedWriter(scriptPath, encoding);
+        try {
+            bw.write("#!/bin/bash");
+            bw.newLine();
+
+            for (String path : originPath) {
+                String.format("wget -P %s %s", changePath, path);
+                bw.newLine();
+            }
+
+            log.info("makeImgDownLoadScript: {}", scriptPath);
+
         } catch (IOException e) {
             log.info(e.getMessage());
         } finally {
@@ -198,8 +353,15 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
         int cnt = 0;
         for (String fileName : fileNames) {
+
             String tempFileName = fileName + "#%#";
             replaceImgURLtaskFile(fileName, tempFileName, this.encoding);
+
+            Boolean rmFile = KOTFileUtil.rmFile(fileName);
+            if (!rmFile) log.info("파일 삭제 오류  {}", fileName);
+
+            Boolean renameFile = KOTFileUtil.renameFile(tempFileName, fileName);
+            if (!renameFile) log.info("파일명 변경 오류");
 
             cnt++;
             if (cnt % 100 == 0) {
@@ -244,20 +406,12 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
                         bw.write(temp[i].replace(imgURLOrg.substring(0, idx), parentFile) + " ");
                         this.imgChangePaths.add(parentFile);
 
-                        log.info("download imagePath: {}", imgURLOrg);
+                        log.info("filePath: {}, download imagePath: {}", parentFile, imgURLOrg);
 
                     } else {
                         bw.write(temp[i] + " ");
                     }
                 }
-            }
-
-            Boolean rmFile = KOTFileUtil.rmFile(fileName);
-            if(!rmFile) {
-                log.info("파일 삭제 오류");
-            } else {
-                Boolean renameFile = KOTFileUtil.renameFile(tempFileName, fileName);
-                if(!renameFile) log.info("파일명 변경 오류");
             }
 
         } catch (IOException e) {
@@ -282,6 +436,8 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
     /**
      * 이미지파일 다운로드 script 파일 생성
+     *
+     * @param scriptPath 스크립트 파일경로
      */
     private void makeImgDownLoadScript(String scriptPath) {
         if (this.imgChangePaths.size() == this.imgURLsOrg.size()) {

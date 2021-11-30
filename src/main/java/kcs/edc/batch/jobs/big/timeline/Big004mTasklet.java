@@ -41,8 +41,8 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
         super.beforeStep(stepExecution);
 
         this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
-        this.from = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -1, "yyyy-MM-dd");
-        this.until = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -0, "yyyy-MM-dd");
+        this.from = DateUtil.getOffsetDate(this.baseDt, 0, "yyyy-MM-dd");
+        this.until = DateUtil.getOffsetDate(this.baseDt, 1, "yyyy-MM-dd");
 
         try {
             String resourcePath = this.fileService.getResourcePath();
@@ -68,6 +68,7 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart();
+        log.info("from: {}, until: {}", this.from, this.until);
 
         TimelineQueryVO queryVO = new TimelineQueryVO();
         queryVO.setAccess_key(this.accessKey);

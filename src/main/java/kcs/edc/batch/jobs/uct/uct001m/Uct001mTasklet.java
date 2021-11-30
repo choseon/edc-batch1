@@ -13,9 +13,7 @@ import kcs.edc.batch.jobs.uct.uct001m.vo.Uct001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -121,7 +119,6 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                         if (!"Ok".equals(resultVO.getValidation().getStatus().get("name"))) continue;
                         if ("0".equals(resultVO.getValidation().getCount().get("value"))) continue;
 
-                        List<Object> resultList = new ArrayList<>();
                         List<Uct001mVO.Item> dataset = resultVO.getDataset();
                         for (Uct001mVO.Item item : dataset) {
 
@@ -131,7 +128,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                                 throw new IllegalAccessException("result is '0'");
                             }
 
-                            item.setCletFileCtrnDt(this.baseDt);
+                            item.setCletFileCrtnDt(this.baseDt);
                             this.resultList.add(item);
                         }
 
@@ -139,7 +136,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                         this.fileService.makeTempFile(this.resultList, suffixFileName);
                         this.resultList.clear();
 
-                        break; // 무한루프를 종료한다.
+                        break; // 무한루프를 종료
 
                     } catch (Exception e) {
 

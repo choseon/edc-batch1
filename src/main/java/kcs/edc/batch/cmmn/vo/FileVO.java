@@ -31,7 +31,7 @@ public class FileVO {
         this.baseFileName = fileName;
         this.fileName = fileName;
         this.fileExtension = fileExtension;
-        this.filePath = fileRootPath + fileDirName + File.separator;
+        this.filePath = fileRootPath + fileDirName + "/";
     }
 
     public void setAppendingFileName(String appendFileName) {

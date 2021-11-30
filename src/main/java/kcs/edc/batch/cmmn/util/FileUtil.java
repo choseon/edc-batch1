@@ -3,8 +3,6 @@ package kcs.edc.batch.cmmn.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.univocity.parsers.tsv.TsvParser;
-import com.univocity.parsers.tsv.TsvParserSettings;
 import com.univocity.parsers.tsv.TsvWriter;
 import com.univocity.parsers.tsv.TsvWriterSettings;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +45,10 @@ public class FileUtil {
     public static <T> void makeTsvFile(String filePath, String fileName, List<T> list, Boolean append) {
         File dir = new File(filePath);
         if (!dir.exists()) {
-            dir.mkdirs();
+            if (!dir.mkdirs()) {
+                log.info("폴더 생성 실패", dir.getPath());
+                return;
+            }
         }
 
         TsvWriter tsvWriter = null;
@@ -83,8 +84,62 @@ public class FileUtil {
                 tsvWriter.close();
             }
         }
-
     }
+
+    public static void makeHtmlFile(String filePath, String content) {
+        makeHtmlFile(filePath, content, false, "UTF-8");
+    }
+
+    public static void makeHtmlFile(String filePath, String content, Boolean isAppend, String encoding) {
+
+        String parent = new File(filePath).getParent();
+        File dir = new File(parent);
+        if (!dir.exists()) {
+            if (!dir.mkdirs()) {
+                log.info("폴더 생성 실패", dir.getPath());
+                return;
+            }
+        }
+
+        Writer bw = null;
+        FileOutputStream fos = null;
+        OutputStreamWriter osw = null;
+
+        try {
+            fos = new FileOutputStream(filePath, isAppend);
+            osw = new OutputStreamWriter(fos, encoding);
+            bw = new BufferedWriter(osw);
+//            bw.write(content);
+
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            log.info(e.getMessage());
+        } catch (IOException e) {
+            log.info(e.getMessage());
+        } finally {
+            if(bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
+            if(fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
+            if(osw != null) {
+                try {
+                    osw.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
+        }
+    }
+
 
     /**
      * 파일 병합
@@ -107,11 +162,14 @@ public class FileUtil {
             File targetFile = new File(targetPath + targetFileName);
             // 파일이 존재하면 삭제
             if (targetFile.exists()) {
-                targetFile.delete();
+                if (!targetFile.delete()) {
+                    log.info("파일 삭제 실패: {}", targetFile.getPath());
+                }
             }
             // 파일생성
-            targetFile.createNewFile();
-            log.info("createNewFile >> {}", targetFile);
+            if (!targetFile.createNewFile()) {
+                log.info("createNewFile Failed>> {}", targetFile);
+            }
 
             // 파일 이어쓰기 가능하게 설정
             bos = new BufferedOutputStream(new FileOutputStream(targetFile, true));

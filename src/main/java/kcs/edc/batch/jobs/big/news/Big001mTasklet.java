@@ -50,24 +50,15 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
         super.beforeStep(stepExecution);
 
         this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
-        this.from = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -1, "yyyy-MM-dd");
-        this.until = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -0, "yyyy-MM-dd");
-    }
-
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-
-//        this.keywordList.clear();
-//        this.kcsRgrsYn = null;
-//        this.issueSrwrYn = null;
-
-        return super.afterStep(stepExecution);
+        this.from = DateUtil.getOffsetDate(this.baseDt, 0, "yyyy-MM-dd");
+        this.until = DateUtil.getOffsetDate(this.baseDt, 1, "yyyy-MM-dd");
     }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         writeCmmnLogStart();
+        log.info("from: {}, until: {}", this.from, this.until);
 
         NewsQueryVO queryVO = new NewsQueryVO();
         queryVO.setAccess_key(this.accessKey);
@@ -76,8 +67,9 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
         NewNationWideComCode code = new NewNationWideComCode();
 
-        if (!ObjectUtils.isEmpty(this.newsClusterList)) { // 뉴스상세검색
+        if (!ObjectUtils.isEmpty(this.newsClusterList)) {
 
+            // 뉴스상세검색
             for (List<String> nesClusters : this.newsClusterList) {
                 queryVO.getArgument().setNewsIds(nesClusters);
 
@@ -99,11 +91,9 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
                         getCurrentJobId(), nesClusters.size(), documents.size(), this.kcsRgrsYn);
 
             }
-
-
-//        } else if (!ObjectUtils.isEmpty(this.keywordList)) { // 뉴스 키워드 검색
         } else {
 
+            // 뉴스 키워드 검색
             for (String keyword : this.keywordList) {
                 queryVO.getArgument().setQuery(keyword);
 

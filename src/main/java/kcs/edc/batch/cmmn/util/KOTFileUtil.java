@@ -24,6 +24,14 @@ public class KOTFileUtil {
             br = new BufferedReader(isr);
         } catch (IOException e) {
             log.info(e.getMessage());
+        } finally {
+            if(br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
         }
 
         return br;
@@ -48,8 +56,17 @@ public class KOTFileUtil {
             FileOutputStream fos = new FileOutputStream(fileName, isAppend);
             OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
             bw = new BufferedWriter(osw);
+            return bw;
         } catch (IOException e) {
             log.info(e.getMessage());
+        } finally {
+            if(bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
         }
 
         return bw;
@@ -60,33 +77,32 @@ public class KOTFileUtil {
      **/
 
     public static void makeParent(String fileName) {
-        try {
-            File file = new File(fileName);
-            File parentFile = file.getParentFile();
+        File file = new File(fileName);
+        File parentFile = file.getParentFile();
 
-            ArrayList<String> mkdirList = new ArrayList<String>();
+        ArrayList<String> mkdirList = new ArrayList<String>();
 
-            // 부모 폴더가 없는 경우를 탐색
-            while (true) {
-                // 부모 폴더가 존재하면 종료
-                if (parentFile.exists()) {
-                    break;
-                }
-                // 부모 폴더가 존재하지 않으면, 새로 생성하기 위한 목록에 저장
-                else {
-                    mkdirList.add(parentFile.getAbsolutePath());
-                    parentFile = parentFile.getParentFile();
-                }
+        // 부모 폴더가 없는 경우를 탐색
+        while (true) {
+            // 부모 폴더가 존재하면 종료
+            if (parentFile.exists()) {
+                break;
             }
-
-            // 부모 폴더 생성
-            for (int i = mkdirList.size() - 1; i >= 0; i--) {
-                parentFile = new File(mkdirList.get(i));
-                parentFile.mkdir();
+            // 부모 폴더가 존재하지 않으면, 새로 생성하기 위한 목록에 저장
+            else {
+                mkdirList.add(parentFile.getAbsolutePath());
+                parentFile = parentFile.getParentFile();
             }
-        } catch (Exception e) {
-            log.info(e.getMessage());
         }
+
+        // 부모 폴더 생성
+        for (int i = mkdirList.size() - 1; i >= 0; i--) {
+            parentFile = new File(mkdirList.get(i));
+            if (!parentFile.mkdir()) {
+                log.info("폴더 생성 실패: {}", parentFile.getPath());
+            }
+        }
+
     }
 
 

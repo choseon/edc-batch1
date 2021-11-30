@@ -44,8 +44,8 @@ public class Big003mTasklet extends CmmnJob implements Tasklet{
         super.beforeStep(stepExecution);
 
         this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
-        this.from = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -1, "yyyy-MM-dd");
-        this.until = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -0, "yyyy-MM-dd");
+        this.from = DateUtil.getOffsetDate(this.baseDt, 0, "yyyy-MM-dd");
+        this.until = DateUtil.getOffsetDate(this.baseDt, 1, "yyyy-MM-dd");
     }
 
     @Override
@@ -62,6 +62,7 @@ public class Big003mTasklet extends CmmnJob implements Tasklet{
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
         this.writeCmmnLogStart();
+        log.info("from: {}, until: {}", this.from, this.until);
 
         WCQueryVO queryVO = new WCQueryVO();
         queryVO.setAccess_key(this.accessKey);

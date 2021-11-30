@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -68,8 +69,6 @@ public class ApiService {
      */
     public <T> T sendApiForEntity(URI uri, Class<T> resonseType) {
 
-        log.debug("uri {}", uri);
-
         ResponseEntity<String> forEntity = this.restTemplate.getForEntity(uri, String.class);
         String resultJson = forEntity.getBody();
 
@@ -78,6 +77,7 @@ public class ApiService {
             log.info("resultJson is null");
             return null;
         } else {
+            log.debug("uri {}", uri);
             log.debug("resultJson {}", resultJson);
         }
 
@@ -86,7 +86,7 @@ public class ApiService {
             this.objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
             return this.objectMapper.readValue(resultJson, resonseType);
 
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | RestClientException e) {
             log.info(e.getMessage());
         }
         return null;
@@ -116,7 +116,7 @@ public class ApiService {
 
         try {
             t = this.objectMapper.readValue(resultJson, targetClass);
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | RestClientException e) {
             log.info(e.getMessage());
         }
         return t;
@@ -140,7 +140,7 @@ public class ApiService {
 
         try {
             t = this.objectMapper.readValue(resultJson, targetClass);
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | RestClientException e) {
             log.info(e.getMessage());
         }
         return t;

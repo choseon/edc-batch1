@@ -18,6 +18,7 @@ public class ZipUtil {
         File f = new File(dirPath);
 
         fileList = f.listFiles();
+        if(fileList == null) return;
 
         // 압축 파일을 저장할 디렉토리 경로 및 압축 파일 명
         zipFileName = zipPath + zipName;
@@ -46,7 +47,9 @@ public class ZipUtil {
                     zos.closeEntry();
                     in.close();
                     // 압축 후 대상 파일 삭제
-                    chkFile.delete();
+                    if(!chkFile.delete()) {
+                        log.info("파일 삭제 실패:", chkFile.getPath());
+                    }
                 }
             }
             //압축 대상 파일이 있던 폴더도 삭제

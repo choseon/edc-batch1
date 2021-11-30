@@ -39,13 +39,12 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
         super.beforeStep(stepExecution);
 
         this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
-        this.from = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -1, "yyyy-MM-dd");
-        this.until = DateUtil.getOffsetDate(DateUtil.getFormatDate(this.baseDt), -0, "yyyy-MM-dd");
+        this.from = DateUtil.getOffsetDate(this.baseDt, 0, "yyyy-MM-dd");
+        this.until = DateUtil.getOffsetDate(this.baseDt, 1, "yyyy-MM-dd");
     }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-
 
         this.jobExecutionContext.put("newsClusterList", this.newsClusterList);
         this.jobExecutionContext.put("kcsRgrsYn", this.kcsRgrsYn);
@@ -61,7 +60,7 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
 
         IssueRankQueryVO queryVO = new IssueRankQueryVO();
         queryVO.setAccess_key(this.accessKey);
-        queryVO.getArgument().setDate(this.until); // ex) 2019-01-01
+        queryVO.getArgument().setDate(this.until); // ex) 2021-11-24
 
         URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
         Big002mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big002mVO.class);
@@ -73,13 +72,11 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
         List<Big002mVO.TopicItem> topics = resultVO.getReturn_object().getTopics();
         for (Big002mVO.TopicItem item : topics) {
 
-            List<String> newsCluster = item.getNewsCluster();
-            log.info("newsCluster: {}", newsCluster);
+            List<String> newsCluster = item.getNews_cluster();
             this.newsClusterList.add(newsCluster);
-            log.info("this.newsClusterList.size(): {}", this.newsClusterList.size());
 
-            item.setArtcListCn(convertNesClusterListToString(newsCluster));
-            item.setArtcPblsDt(this.baseDt);
+//            item.setNews_cluster(convertNesClusterListToString(newsCluster));
+            item.setArtcPblsDt(this.baseDt); // 20211124
             item.setKcsRgrsYn(this.kcsRgrsYn);
             item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
             item.setLastChngDtlDttm(DateUtil.getCurrentTime());
@@ -92,18 +89,5 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
-    }
-
-    public String convertNesClusterListToString(List<String> newsClusterList) {
-        StringBuilder sb = new StringBuilder();
-        Iterator<String> iterator = newsClusterList.iterator();
-
-        while (iterator.hasNext()) {
-            String str = (String) iterator.next();
-            sb.append("\"").append(str).append("\"").append(",");
-        }
-
-        String clusterStr = sb.toString();
-        return clusterStr.substring(0, clusterStr.length() - 1) + "]";
     }
 }
