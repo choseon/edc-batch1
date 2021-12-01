@@ -86,11 +86,11 @@ public class FileUtil {
         }
     }
 
-    public static void makeHtmlFile(String filePath, String content) {
-        makeHtmlFile(filePath, content, false, "UTF-8");
+    public static void makeFile(String filePath, String content) {
+        makeFile(filePath, content, false, "UTF-8");
     }
 
-    public static void makeHtmlFile(String filePath, String content, Boolean isAppend, String encoding) {
+    public static void makeFile(String filePath, String content, Boolean isAppend, String encoding) {
 
         String parent = new File(filePath).getParent();
         File dir = new File(parent);
@@ -109,7 +109,7 @@ public class FileUtil {
             fos = new FileOutputStream(filePath, isAppend);
             osw = new OutputStreamWriter(fos, encoding);
             bw = new BufferedWriter(osw);
-//            bw.write(content);
+            bw.write(content);
 
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             log.info(e.getMessage());

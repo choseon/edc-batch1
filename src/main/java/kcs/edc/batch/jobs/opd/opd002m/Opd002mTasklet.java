@@ -43,14 +43,8 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
     @Value("${opd.documentUrl}")
     private String documentUrl;
 
-    @Value("${opd.pblntfTypeFileName}")
-    private String pblntfTypeFileName;
-
-    @Value("#{jobParameters[beginDt]}")
-    private String beginDt;
-
-    @Value("#{jobParameters[endDt]}")
-    private String endDt;
+    @Value("${opd.attachDBPath}")
+    private String attachDBPath; // DB에 저장될 첨부파일 root 경로
 
 
     @Override
@@ -66,79 +60,71 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
 
         this.writeCmmnLogStart();
 
-        // 로직 수정 필요
-        // 초기적재 실행시에는 companyList를 루프로 조회
-        // 당일 변경분 적재는 companyCode 필요없음.
-//        this.companyCodeList.clear();
-//        this.companyCodeList.add("");
-
         int pageNo = 1;
         int totPageNo = 0;
 
-        int downloadCnt = 0;
+        int downloadCnt = 1;
 
         // 당일 변경적재분 호출
-//        for (String companyCode : this.companyCodeList) { // 고유번호 목록
-            for (String pblnt : this.pblntfDetailList) { // 공시상세유형 목록
+        for (String pblnt : this.pblntfDetailList) { // 공시상세유형 목록
 
-                do {
-                    String pblntfType = pblnt.substring(0, 1); // 공시유형코드
+            do {
+                String pblntfType = pblnt.substring(0, 1); // 공시유형코드
 
-                    UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
-                    builder.replaceQueryParam("crtfc_key", this.crtfcKey);
+                UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
+                builder.replaceQueryParam("crtfc_key", this.crtfcKey);
 //                    builder.replaceQueryParam("corp_code", companyCode);
-                    builder.replaceQueryParam("bgn_de", this.baseDt);
-                    builder.replaceQueryParam("end_de", this.baseDt);
-                    builder.replaceQueryParam("pblntf_ty", pblntfType);
-                    builder.replaceQueryParam("pblntf_detail_ty", pblnt);
-                    builder.replaceQueryParam("page_no", pageNo);
-                    URI uri = builder.build().toUri();
+                builder.replaceQueryParam("bgn_de", this.baseDt);
+                builder.replaceQueryParam("end_de", this.baseDt);
+                builder.replaceQueryParam("pblntf_ty", pblntfType);
+                builder.replaceQueryParam("pblntf_detail_ty", pblnt);
+                builder.replaceQueryParam("page_no", pageNo);
+                URI uri = builder.build().toUri();
 
-                    Thread.sleep(this.callApiDelayTime);
+                Thread.sleep(this.callApiDelayTime);
 
-                    Opd002mVO resultVO = this.apiService.sendApiForEntity(uri, Opd002mVO.class);
-                    if (resultVO.getStatus().equals("000")) {
+                Opd002mVO resultVO = this.apiService.sendApiForEntity(uri, Opd002mVO.class);
+                if (resultVO.getStatus().equals("000")) {
 //                        log.info("companyCode: {}, pblntf: {}, list: {} ", companyCode, pblnt, resultVO.getList().size());
 
-                        totPageNo = Integer.parseInt(resultVO.getTotal_page());
+                    totPageNo = Integer.parseInt(resultVO.getTotal_page());
 
-                        for (Opd002mVO.Item item : resultVO.getList()) {
+                    for (Opd002mVO.Item item : resultVO.getList()) {
 
-                            item.setPblntf_ty(pblntfType);
-                            item.setPblntf_detail_ty(pblnt);
-                            item.setFile_path_nm(this.fileService.getAttachedFilePath());
-                            item.setRcpn_file_path_nm(this.baseDt + File.separator); // 년월일
-                            item.setSrbk_file_nm("[" + item.getCorp_name() + "]" + item.getReport_nm() + ".zip");
+                        item.setPblntf_ty(pblntfType);
+                        item.setPblntf_detail_ty(pblnt);
+                        item.setFile_path_nm(this.fileService.getAttachedFilePath());
+                        item.setRcpn_file_path_nm(this.baseDt + File.separator); // 년월일
+                        item.setSrbk_file_nm("[" + item.getCorp_name() + "]" + item.getReport_nm() + ".zip");
 
-                            String saveFileNm = item.getReport_nm() + "_" + pblntfType + "_" + pblnt + ".zip";
-                            item.setSorg_file_nm(saveFileNm);
+                        String saveFileNm = item.getReport_nm() + "_" + pblntfType + "_" + pblnt + ".zip";
+                        item.setSorg_file_nm(saveFileNm);
 
-                            item.setCletFileCrtnDt(DateUtil.getCurrentDate());
-                            this.resultList.add(item);
+                        item.setCletFileCrtnDt(DateUtil.getCurrentDate());
+                        this.resultList.add(item);
 
-                            log.info("corpName: {}, reportNm: {}, pblnt: {}", item.getCorp_name(), item.getReport_nm(), pblnt);
+                        log.info("corpName: {}, reportNm: {}, pblnt: {}", item.getCorp_name(), item.getReport_nm(), pblnt);
 
-                            if (!ObjectUtils.isEmpty(item.getStock_code().trim())) {
-                                downloadCnt++;
-                            }
+                        if (!ObjectUtils.isEmpty(item.getStock_code().trim())) {
+                            downloadCnt++;
                         }
-                        pageNo++;
-
-                    } else {
-                        log.debug("resultVO.getStatus(): {}", resultVO.getStatus());
-                        totPageNo = 0;
                     }
+                    pageNo++;
 
-                } while (totPageNo >= pageNo);
-            }
-//        }
+                } else {
+                    log.debug("resultVO.getStatus(): {}", resultVO.getStatus());
+                    totPageNo = 0;
+                }
+
+            } while (totPageNo >= pageNo);
+        }
 
         // 데이터파일생성
         this.fileService.makeFile(this.resultList);
 
         // 첨부파일 다운로드
         log.info("start report File download: {}", downloadCnt);
-        int index = 0;
+        int cnt = 1;
         for (Object o : this.resultList) {
             Opd002mVO.Item item = (Opd002mVO.Item) o;
             if (!ObjectUtils.isEmpty(item.getStock_code().trim())) {
@@ -149,10 +135,10 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                 String saveFileNm = saveRptFile(dcmNoList, item.getRcept_no(), item.getPblntf_ty(), item.getPblntf_detail_ty(), item.getReport_nm());
                 if (!ObjectUtils.isEmpty(saveFileNm)) {
                     log.info("[{}/{}] Success download corpName: {}, saveFileNm: {}",
-                            index++, downloadCnt,item.getCorp_name(), saveFileNm);
+                            cnt++, downloadCnt, item.getCorp_name(), saveFileNm);
                 } else {
                     log.info("[{}/{}] Fail download corpName: {}, saveFileNm: {}",
-                            index++, downloadCnt,item.getCorp_name(), saveFileNm);
+                            cnt++, downloadCnt, item.getCorp_name(), saveFileNm);
                 }
             }
         }
@@ -266,11 +252,11 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                     rcpNo2 = "";
                 }
                 if (strHtmlLine.indexOf("openPdfDownload('") > 0) {
-                    if(strHtmlLine.indexOf("openPdfDownload('") + 17 < strHtmlLine.indexOf("',")) {
+                    if (strHtmlLine.indexOf("openPdfDownload('") + 17 < strHtmlLine.indexOf("',")) {
                         rcpNo3 = strHtmlLine.substring(strHtmlLine.indexOf("openPdfDownload('") + 17, strHtmlLine.indexOf("',")); //추출하기
 
                         if (rcept_no.equals(rcpNo3)) {
-                            if(strHtmlLine.indexOf("', '") + 4 < strHtmlLine.indexOf("');\">다운로드")) {
+                            if (strHtmlLine.indexOf("', '") + 4 < strHtmlLine.indexOf("');\">다운로드")) {
                                 dcmNo = strHtmlLine.substring(strHtmlLine.indexOf("', '") + 4, strHtmlLine.indexOf("');\">다운로드")); //추출하기
                                 dcmNoExistFlag = false;
                                 for (int check = 0; check < returnArr.size(); check++) {//중복 저장 방지를 위한 확인
@@ -317,7 +303,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
             File delFile = new File(viewerFileNm);
             //이제 필요 없어진 뷰어 html 삭제
             if (delFile.exists()) {
-                if(!delFile.delete()) {
+                if (!delFile.delete()) {
                     log.info("파일 삭제 실패: {}", delFile.getPath());
                 }
             }
@@ -370,7 +356,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                                 fileName = disposition.substring(index + 9, disposition.length());
                             }
 
-                            if(fileType[j].equals("zip")) {
+                            if (fileType[j].equals("zip")) {
                                 fileName = repNm + ".zip";
                                 fileName = fileName.replaceAll(" ", "");
                                 fileName = fileName.replaceAll("\"", "");
@@ -383,7 +369,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                                 fileName = fileName.replaceAll("<", "");
                                 fileName = fileName.replaceAll(">", "");
                                 fileName = fileName.replaceAll("|", "");
-                            }else {
+                            } else {
                                 fileName = fileName.replaceAll("\"", "");
                                 fileName = fileName.replaceAll(";", "");
                                 fileName = new String(fileName.getBytes("ISO-8859-1"), "EUC-KR");

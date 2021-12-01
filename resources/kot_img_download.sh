@@ -1,0 +1,7 @@
+wget -P C:/dev/app_nas/anl_data/BA201/kotra/image/ 'https://news.kotra.or.kr/crosseditor/binary/images/001648/20211127024908831_EXOHI74O.png'
+wget -P C:/dev/app_nas/anl_data/BA201/kotra/image/ 'https://news.kotra.or.kr/crosseditor/binary/images/001648/20211127024940391_Y51RKHX5.png'
+wget -P C:/dev/app_nas/anl_data/BA201/kotra/image/ 'https://news.kotra.or.kr/crosseditor/binary/images/001646/20211126092231774_VFTACDIZ.png'
+wget -P C:/dev/app_nas/anl_data/BA201/kotra/image/ 'https://news.kotra.or.kr/crosseditor/binary/images/001646/20211126005200695_ATL3NGDJ.jpg'
+wget -P C:/dev/app_nas/anl_data/BA201/kotra/image/ 'https://news.kotra.or.kr/crosseditor/binary/images/001646/20211126005200372_K2HZNT3L.jpg'
+wget -P C:/dev/app_nas/anl_data/BA201/kotra/image/ 'https://news.kotra.or.kr/crosseditor/binary/images/001644/20211124191216948_4JCV8P0Y.png'
+wget -P C:/dev/app_nas/anl_data/BA201/kotra/image/ 'https://news.kotra.or.kr/crosseditor/binary/images/001644/20211124191529808_LLSQXM3N.png'

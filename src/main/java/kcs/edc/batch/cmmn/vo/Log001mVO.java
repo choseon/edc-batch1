@@ -34,7 +34,7 @@ public class Log001mVO {
     private int targSuccessRows;
 
     /** 적재용량 */
-    private int bytes;
+    private long bytes;
 
     /** 기준일 */
     private String baseDt;

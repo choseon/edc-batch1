@@ -19,6 +19,7 @@ public class Biz001mVO {
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Item {
+
         private String pblancId;
 
         private String pblancNm;
@@ -33,9 +34,9 @@ public class Biz001mVO {
 
         private String areaNm;
 
-        private String entrprsStle;
-
         private String industNm;
+
+        private String entrprsStle;
 
         private String trgetNm;
 

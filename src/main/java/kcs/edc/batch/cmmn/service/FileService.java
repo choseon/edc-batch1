@@ -76,14 +76,14 @@ public class FileService {
         // 데이터 디렉토리명
         String dataDirName = dataFilePrefixName + jobId;
         // 데이터 파일명
-        String dataFileName = dataDirName + "_" + this.baseDt + "_" + DateUtil.getCurrentTime2();
+        String dataFileName = dataDirName + "_" + this.baseDt;
         this.dataFileVO = new FileVO(fileRootPath, dataDirName, dataFileName, fileExtension);
 
         // 로그 디렉토리명
         String logDirName = this.fileProperty.getLogDirName();
         // 로그파일명
-        //      String logFileName = dataDirName + "_" + DateUtil.getCurrentTime2();
-        String logFileName = dataDirName + "_" + this.baseDt + "_" + DateUtil.getCurrentTime2();
+              String logFileName = dataFileName + "_" + DateUtil.getCurrentTime2();
+//        String logFileName = dataDirName + "_" + this.baseDt + "_" + DateUtil.getCurrentTime2();
         this.logFileVO = new FileVO(fileRootPath, logDirName, logFileName, fileExtension);
 
         // 임시파일 디렉토리명
@@ -187,7 +187,7 @@ public class FileService {
 
         initFileVO(jobId);
         makeDataFile(list, this.dataFileVO, append);
-        makeLogFile(list, this.logFileVO);
+        makeLogFile(list, this.logFileVO, this.dataFileVO);
     }
 
     /**
@@ -212,27 +212,33 @@ public class FileService {
      * 성공 로그파일 생성
      *
      * @param list
-     * @param fileVO
+     * @param logFileVO
      * @param <T>
      */
-    private <T> void makeLogFile(List<T> list, FileVO fileVO) {
+    private <T> void makeLogFile(List<T> list, FileVO logFileVO, FileVO dataFileVO) {
 
-        Log001mVO logVO = new Log001mVO();
-        logVO.setParamYmd(this.baseDt);
-        logVO.setStep(this.LOG_FILE_STEP);
-        logVO.setTableName(fileVO.getFileDirName());
-        logVO.setStartTime(this.startTime);
-        logVO.setEndTime(DateUtil.getCurrentTime());
-        logVO.setJobStat(LOG_JOB_STAT_SUCCEEDED);
-        logVO.setTargSuccessRows(list.size());
-        logVO.setBaseDt(this.baseDt);
+        Log001mVO log001mVO = new Log001mVO();
+        log001mVO.setParamYmd(this.baseDt);
+        log001mVO.setStep(this.LOG_FILE_STEP);
+        log001mVO.setTableName(dataFileVO.getFileDirName());
+        log001mVO.setStartTime(this.startTime);
+        log001mVO.setEndTime(DateUtil.getCurrentTime());
+        log001mVO.setJobStat(LOG_JOB_STAT_SUCCEEDED);
+        log001mVO.setTargSuccessRows(list.size());
+        log001mVO.setBaseDt(this.baseDt);
+
+        // 데이터 파일용량
+        File file = new File(dataFileVO.getFullFilePath());
+        if(file.exists()) {
+            log001mVO.setBytes(file.length());
+        }
 
         ArrayList<Object> arrayList = new ArrayList<>();
-        arrayList.add(logVO);
+        arrayList.add(log001mVO);
 
         // 로그 파일 생성
-        FileUtil.makeTsvFile(fileVO.getFilePath(), fileVO.getFileFullName(), arrayList);
-        log.info("logFile: {}", fileVO.getFullFilePath());
+        FileUtil.makeTsvFile(logFileVO.getFilePath(), logFileVO.getFileFullName(), arrayList);
+        log.info("logFile: {}", logFileVO.getFullFilePath());
     }
 
     /**
@@ -245,7 +251,7 @@ public class FileService {
         Log001mVO logVO = new Log001mVO();
         logVO.setParamYmd(this.baseDt);
         logVO.setStep(this.LOG_FILE_STEP);
-        logVO.setTableName(this.logFileVO.getFileDirName());
+        logVO.setTableName(this.dataFileVO.getFileDirName());
         logVO.setStartTime(this.startTime);
         logVO.setEndTime(DateUtil.getCurrentTime());
         logVO.setJobStat(LOG_JOB_STAT_FAIL);
