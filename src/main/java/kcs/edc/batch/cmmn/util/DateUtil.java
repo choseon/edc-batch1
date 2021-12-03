@@ -109,6 +109,10 @@ public class DateUtil {
         }
         return result;
     }
+
+    public static String getYesterDayDtlDttm() {
+        return LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
 }
 
 

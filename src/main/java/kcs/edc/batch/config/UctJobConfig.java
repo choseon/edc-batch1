@@ -27,6 +27,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -69,7 +71,13 @@ public class UctJobConfig {
         String baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
 
         // 수집기준년도 : 전년도, 전전년도 2년치
-        String baseYear = LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy"));
+        String baseYear = null;
+        String day = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd"));
+        if(day.equals("1")) {
+            baseYear = LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy"));
+        } else {
+            baseYear = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
+        }
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)

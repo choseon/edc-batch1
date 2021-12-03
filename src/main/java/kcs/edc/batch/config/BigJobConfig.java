@@ -91,18 +91,20 @@ public class BigJobConfig {
                 .next(big001mStep(null, null, null, null, null)) // News Search
                 .build();
 
-        // query_rank(인기검색어) -> Word Cloud(워드클라우드) -> News Search(뉴스조회)
+        // Issue Rank(이슈랭킹) -> News Search(뉴스상세조회)
         Flow bigFlow2 = new FlowBuilder<Flow>("bigFlow2")
+                .start(big002mStep(null)) // Issue Rank
+                .next(big001mStep(null, null, null, null, null)) // News Search
+                .build();
+
+        // query_rank(인기검색어) -> Word Cloud(워드클라우드) -> News Search(뉴스조회)
+        Flow bigFlow3 = new FlowBuilder<Flow>("bigFlow3")
                 .start(big005mStep(null)) // query_rank
                 .next(big003mStep(null, null, null, null)) // Word Cloud
                 .next(big001mStep(null, null, null, null, null)) // News Search
                 .build();
 
-        // Issue Rank(이슈랭킹) -> News Search(뉴스상세조회)
-        Flow bigFlow3 = new FlowBuilder<Flow>("bigFlow3")
-                .start(big002mStep(null)) // Issue Rank
-                .next(big001mStep(null, null, null, null, null)) // News Search
-                .build();
+
 
         return jobBuilderFactory.get("bigJob")
                 .start(bigFlow1)

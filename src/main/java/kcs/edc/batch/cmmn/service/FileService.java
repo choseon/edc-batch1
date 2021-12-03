@@ -218,7 +218,7 @@ public class FileService {
     private <T> void makeLogFile(List<T> list, FileVO logFileVO, FileVO dataFileVO) {
 
         Log001mVO log001mVO = new Log001mVO();
-        log001mVO.setParamYmd(this.baseDt);
+        log001mVO.setParamYmd(DateUtil.getCurrentDate()); // 작업일자
         log001mVO.setStep(this.LOG_FILE_STEP);
         log001mVO.setTableName(dataFileVO.getFileDirName());
         log001mVO.setStartTime(this.startTime);
@@ -248,19 +248,19 @@ public class FileService {
      */
     public void makeLogFile(String msg) {
 
-        Log001mVO logVO = new Log001mVO();
-        logVO.setParamYmd(this.baseDt);
-        logVO.setStep(this.LOG_FILE_STEP);
-        logVO.setTableName(this.dataFileVO.getFileDirName());
-        logVO.setStartTime(this.startTime);
-        logVO.setEndTime(DateUtil.getCurrentTime());
-        logVO.setJobStat(LOG_JOB_STAT_FAIL);
-        logVO.setErrm(msg);
-        logVO.setTargSuccessRows(0);
-        logVO.setBaseDt(this.baseDt);
+        Log001mVO log001mVO = new Log001mVO();
+        log001mVO.setParamYmd(DateUtil.getCurrentDate()); // 작업일자
+        log001mVO.setStep(this.LOG_FILE_STEP);
+        log001mVO.setTableName(this.dataFileVO.getFileDirName());
+        log001mVO.setStartTime(this.startTime);
+        log001mVO.setEndTime(DateUtil.getCurrentTime());
+        log001mVO.setJobStat(LOG_JOB_STAT_FAIL);
+        log001mVO.setErrm(msg);
+        log001mVO.setTargSuccessRows(0);
+        log001mVO.setBaseDt(this.baseDt);
 
         ArrayList<Object> arrayList = new ArrayList<>();
-        arrayList.add(logVO);
+        arrayList.add(log001mVO);
 
         // 로그 파일 생성
         FileUtil.makeTsvFile(this.logFileVO.getFilePath(), this.logFileVO.getFileFullName(), arrayList);

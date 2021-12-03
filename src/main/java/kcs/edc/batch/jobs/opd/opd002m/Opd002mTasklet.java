@@ -341,6 +341,13 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                 String fileURL = "https://dart.fss.or.kr/pdf/download/" + fileType[j] + ".do?rcp_no=" + rcept_no + "&dcm_no=" + dcmNoList.get(i) + "&lang=ko";
 
                 try {
+
+                    // 끊김방지를 위하여 난수 발생하여 delay
+                    int min = 1;
+                    int max = 4;
+                    int callApiViewerDownDelayRandomTime = (int) ((Math.random() * (max - min) + min)) * 1000;
+                    Thread.sleep(callApiViewerDownDelayRandomTime);
+
                     URL url = new URL(fileURL);
                     HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
                     int responseCode = httpConn.getResponseCode();
@@ -411,12 +418,6 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                     }
                     httpConn.disconnect();
 //                    Thread.sleep(this.callApiViewerDownDelayTime); //1분에 1000건을 넘지 않기 위한 지연
-
-                    // 끊김방지를 위하여 3-10초사이 난수 발생하여 delay
-                    int min = 3;
-                    int max = 10;
-                    int callApiViewerDownDelayRandomTime = (int) ((Math.random() * (max - min) + min)) * 1000;
-                    Thread.sleep(callApiViewerDownDelayRandomTime);
 
                 } catch (IOException | InterruptedException e) {
                     log.info(e.getMessage());

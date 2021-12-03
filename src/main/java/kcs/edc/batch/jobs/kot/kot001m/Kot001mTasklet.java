@@ -37,7 +37,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
     private String encoding = "UTF-8";
 
-    private String attachedFilePath;
+    private String attachedFilePath; // 첨부파일 경로
 
     private String scriptPath; // script 경로
 
@@ -51,12 +51,12 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
     private List<String> allowUrls; // 이미지다운로드시 방화벽 허용된 url 목록
 
     @Value("${kot.changImgUrlPath}")
-    private String changImgUrlPath;
+    private String changImgUrlPath; // 변경될 url path
 
     @Value("${kot.htmlDBPath}")
-    private String htmlDBPath;
+    private String htmlDBPath; // db에 저장될 html 경로
 
-    private List<String> changingImageList = new ArrayList<>(); // 변경할 src url 목록
+    private List<String> changeImgUrlPathList = new ArrayList<>(); // 변경할 src url 목록
     private List<Kot002mVO> newsKeywordList = new ArrayList<>(); // 뉴스 키워드 목록
 
     @SneakyThrows
@@ -227,11 +227,11 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
         while (matcher.find()) {
             String group = matcher.group(1);
 
-            if (!isAllowUrl(group)) continue;
-            if (!isImageFile(group)) continue;
+            if (!isAllowUrl(group)) continue; // 방화벽 허용되지 않은 URL의 경우 제외
+            if (!isImageFile(group)) continue; // 이미지파일이 아닌 경우 제외
 
             result.add(group);
-            this.changingImageList.add(group);
+            this.changeImgUrlPathList.add(group);
         }
         return result;
     }
@@ -293,10 +293,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
      */
     private String makeScriptSource() {
         StringBuffer stringBuffer = new StringBuffer();
-        for (String path : this.changingImageList) {
-
-            if (!isAllowUrl(path)) continue;
-            if (!isImageFile(path)) continue;
+        for (String path : this.changeImgUrlPathList) {
 
             String commandLine = String.format("wget -P %s '%s'", this.attachedFilePath + "image/", path);
             stringBuffer.append(commandLine);
@@ -312,17 +309,33 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
         // 스크립트 소스 생성
         String source = makeScriptSource();
-        String filePath = this.scriptPath + this.scriptFileName;
 
         // 스크립트 파일 생성
+        String filePath = this.scriptPath + this.scriptFileName;
         FileUtil.makeFile(filePath, source);
-        log.info("makeScriptFile: {}", filePath);
+        log.info("scriptFile: {}", filePath);
 
-        // 스크립트 파일 실행
+        BufferedReader br = null;
         try {
-            Runtime.getRuntime().exec(filePath);
+            // 스크립트 파일 실행
+            Process process = Runtime.getRuntime().exec(filePath);
+
+            // 스크립트 로그 출력
+            br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = null;
+            while((line = br.readLine()) != null) {
+                log.info(line);
+            }
         } catch (IOException e) {
             log.info(e.getMessage());
+        } finally {
+            if(br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    log.info(e.getMessage());
+                }
+            }
         }
     }
 }

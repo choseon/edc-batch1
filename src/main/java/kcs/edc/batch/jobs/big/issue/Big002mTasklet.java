@@ -81,8 +81,9 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
             item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
             item.setLastChngDtlDttm(DateUtil.getCurrentTime());
             this.resultList.add(item);
+            log.info("{} >> newsCluster: {}", getCurrentJobId(), item.getNews_cluster());
         }
-        log.info("{} >> topics.size : {}, KcsKeywordYn : {}", getCurrentJobId(), topics.size(), this.kcsRgrsYn);
+//        log.info("{} >> topics.size : {}, KcsKeywordYn : {}", getCurrentJobId(), topics.size(), this.kcsRgrsYn);
 
         // 파일생성
         this.fileService.makeFile(this.resultList, true);

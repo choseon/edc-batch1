@@ -26,6 +26,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -53,6 +55,10 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
         this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
 
+        if (ObjectUtils.isEmpty(this.baseDt)) {
+            this.baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
+        }
+
         // apiService에  Custom RestTemplate Setting
         this.apiService.setRestTemplate(getRestTemplate());
 
@@ -66,11 +72,11 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
         // 이미 생성된 파일은 체크하여 바로 넘어기 때문에 생성안된 파일만 다시 api 호출하여 파일생성하고 끝난다.
         int resultCnt = 0;
         do {
-            for (int i = 0; i < this.period; i++) {
-                String year = String.valueOf(Integer.parseInt(this.baseYear) - i);
-                this.baseYearList.add(year);
-                resultCnt = callApi(rList, pList, year);
-            }
+//            for (int i = 0; i < this.period; i++) {
+//                String year = String.valueOf(Integer.parseInt(this.baseYear) - i);
+//                this.baseYearList.add(year);
+            resultCnt = callApi(rList, pList, this.baseYear);
+//            }
         } while (resultCnt != 0);
 
 
@@ -83,9 +89,10 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     /**
      * API 호출
      *
-     * @param ps          년도
      * @param reportList  신고국가
      * @param partnerList 파트너국가
+     * @param ps          년도
+     * @return
      */
     private int callApi(List<String> reportList, List<String> partnerList, String ps) {
         int resultCnt = 0;

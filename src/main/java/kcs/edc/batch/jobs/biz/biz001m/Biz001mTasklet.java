@@ -11,6 +11,8 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -34,8 +36,11 @@ public class Biz001mTasklet extends CmmnJob implements Tasklet {
         List<Biz001mVO.Item> jsonArray = resultVO.getJsonArray();
         for (Biz001mVO.Item item : jsonArray) {
 
-            item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
-            item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+            // frst_regr_dtl_dttm, last_chng_dtl_dttm을 D-1로 셋팅 (1차 소스 그대로 적용)
+            String yesterday = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+            item.setFrstRgsrDtlDttm(yesterday);
+            item.setLastChngDtlDttm(yesterday);
 
             resultList.add(item);
         }
