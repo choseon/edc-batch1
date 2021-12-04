@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.big.news;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.news.code.NewNationWideComCode;
@@ -16,6 +17,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestClientException;
 
 import java.net.URI;
 import java.util.List;
@@ -55,7 +57,7 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     }
 
     @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         writeCmmnLogStart();
         log.info("from: {}, until: {}", this.from, this.until);
@@ -74,7 +76,16 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
                 queryVO.getArgument().setNewsIds(nesClusters);
 
                 URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-                Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
+                Big001mVO resultVO = null;
+                try {
+                    resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
+                } catch (JsonProcessingException e) {
+                    this.processError(e.getMessage());
+                    return null;
+                } catch (RestClientException e) {
+                    this.processError(e.getMessage());
+                    return null;
+                }
 
                 List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
                 for (Big001mVO.DocumentItem item : documents) {
@@ -98,7 +109,16 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
                 queryVO.getArgument().setQuery(keyword);
 
                 URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-                Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
+                Big001mVO resultVO = null;
+                try {
+                    resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
+                } catch (JsonProcessingException e) {
+                    this.processError(e.getMessage());
+                    return null;
+                } catch (RestClientException e) {
+                    this.processError(e.getMessage());
+                    return null;
+                }
                 if (resultVO.getResult() != 0) continue;
 
                 List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();

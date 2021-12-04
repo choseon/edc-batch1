@@ -99,10 +99,6 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
 
         // 파일생성
         this.fileService.makeFile(this.resultList);
-
-        // 다운로드 Temp파일 삭제
-        this.fileService.cleanTempFile();
-
         this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
@@ -116,7 +112,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    private List<String> getCompanyCodeList() throws IOException, ParserConfigurationException, SAXException {
+    private List<String> getCompanyCodeList() {
 
         // 고유번호 압축 파일 다운로드 URL
         UriComponentsBuilder builder = UriComponentsBuilder.newInstance().fromHttpUrl(this.corpCodeUrl);
@@ -137,43 +133,51 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
             return zipFile;
         });
 
-        // 압축 해제
-        String downloadFilePath = null;
-        byte[] buf = Files.readAllBytes(tempFile);
-        ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(buf));
-
-        // 압축파일 copy
-        String dataTempPath = this.fileService.getTempPath();
-        ZipEntry zipEntry = zipInputStream.getNextEntry();
-        if (zipEntry != null) {
-            File dir = new File(dataTempPath);
-            if (!dir.exists()) {
-                if(!dir.mkdirs()) {
-                    log.info("폴더 생성 실패", dir.getPath());
-                    return null;
-                }
-            }
-            downloadFilePath = dataTempPath + zipEntry.getName(); //압축 해제하여 생성한 파일명
-            File downloadFile = new File(downloadFilePath);
-            if (downloadFile.exists()) { // 파일이 존재하면 삭제
-                Files.delete(downloadFile.toPath());
-            }
-            Files.copy(zipInputStream, Paths.get(downloadFilePath)); // 파일 복사
-        }
-        zipInputStream.closeEntry();
-        zipInputStream.close();
-
-        // xml parsing
         List<String> resultList = null;
-        if (!ObjectUtils.isEmpty(downloadFilePath)) {
-            resultList = xmlParsing(downloadFilePath);
+        try {
+            // 압축 해제
+            String downloadFilePath = null;
+            byte[] buf = Files.readAllBytes(tempFile);
+            ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(buf));
+
+            // 압축파일 copy
+            String dataTempPath = this.fileService.getTempPath();
+            ZipEntry zipEntry = null;
+
+            zipEntry = zipInputStream.getNextEntry();
+
+            if (zipEntry != null) {
+                File dir = new File(dataTempPath);
+                if (!dir.exists()) {
+                    if (!dir.mkdirs()) {
+                        log.info("폴더 생성 실패", dir.getPath());
+                        return null;
+                    }
+                }
+                downloadFilePath = dataTempPath + zipEntry.getName(); //압축 해제하여 생성한 파일명
+                File downloadFile = new File(downloadFilePath);
+                if (downloadFile.exists()) { // 파일이 존재하면 삭제
+                    Files.delete(downloadFile.toPath());
+                }
+                Files.copy(zipInputStream, Paths.get(downloadFilePath)); // 파일 복사
+            }
+            zipInputStream.closeEntry();
+            zipInputStream.close();
+
+            // xml parsing
+            if (!ObjectUtils.isEmpty(downloadFilePath)) {
+                resultList = xmlParsing(downloadFilePath);
+            }
+
+            // 압축파일 삭제
+            Files.delete(tempFile);
+
+            // 다운로드 Temp파일 삭제
+            this.fileService.cleanTempFile();
+
+        } catch (IOException e) {
+            log.info(e.getMessage());
         }
-
-        // 압축파일 삭제
-        Files.delete(tempFile);
-        // 다운로드 파일 삭제
-//        Files.delete(Paths.get(tempPath));
-
 
         return resultList;
 
@@ -188,7 +192,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
      * @throws SAXException
      * @throws IOException
      */
-    private List<String> xmlParsing(String xmlFilePath) throws ParserConfigurationException, SAXException, IOException {
+    private List<String> xmlParsing(String xmlFilePath) {
         log.info("dwnlFileNm >> {}", xmlFilePath);
 
 //        String lastModifyDt = getLastModifyDt(); //이전 배치를 실행한 날짜
@@ -202,30 +206,39 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         // XML DOCTYPE 선언 비활성화
-        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document document = db.parse(xmlFile);
-        document.getDocumentElement().normalize();
+        try {
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
-        NodeList nList = document.getElementsByTagName("list");
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document document = db.parse(xmlFile);
+            document.getDocumentElement().normalize();
 
-        for (int temp = 0; temp < nList.getLength(); temp++) {
-            Node nNode = nList.item(temp);
+            NodeList nList = document.getElementsByTagName("list");
 
-            if (nNode.getNodeType() != Node.ELEMENT_NODE) continue;
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+                Node nNode = nList.item(temp);
 
-            Element eElement = (Element) nNode;
-            //고유번호 가져오기
-            modifyDt = eElement.getElementsByTagName("modify_date").item(0).getTextContent();
-            stockCd = eElement.getElementsByTagName("stock_code").item(0).getTextContent();
-            stockCd = stockCd.trim();
+                if (nNode.getNodeType() != Node.ELEMENT_NODE) continue;
 
-            if(ObjectUtils.isEmpty(stockCd)) continue;
+                Element eElement = (Element) nNode;
+                //고유번호 가져오기
+                modifyDt = eElement.getElementsByTagName("modify_date").item(0).getTextContent();
+                stockCd = eElement.getElementsByTagName("stock_code").item(0).getTextContent();
+                stockCd = stockCd.trim();
 
-            //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
-            if (getNewDataYN(lastModifyDt, modifyDt)) {
-                resultList.add(eElement.getElementsByTagName("corp_code").item(0).getTextContent());
+                if (ObjectUtils.isEmpty(stockCd)) continue;
+
+                //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
+                if (getNewDataYN(lastModifyDt, modifyDt)) {
+                    resultList.add(eElement.getElementsByTagName("corp_code").item(0).getTextContent());
+                }
             }
+        } catch (ParserConfigurationException e) {
+            log.info(e.getMessage());
+        } catch (IOException e) {
+            log.info(e.getMessage());
+        } catch (SAXException e) {
+            log.info(e.getMessage());
         }
         return resultList;
     }

@@ -76,7 +76,7 @@ public class CmmnConst {
      ***********************************************************************************/
     public static final String RESOURCE_FILE_NAME_SOM_KCS_KEWORD = "som_kcs_keyword.txt";
     public static final String RESOURCE_FILE_NAME_UCT_AREA = "uct_area.txt";
-    public static final String RESOURCE_FILE_NAME_KCS_KEYWORD = "kcs_keyword.txt";
+    public static final String RESOURCE_FILE_NAME_KCS_KEYWORD = "big_kcs_keyword.txt";
     public static final String RESOURCE_FILE_NAME_UCT_SCRIPT = "uct_file_merge_script.sh";
 
     /***********************************************************************************
@@ -84,4 +84,8 @@ public class CmmnConst {
      ***********************************************************************************/
     public static final String CMMN_FILE_ACTION_TYPE_MERGE = "merge";
     public static final String CMMN_FILE_ACTION_TYPE_CLEAN = "clean";
+
+    public static final String LOG_ERROR_MSG_FILE = "파일 생성 실패";
+    public static final String LOG_ERROR_MSG_API = "API 호출 오류";
+    public static final String LOG_ERROR_MSG_ = "";
 }

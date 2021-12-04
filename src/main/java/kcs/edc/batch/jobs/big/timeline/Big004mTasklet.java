@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.big.timeline;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
@@ -15,6 +16,7 @@ import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -43,16 +45,6 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
         this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
         this.from = DateUtil.getOffsetDate(this.baseDt, 0, "yyyy-MM-dd");
         this.until = DateUtil.getOffsetDate(this.baseDt, 1, "yyyy-MM-dd");
-
-        try {
-            String resourcePath = this.fileService.getResourcePath();
-            String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_KCS_KEYWORD;
-            this.kcsKeywordList = FileUtil.readTextFile(filePath);
-            log.info("kcsKeywordList.size() {}", kcsKeywordList.size());
-
-        } catch (IOException e) {
-            log.info(e.getMessage());
-        }
     }
 
     @Override
@@ -65,10 +57,21 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     }
 
     @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
         log.info("from: {}, until: {}", this.from, this.until);
+
+        try {
+            String resourcePath = this.fileService.getResourcePath();
+            String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_KCS_KEYWORD;
+            this.kcsKeywordList = FileUtil.readTextFile(filePath);
+            log.info("kcsKeywordList.size() {}", kcsKeywordList.size());
+
+        } catch (IOException e) {
+            this.processError(e.getMessage());
+            return null;
+        }
 
         TimelineQueryVO queryVO = new TimelineQueryVO();
         queryVO.setAccess_key(this.accessKey);
@@ -79,7 +82,16 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
             queryVO.getArgument().setQuery(keyword);
 
             URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-            Big004mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big004mVO.class);
+            Big004mVO resultVO = null;
+            try {
+                resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big004mVO.class);
+            } catch (JsonProcessingException e) {
+                this.processError(e.getMessage());
+                return null;
+            } catch (RestClientException e) {
+                this.processError(e.getMessage());
+                return null;
+            }
             if(resultVO.getResult() != 0) continue;
 
             List<Big004mVO.TimeLineItem> time_line = resultVO.getReturn_object().getTime_line();

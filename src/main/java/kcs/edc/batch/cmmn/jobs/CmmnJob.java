@@ -31,21 +31,18 @@ public class CmmnJob implements StepExecutionListener {
     @Value("#{jobParameters[fromDt]}")
     protected String fromDt; // 수집시작일
 
-    protected List<String> baseDtList; // 수집기준일 목록
-
     protected List<Object> resultList = new ArrayList<>(); // 최종결과리스트
     protected ExecutionContext jobExecutionContext;
 
     protected String jobGroupId;
     protected String jobId;
 
+    protected Boolean isFail = false;
+
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
 
-        if (Objects.isNull(this.baseDt)) {
-            log.info("baseDt is null");
-        }
         this.jobId = getCurrentJobId();
         this.jobGroupId = getCurrentJobGroupId(this.jobId);
 
@@ -64,7 +61,7 @@ public class CmmnJob implements StepExecutionListener {
         // 현재의 jobId를 공통으로 담아준다. FileMerge시 자동으로 jobId가 전달된다.
         this.jobExecutionContext.put("jobId", getCurrentJobId());
 
-        return ExitStatus.COMPLETED;
+        return isFail ? ExitStatus.FAILED : ExitStatus.COMPLETED;
     }
 
     protected String getJobGroupId() {
@@ -118,9 +115,9 @@ public class CmmnJob implements StepExecutionListener {
     }
 
     public void writeCmmnLogEnd(String jobId) {
-        log.info("##########################################################################");
+//        log.info("##########################################################################");
         log.info("END JOB :::: {}", jobId);
-        log.info("##########################################################################");
+//        log.info("##########################################################################");
     }
 
     /**
@@ -143,6 +140,13 @@ public class CmmnJob implements StepExecutionListener {
 //        log.info("##########################################################################");
         log.info("END JOB :::: {} #{}", getCurrentJobId(), threadNum);
         log.info("##########################################################################");
+    }
+
+    public void processError(String msg) {
+        log.info(msg);
+        this.fileService.makeLogFile(msg);
+//        this.isFail = true;
+        this.writeCmmnLogEnd();
     }
 
 }

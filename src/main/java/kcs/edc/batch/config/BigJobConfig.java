@@ -85,6 +85,11 @@ public class BigJobConfig {
     public Job bigJob() {
 
         // News TimeLine(뉴스타임라인) -> Word Cloud(워드클라우드) -> News Search(뉴스조회)
+/*        Flow bigFlow1 = new FlowBuilder<Flow>("bigFlow1")
+                .start(big004mStep(null)) // News Timeline
+                .next(big003mStep(null, null, null, null)) // Word Cloud
+                .next(big001mStep(null, null, null, null, null)) // News Search
+                .build();*/
         Flow bigFlow1 = new FlowBuilder<Flow>("bigFlow1")
                 .start(big004mStep(null)) // News Timeline
                 .next(big003mStep(null, null, null, null)) // Word Cloud

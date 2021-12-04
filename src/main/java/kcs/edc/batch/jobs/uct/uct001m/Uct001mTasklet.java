@@ -132,7 +132,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                             // 결과값 체크
                             if (item.getYr().equals("0") || item.getRtCode().equals("0") ||
                                     item.getPtTitle().equals("0") || item.getPtCode().equals("0")) {
-                                throw new IllegalAccessException("result is '0'");
+                                throw new Exception("result is '0'");
                             }
 
                             item.setCletFileCrtnDt(this.baseDt);

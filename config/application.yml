@@ -1,130 +1,12 @@
+#########################################################################################
+# SpringBoot Settings
+#########################################################################################
 spring:
   profiles:
     active: local
-  datasource:
-    hikari: jdbc-url= jdbc:h2:mem:edcb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
----
-spring:
-  profiles: local
-  batch:
-    job:
-      names: ${job.name:NONE}
-server:
-  port: 8081
-#file:
-#  resourcePath: C:/dev/edc-batch/resources/
-#  fileRootPath: C:/dev/hdata/
-#  logDirName: ht_log001m
-#  tempDirName: temp
-#  prefixTableName: ht_
-#  fileExtension: txt
-#  attachPath:
-#    opd: C:/dev/app_nas/anl_data/BA204/opendart/
-#    kot: C:/dev/app_nas/anl_data/BA201/kotra/
-
-file:
-  resourcePath: C:/dev/edc-batch/resources/
-  rootPath: C:/dev/hdata/
-  attachRootPath: C:/dev/app_nas/anl_data/
-  logDirName: ht_log001m
-  tempDirName: temp
-  dataFilePrefixName: ht_
-  dataFileExtension: txt
-  attachDirName:
-    opd: BA204/opendart
-    kot: BA201/kotra
----
-spring:
-  profiles: dev
-  batch:
-    job:
-      names: ${job.name:NONE}
-server:
-  port: 8081
-file:
-  resourcePath: /data/edc-batch/dev/resources/
-  rootPath: /data/edc-batch/dev/hdata/
-  attachRootPath: /data/edc-batch/dev/app_nas/anl_data/
-  logDirName: ht_log001m
-  tempDirName: temp
-  dataFilePrefixName: ht_
-  dataFileExtension: txt
-  attachDirName:
-    opd: BA204/opendart
-    kot: BA201/kotra
-#  resourcePath: /app/ext-batch/dev/resources/
-#  fileRootPath: /app/ext-batch/dev/hdata/
-#  logDirName: ht_log001m
-#  tempDirName: temp
-#  prefixTableName: ht_
-#  fileExtension: txt
-#  attachPath:
-#    opd: /app/ext-batch/dev/app_nas/anl_data/BA204/opendart/
-#    kot: /app/ext-batch/dev/app_nas/anl_data/BA201/kotra/
----
-spring:
-  profiles: prod
-  batch:
-    job:
-      names: ${job.name:NONE}
-server:
-  port: 8080
-file:
-  resourcePath: /data/edc-batch/prod/resources/
-  rootPath: /hdata/
-  attachRootPath: /app_nas/anl_data/
-  logDirName: ht_log001m
-  tempDirName: temp
-  dataFilePrefixName: ht_
-  dataFileExtension: txt
-  attachDirName:
-    opd: BA204/opendart
-    kot: BA201/kotra
-#  resourcePath: /app/ext-batch/prod/resources/
-#  fileRootPath: /hdata/
-#  logDirName: ht_log001m
-#  tempDirName: temp
-#  prefixTableName: ht_
-#  fileExtension: txt
-#  attachPath:
-#    opd: /app_nas/anl_data/BA204/opendart/
-#    kot: /app_nas/anl_data/BA201/kotra/
-
----
-# Job Scheduler
-scheduler:
-    biz:
-      isActive: false
-      cron: "* 0 07 * * ?"
-    big:
-      isActive: false
-      cron: "* 0 07 * * ?"
-    som:
-      isActive: true
-      cron: "* 30 03 * * ?"
-    saf:
-      isActive: false
-      cron: "* 0 07 * * ?"
-    eba:
-      isActive: false
-      cron: "* 0 07 * * ?"
-    nav:
-      isActive: true
-      cron: "0 10 12 * * ?"
-    kot:
-      isActive: true
-      cron: "0 10 12 * * ?"
-    opd:
-      isActive: true
-      cron: "0 10 12 * * ?"
-    uct:
-      isActive: true
-      cron: "0 0 07-23 1-14 * ?"
----
-# Open Api Information
+#########################################################################################
+# OpenApi Information Settings
+#########################################################################################
 api:
   jobs:
     biz001m:
@@ -287,7 +169,9 @@ api:
         pageNo: 1
         numOfRows: 50
         search4:
----
+#########################################################################################
+# SFTP Information Settings
+#########################################################################################
 sftp:
   jobs:
     nav003m:
@@ -306,7 +190,6 @@ sftp:
       remoteFilePath: /opt/merge/HT_NAV004M/
       remoteFileName: HT_NAV004M
       downloadFilePath: ../hdata/ht_nav004m/temp/
-
 #sftp:
 #    host: 210.114.22.185
 #    port: 16001
@@ -319,7 +202,10 @@ sftp:
 #    nav004m:
 #      remoteDirName: HT_NAV003M
 #      remoteFileName: HT_NAV003M_%s
----
+
+#########################################################################################
+# Batch Job Specific Information Settings
+#########################################################################################
 kot:
   scriptFileName: kot_img_download.sh # 이미지다운로드 스크립트 파일명
   period: 7 # 데이터수집 기간(7일)
@@ -328,7 +214,7 @@ kot:
   changImgUrlPath: /anl_data/BA201/kotra/image/ # 소스 src 변경할 url
   htmlDBPath: BA201/kotra/html/ # db에 저장될 html 경로
 opd:
-  callApiDelayTime: 70 # Api 호출시 DelayTime (1시간에 1000번 이하 limit)
+  callApiDelayTime: 100 # Api 호출시 DelayTime (1시간에 1000번 이하 limit)
   callApiViewerDownDelayTime: 100
   corpCodeUrl: https://opendart.fss.or.kr/api/corpCode.xml # 고유번호 압축 파일 다운로드 URL
   documentUrl: https://opendart.fss.or.kr/api/document.xml # 보고서 원문파일 다운로드 URL
@@ -341,7 +227,7 @@ uct:
 som:
   somKcsKeywordFileName: som_kcs_keyword.txt
 big:
-  bigKcsKeywordFileName: kcs_keyword.txt
+  bigKcsKeywordFileName: big_kcs_keyword.txt
 
 
 

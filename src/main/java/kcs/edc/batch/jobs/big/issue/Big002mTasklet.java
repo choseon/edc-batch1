@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.big.issue;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.issue.vo.Big002mVO;
@@ -12,6 +13,7 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.web.client.RestClientException;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -54,7 +56,7 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
     }
 
     @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
 
@@ -63,9 +65,19 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
         queryVO.getArgument().setDate(this.until); // ex) 2021-11-24
 
         URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-        Big002mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big002mVO.class);
+        Big002mVO resultVO = null;
+        try {
+            resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big002mVO.class);
+        } catch (JsonProcessingException e) {
+            this.processError(e.getMessage());
+            return null;
+        } catch (RestClientException e) {
+//            this.processError(e.getMessage());
+            this.processError(e.toString());
+            return null;
+        }
         if(resultVO.getResult() != 0) {
-            log.info("resultVO.getResult(): {}", resultVO.getReason());
+            this.processError(resultVO.getReason());
             return null;
         }
 

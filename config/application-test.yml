@@ -1,0 +1,65 @@
+#########################################################################################
+# SpringBoot Settings
+#########################################################################################
+spring:
+  profiles:
+    activate:
+      on-profile: test
+  batch:
+    job:
+      names: ${job.name:NONE}
+  datasource:
+    hikari: jdbc-url= jdbc:h2:mem:edcb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+#########################################################################################
+# Tomcat Settings
+#########################################################################################
+server:
+  port: 8081
+#########################################################################################
+# File Path Information Settings
+#########################################################################################
+file:
+  resourcePath: /data/edc-batch/test/resources/
+  rootPath: /data/edc-batch/test/hdata/
+  attachRootPath: /data/edc-batch/test/app_nas/anl_data/
+  logDirName: ht_log001m
+  tempDirName: temp
+  dataFilePrefixName: ht_
+  dataFileExtension: txt
+  attachDirName:
+    opd: BA204/opendart
+    kot: BA201/kotra
+#########################################################################################
+# Batch Scheduler(Cron) Information Settings
+#########################################################################################
+scheduler:
+  biz:
+    isActive: false
+    cron: "* 0 07 * * ?"
+  big:
+    isActive: false
+    cron: "* 0 07 * * ?"
+  som:
+    isActive: true
+    cron: "* 30 03 * * ?"
+  saf:
+    isActive: false
+    cron: "* 0 07 * * ?"
+  eba:
+    isActive: false
+    cron: "* 0 07 * * ?"
+  nav:
+    isActive: false
+    cron: "0 10 12 * * ?"
+  kot:
+    isActive: false
+    cron: "0 10 12 * * ?"
+  opd:
+    isActive: false
+    cron: "0 10 12 * * ?"
+  uct:
+    isActive: false
+    cron: "0 0 07-23 1-14 * ?"

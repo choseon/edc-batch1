@@ -63,7 +63,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
         int pageNo = 1;
         int totPageNo = 0;
 
-        int downloadCnt = 1;
+        int downloadCnt = 0;
 
         // 당일 변경적재분 호출
         for (String pblnt : this.pblntfDetailList) { // 공시상세유형 목록
@@ -106,7 +106,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                         log.info("corpName: {}, reportNm: {}, pblnt: {}", item.getCorp_name(), item.getReport_nm(), pblnt);
 
                         if (!ObjectUtils.isEmpty(item.getStock_code().trim())) {
-                            downloadCnt++;
+                            ++downloadCnt;
                         }
                     }
                     pageNo++;
@@ -124,7 +124,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
 
         // 첨부파일 다운로드
         log.info("start report File download: {}", downloadCnt);
-        int cnt = 1;
+        int cnt = 0;
         for (Object o : this.resultList) {
             Opd002mVO.Item item = (Opd002mVO.Item) o;
             if (!ObjectUtils.isEmpty(item.getStock_code().trim())) {
@@ -135,10 +135,10 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                 String saveFileNm = saveRptFile(dcmNoList, item.getRcept_no(), item.getPblntf_ty(), item.getPblntf_detail_ty(), item.getReport_nm());
                 if (!ObjectUtils.isEmpty(saveFileNm)) {
                     log.info("[{}/{}] Success download corpName: {}, saveFileNm: {}",
-                            cnt++, downloadCnt, item.getCorp_name(), saveFileNm);
+                            ++cnt, downloadCnt, item.getCorp_name(), saveFileNm);
                 } else {
                     log.info("[{}/{}] Fail download corpName: {}, saveFileNm: {}",
-                            cnt++, downloadCnt, item.getCorp_name(), saveFileNm);
+                            ++cnt, downloadCnt, item.getCorp_name(), saveFileNm);
                 }
             }
         }

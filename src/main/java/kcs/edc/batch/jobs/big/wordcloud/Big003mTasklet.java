@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.big.wordcloud;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.wordcloud.vo.Big003mVO;
@@ -14,6 +15,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestClientException;
 
 import java.net.URI;
 import java.util.List;
@@ -59,7 +61,7 @@ public class Big003mTasklet extends CmmnJob implements Tasklet{
     }
 
     @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
         log.info("from: {}, until: {}", this.from, this.until);
@@ -73,7 +75,17 @@ public class Big003mTasklet extends CmmnJob implements Tasklet{
             queryVO.getArgument().setQuery(keyword);
 
             URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-            Big003mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big003mVO.class);
+            Big003mVO resultVO = null;
+            try {
+                resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big003mVO.class);
+            } catch (JsonProcessingException e) {
+                this.processError(e.getMessage());
+                return null;
+            } catch (RestClientException e) {
+                this.processError(e.getMessage());
+                return null;
+            }
+
             if(resultVO.getResult() != 0) continue;
 
             List<Big003mVO.NodeItem> nodes = resultVO.getReturn_object().getNodes();

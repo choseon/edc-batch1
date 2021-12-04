@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.som.som001m;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
@@ -13,6 +14,7 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -89,7 +91,12 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
         builder.replaceQueryParam("endDate", this.baseDt);
         URI uri = builder.build().toUri();
 
-        Som001mVO[] resultVO = this.apiService.sendApiForEntity(uri, Som001mVO[].class);
+        Som001mVO[] resultVO = new Som001mVO[0];
+        try {
+            resultVO = this.apiService.sendApiForEntity(uri, Som001mVO[].class);
+        } catch (JsonProcessingException e) {
+            log.info(e.getMessage());
+        }
         if (Objects.isNull(resultVO)) return null;
 
         for (Som001mVO item : resultVO) {
@@ -145,9 +152,19 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
             }
             URI uri = builder.build().toUri();
 
-            KCSFrequencyVO resultVO = this.apiService.sendApiForEntity(uri, KCSFrequencyVO.class);
+            KCSFrequencyVO resultVO = null;
+            try {
+                resultVO = this.apiService.sendApiForEntity(uri, KCSFrequencyVO.class);
+            } catch (JsonProcessingException e) {
+                log.info(e.getMessage());
+                this.processError(e.getMessage());
+                return null;
+            } catch (RestClientException e) {
+                log.info(e.getMessage());
+                this.processError(e.getMessage());
+                return null;
+            }
             if (Objects.isNull(resultVO)) continue;
-
 
             for (String keyword : split) {
                 Object o = resultVO.getKeywordDocumentCount().get(keyword);

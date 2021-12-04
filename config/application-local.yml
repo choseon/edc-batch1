@@ -4,7 +4,7 @@
 spring:
   profiles:
     activate:
-      on-profile: prod
+      on-profile: test
   batch:
     job:
       names: ${job.name:NONE}
@@ -17,14 +17,14 @@ spring:
 # Tomcat Settings
 #########################################################################################
 server:
-  port: 8080
+  port: 8081
 #########################################################################################
 # File Path Information Settings
 #########################################################################################
 file:
-  resourcePath: /data/edc-batch/prod/resources/
-  rootPath: /hdata/
-  attachRootPath: /app_nas/anl_data/
+  resourcePath: C:/dev/edc-batch/resources/
+  rootPath: C:/dev/hdata/
+  attachRootPath: C:/dev/app_nas/anl_data/
   logDirName: ht_log001m
   tempDirName: temp
   dataFilePrefixName: ht_
@@ -40,26 +40,26 @@ scheduler:
     isActive: false
     cron: "* 0 07 * * ?"
   big:
-    isActive: false
-    cron: "* 0 07 * * ?"
+    isActive: true
+    cron: "0 2 14 * * ?"
   som:
     isActive: true
-    cron: "* 30 03 * * ?"
+    cron: "30 2 14 * * ?"
   saf:
-    isActive: false
+    isActive: true
     cron: "* 0 07 * * ?"
   eba:
     isActive: false
     cron: "* 0 07 * * ?"
   nav:
-    isActive: true
+    isActive: false
     cron: "0 10 12 * * ?"
   kot:
-    isActive: true
+    isActive: false
     cron: "0 10 12 * * ?"
   opd:
-    isActive: true
+    isActive: false
     cron: "0 10 12 * * ?"
   uct:
-    isActive: true
+    isActive: false
     cron: "0 0 07-23 1-14 * ?"

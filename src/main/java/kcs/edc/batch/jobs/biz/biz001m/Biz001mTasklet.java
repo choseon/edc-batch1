@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.biz.biz001m;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.biz.biz001m.vo.Biz001mVO;
@@ -9,6 +10,7 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.web.client.RestClientException;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -20,7 +22,7 @@ import java.util.List;
 public class Biz001mTasklet extends CmmnJob implements Tasklet {
 
     @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
 
@@ -28,7 +30,16 @@ public class Biz001mTasklet extends CmmnJob implements Tasklet {
         URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
 
         // Api 호풀
-        Biz001mVO resultVO = this.apiService.sendApiForEntity(uri, Biz001mVO.class);
+        Biz001mVO resultVO = null;
+        try {
+            resultVO = this.apiService.sendApiForEntity(uri, Biz001mVO.class);
+        } catch (JsonProcessingException e) {
+            this.processError(e.getMessage());
+            return null;
+        } catch (RestClientException e) {
+            this.processError(e.getMessage());
+            return null;
+        }
 
         // 예외 처리
 

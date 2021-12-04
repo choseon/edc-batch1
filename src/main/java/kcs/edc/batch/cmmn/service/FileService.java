@@ -57,7 +57,7 @@ public class FileService {
         this.startTime = DateUtil.getCurrentTime();
 
         initFileVO(this.jobId);
-        log.info("FileService init() >> jobId: {}", this.jobId);
+        log.debug("FileService init() >> jobId: {}", this.jobId);
     }
 
     /**

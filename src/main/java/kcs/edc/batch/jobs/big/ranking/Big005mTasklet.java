@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.big.ranking;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
@@ -14,6 +15,7 @@ import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.web.client.RestClientException;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -56,7 +58,7 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     }
 
     @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
         log.info("from: {}, until: {}", this.from, this.until);
@@ -68,8 +70,20 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
         queryVO.getArgument().setFrom(this.from);
         queryVO.getArgument().setUntil(this.until);
 
-        Big005mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big005mVO.class);
-        if(resultVO.getResult() != 0) return RepeatStatus.FINISHED;
+        Big005mVO resultVO = null;
+        try {
+            resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big005mVO.class);
+        } catch (JsonProcessingException e) {
+            this.processError(e.getMessage());
+            return null;
+        } catch (RestClientException e) {
+            this.processError(e.getMessage());
+            return null;
+        }
+        if(resultVO.getResult() != 0) {
+            this.processError("resultCode is not '0'" + resultVO.getResult());
+            return null;
+        }
 
         List<Big005mVO.QueryItem> queries = resultVO.getReturn_object().getQueries();
         for (Big005mVO.QueryItem item : queries) {
