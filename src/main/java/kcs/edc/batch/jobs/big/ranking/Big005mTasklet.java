@@ -17,6 +17,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.web.client.RestClientException;
 
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,44 +62,49 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
-        log.info("from: {}, until: {}", this.from, this.until);
+        log.info("from: {}, until: {}, KcsKeywordYn: {}, issueSrwrYn: {}", this.from, this.until, this.kcsRgrsYn, this.issueSrwrYn);
 
-        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-
-        RankingQueryVO queryVO = new RankingQueryVO();
-        queryVO.setAccess_key(this.accessKey);
-        queryVO.getArgument().setFrom(this.from);
-        queryVO.getArgument().setUntil(this.until);
-
-        Big005mVO resultVO = null;
         try {
+            URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
+
+            RankingQueryVO queryVO = new RankingQueryVO();
+            queryVO.setAccess_key(this.accessKey);
+            queryVO.getArgument().setFrom(this.from);
+            queryVO.getArgument().setUntil(this.until);
+
+            Big005mVO resultVO = null;
+
             resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big005mVO.class);
+
+            List<Big005mVO.QueryItem> queries = resultVO.getReturn_object().getQueries();
+            for (Big005mVO.QueryItem item : queries) {
+                item.setKcsRgrsYn(this.kcsRgrsYn);
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+
+                this.resultList.add(item);
+                this.keywordList.add(item.getQuery());
+
+                log.info("[{}/{}] {} >> query : {}, count: {}",
+                        this.itemCnt++, queries.size(), this.jobId, item.getQuery(), item.getCount());
+            }
+
+            // 파일생성
+            this.fileService.makeFile(CmmnConst.JOB_ID_BIG004M, resultList, true);
+
         } catch (JsonProcessingException e) {
-            this.processError(e.getMessage());
+            this.makeErrorLog(e.getMessage());
             return null;
         } catch (RestClientException e) {
-            this.processError(e.getMessage());
+            this.makeErrorLog(e.getMessage());
             return null;
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(e.getMessage());
+        } finally {
+            this.writeCmmnLogEnd();
         }
-        if(resultVO.getResult() != 0) {
-            this.processError("resultCode is not '0'" + resultVO.getResult());
-            return null;
-        }
-
-        List<Big005mVO.QueryItem> queries = resultVO.getReturn_object().getQueries();
-        for (Big005mVO.QueryItem item : queries) {
-            item.setKcsRgrsYn(this.kcsRgrsYn);
-            item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
-            item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-
-            this.resultList.add(item);
-            this.keywordList.add(item.getQuery());
-
-            log.info("{} >> query : {}, KcsKeywordYn : {}", getCurrentJobId(), item.getQuery(), this.kcsRgrsYn);
-        }
-        // 파일생성
-        this.fileService.makeFile(CmmnConst.JOB_ID_BIG004M, resultList, true);
-        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }

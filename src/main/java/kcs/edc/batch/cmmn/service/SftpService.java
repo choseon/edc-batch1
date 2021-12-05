@@ -22,25 +22,21 @@ public class SftpService {
         this.sftpProp = this.sftpProperties.getCurrentJobProp(jobId);
     }
 
-    public ChannelSftp connectSFTP() {
+    public ChannelSftp connectSFTP() throws JSchException {
         JSch jSch = new JSch();
         Channel channel = null;
 
-        try {
-            Session session = jSch.getSession(this.sftpProp.getUser(), this.sftpProp.getHost(), this.sftpProp.getPort());
-            session.setPassword(this.sftpProp.getPassword());
+        Session session = jSch.getSession(this.sftpProp.getUser(), this.sftpProp.getHost(), this.sftpProp.getPort());
+        session.setPassword(this.sftpProp.getPassword());
 
-            Properties properties = new Properties();
-            properties.put("StrictHostKeyChecking", "no");
-            session.setConfig(properties);
+        Properties properties = new Properties();
+        properties.put("StrictHostKeyChecking", "no");
+        session.setConfig(properties);
 
-            session.connect();
+        session.connect();
 
-            channel = session.openChannel("sftp");
-            channel.connect();
-        } catch (JSchException e) {
-            log.info(e.getMessage());
-        }
+        channel = session.openChannel("sftp");
+        channel.connect();
 
         log.info("Sftp Connection Successed");
 
@@ -52,7 +48,7 @@ public class SftpService {
      * @param remoteFileName
      * @return
      */
-    public File download(ChannelSftp channelSftp, String remoteFileName, String downloadPath) {
+    public File download(ChannelSftp channelSftp, String remoteFileName, String downloadPath) throws IOException, SftpException {
 
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
@@ -60,7 +56,7 @@ public class SftpService {
 
         try {
             String remoteFilePath = this.sftpProp.getRemoteFilePath().replaceAll("\\\\", "/");
-            log.info("remoteFile: {}", remoteFilePath + remoteFileName);
+            log.info("download remoteFile: {}", remoteFilePath + remoteFileName);
 
             channelSftp.cd(remoteFilePath);
             InputStream inputStream = channelSftp.get(remoteFileName);
@@ -82,9 +78,6 @@ public class SftpService {
             while ((readCount = bis.read(buffer)) > 0) {
                 bos.write(buffer, 0, readCount);
             }
-
-        } catch (SftpException | IOException e) {
-            log.info(e.getMessage());
 
         } finally {
             try {

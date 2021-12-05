@@ -1,11 +1,14 @@
 package kcs.edc.batch.config;
 
 
+import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.jobs.big.issue.Big002mTasklet;
 import kcs.edc.batch.jobs.big.news.Big001mTasklet;
 import kcs.edc.batch.jobs.big.ranking.Big005mTasklet;
 import kcs.edc.batch.jobs.big.timeline.Big004mTasklet;
 import kcs.edc.batch.jobs.big.wordcloud.Big003mTasklet;
+import kcs.edc.batch.jobs.uct.uct001m.Uct001mMergeTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
@@ -26,6 +29,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -85,11 +89,6 @@ public class BigJobConfig {
     public Job bigJob() {
 
         // News TimeLine(뉴스타임라인) -> Word Cloud(워드클라우드) -> News Search(뉴스조회)
-/*        Flow bigFlow1 = new FlowBuilder<Flow>("bigFlow1")
-                .start(big004mStep(null)) // News Timeline
-                .next(big003mStep(null, null, null, null)) // Word Cloud
-                .next(big001mStep(null, null, null, null, null)) // News Search
-                .build();*/
         Flow bigFlow1 = new FlowBuilder<Flow>("bigFlow1")
                 .start(big004mStep(null)) // News Timeline
                 .next(big003mStep(null, null, null, null)) // Word Cloud
@@ -106,15 +105,18 @@ public class BigJobConfig {
         Flow bigFlow3 = new FlowBuilder<Flow>("bigFlow3")
                 .start(big005mStep(null)) // query_rank
                 .next(big003mStep(null, null, null, null)) // Word Cloud
+                .on("COMPLETED")
+                .to(bigFileMergeStep(null)) // file merge
                 .next(big001mStep(null, null, null, null, null)) // News Search
+//                .on("COMPLETED")
+//                .to(bigFileMergeStep(null)) // file merge
                 .build();
-
-
 
         return jobBuilderFactory.get("bigJob")
                 .start(bigFlow1)
                 .next(bigFlow2)
                 .next(bigFlow3)
+                .next(bigFileMergeStep(null))
                 .end()
                 .build();
     }
@@ -264,5 +266,23 @@ public class BigJobConfig {
     @StepScope
     public Big005mTasklet big005mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         return new Big005mTasklet();
+    }
+
+
+    @Bean
+    @JobScope
+    public Step bigFileMergeStep(
+            @Value("#{jobExecutionContext[jobId]}") String jobId) {
+
+        return stepBuilderFactory.get(CmmnConst.JOB_GRP_ID_BIG + CmmnConst.POST_FIX_FILE_MERGE_STEP)
+                .tasklet(bigFileMergeTasklet(null))
+                .build();
+    }
+
+    @Bean
+    @StepScope
+    public CmmnFileTasklet bigFileMergeTasklet(
+            @Value("#{jobExecutionContext[jobId]}") String jobId) {
+        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE);
     }
 }

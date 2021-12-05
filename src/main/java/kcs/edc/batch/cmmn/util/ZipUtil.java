@@ -10,7 +10,7 @@ import java.util.zip.ZipOutputStream;
 public class ZipUtil {
 
     //파일 압축하기
-    public static void createZipFile(String dirPath, String zipPath, String zipName) {
+    public static void createZipFile(String dirPath, String zipPath, String zipName) throws IOException {
 
         // 압축할 파일 디렉토리 경로
         File[] fileList = null;
@@ -57,11 +57,6 @@ public class ZipUtil {
             if (folder.exists()) {
                 folder.delete();
             }
-
-        } catch (FileNotFoundException e) {
-            log.info(e.getMessage());
-        } catch (IOException e) {
-            log.info(e.getMessage());
         } finally {
             if (zos != null) {
                 try {

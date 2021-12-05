@@ -29,7 +29,7 @@ public class FileUtil {
      * @param list     리스트
      * @param <T>
      */
-    public static <T> void makeTsvFile(String filePath, String fileName, List<T> list) {
+    public static <T> void makeTsvFile(String filePath, String fileName, List<T> list) throws FileNotFoundException, IllegalAccessException {
         makeTsvFile(filePath, fileName, list, false);
     }
 
@@ -42,7 +42,7 @@ public class FileUtil {
      * @param append   이어쓰기여부
      * @param <T>
      */
-    public static <T> void makeTsvFile(String filePath, String fileName, List<T> list, Boolean append) {
+    public static <T> void makeTsvFile(String filePath, String fileName, List<T> list, Boolean append) throws FileNotFoundException, IllegalAccessException {
         File dir = new File(filePath);
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
@@ -76,9 +76,6 @@ public class FileUtil {
                     tsvWriter.writeRow(fieldArr);
                 }
             }
-
-        } catch (FileNotFoundException | IllegalAccessException e) {
-            log.info(e.getMessage());
         } finally {
             if (tsvWriter != null) {
                 tsvWriter.close();
@@ -86,11 +83,11 @@ public class FileUtil {
         }
     }
 
-    public static void makeFile(String filePath, String content) {
+    public static void makeFile(String filePath, String content) throws IOException {
         makeFile(filePath, content, false, "UTF-8");
     }
 
-    public static void makeFile(String filePath, String content, Boolean isAppend, String encoding) {
+    public static void makeFile(String filePath, String content, Boolean isAppend, String encoding) throws IOException {
 
         String parent = new File(filePath).getParent();
         File dir = new File(parent);
@@ -111,26 +108,22 @@ public class FileUtil {
             bw = new BufferedWriter(osw);
             bw.write(content);
 
-        } catch (FileNotFoundException | UnsupportedEncodingException e) {
-            log.info(e.getMessage());
-        } catch (IOException e) {
-            log.info(e.getMessage());
         } finally {
-            if(bw != null) {
+            if (bw != null) {
                 try {
                     bw.close();
                 } catch (IOException e) {
                     log.info(e.getMessage());
                 }
             }
-            if(fos != null) {
+            if (fos != null) {
                 try {
                     fos.close();
                 } catch (IOException e) {
                     log.info(e.getMessage());
                 }
             }
-            if(osw != null) {
+            if (osw != null) {
                 try {
                     osw.close();
                 } catch (IOException e) {
@@ -140,20 +133,33 @@ public class FileUtil {
         }
     }
 
+    public static int getFileCnt(String filePath) {
+        int resultCnt = 0;
+        File dir = new File(filePath);
+        if (dir == null) return resultCnt;
+        File[] files = dir.listFiles();
+        if (files == null) return resultCnt;
+
+        return files.length;
+    }
 
     /**
-     * 파일 병합
+     * 파일 병합하여 라인수를 리턴한다.
      *
      * @param sourceFilePath
      * @param targetPath
      * @param targetFileName
+     * @return
+     * @throws IOException
      */
-    public static void mergeFile(String sourceFilePath, String targetPath, String targetFileName) {
+    public static int mergeFile(String sourceFilePath, String targetPath, String targetFileName) throws IOException {
+
+        int resultCnt = 0;
 
         File dir = new File(sourceFilePath);
-        if (dir == null) return;
+        if (dir == null) return resultCnt;
         File[] files = dir.listFiles();
-        if (files == null || files.length == 0) return;
+        if (files == null || files.length == 0) return resultCnt;
 
         BufferedOutputStream bos = null;
         BufferedInputStream bis = null;
@@ -168,7 +174,8 @@ public class FileUtil {
             }
             // 파일생성
             if (!targetFile.createNewFile()) {
-                log.info("createNewFile Failed>> {}", targetFile);
+                log.info("failed! makeMergeFile: {}", targetFile);
+                return resultCnt;
             }
 
             // 파일 이어쓰기 가능하게 설정
@@ -176,7 +183,6 @@ public class FileUtil {
 
             for (File file : files) {
                 bis = new BufferedInputStream(new FileInputStream(file.getPath()));
-                log.info("mergeFile >> {}", file.getPath());
 
                 byte[] buffer = new byte[1024];
                 int readCount = 0;
@@ -186,12 +192,10 @@ public class FileUtil {
                     bos.flush();
                 }
                 bis.close();
+                resultCnt += Files.lines(file.toPath()).count();
             }
+            log.info("mergeFileCnt: {}", files.length);
 
-        } catch (FileNotFoundException e) {
-            log.info(e.getMessage());
-        } catch (IOException e) {
-            log.info(e.getMessage());
         } finally {
             if (bis != null) {
                 try {
@@ -208,6 +212,7 @@ public class FileUtil {
                 }
             }
         }
+        return resultCnt;
     }
 
     /**
@@ -226,7 +231,7 @@ public class FileUtil {
             boolean delete = file.delete();
         }
         boolean delete = dir.delete();
-        log.info("deleteFolder : {}, isDelete : {}", dir, delete);
+        log.debug("deleteFolder : {}, isDelete : {}", dir, delete);
     }
 
     /**
@@ -242,6 +247,7 @@ public class FileUtil {
         JsonObject obj = new Gson().fromJson(reader, JsonObject.class);
         JsonArray jsonArray = obj.getAsJsonArray(objName);
 
+        log.info("readJsonFile: {}, listCnt: {}", filePath, jsonArray.size());
         return jsonArray;
     }
 
@@ -255,8 +261,9 @@ public class FileUtil {
     public static List<String> readTextFile(String filePath) throws IOException {
 
         Path path = Paths.get(filePath);
-        log.info("readTextFile filePath {}", path);
         List<String> list = Files.readAllLines(path);
+
+        log.info("readTextFile: {}, listCnt: {}", filePath, list.size());
         return list;
     }
 
@@ -266,7 +273,7 @@ public class FileUtil {
      * @param filePath
      * @return
      */
-    public static List<Object[]> readCsvFile(String filePath) {
+    public static List<Object[]> readCsvFile(String filePath) throws IOException {
         List<Object[]> rows = new ArrayList<>();
         File csv = new File(filePath);
         BufferedReader br = null;
@@ -279,10 +286,6 @@ public class FileUtil {
                 String[] lineArr = line.split(","); // 파일의 한 줄을 ,로 나누어 배열에 저장 후 리스트로 변환한다.
                 rows.add(lineArr);
             }
-        } catch (FileNotFoundException e) {
-            log.info(e.getMessage());
-        } catch (IOException e) {
-            log.info(e.getMessage());
         } finally {
             try {
                 if (br != null) {

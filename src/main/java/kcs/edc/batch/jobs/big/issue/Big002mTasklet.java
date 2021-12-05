@@ -15,9 +15,9 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.web.client.RestClientException;
 
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -59,47 +59,54 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
+        log.info("from: {}, until: {}, KcsKeywordYn: {}, issueSrwrYn: {}", this.from, this.until, this.kcsRgrsYn, this.issueSrwrYn);
 
-        IssueRankQueryVO queryVO = new IssueRankQueryVO();
-        queryVO.setAccess_key(this.accessKey);
-        queryVO.getArgument().setDate(this.until); // ex) 2021-11-24
-
-        URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-        Big002mVO resultVO = null;
         try {
+
+            IssueRankQueryVO queryVO = new IssueRankQueryVO();
+            queryVO.setAccess_key(this.accessKey);
+            queryVO.getArgument().setDate(this.from); // ex) 2021-11-24
+
+            URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
+            Big002mVO resultVO = null;
+
             resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big002mVO.class);
-        } catch (JsonProcessingException e) {
-            this.processError(e.getMessage());
-            return null;
-        } catch (RestClientException e) {
-//            this.processError(e.getMessage());
-            this.processError(e.toString());
-            return null;
-        }
-        if(resultVO.getResult() != 0) {
-            this.processError(resultVO.getReason());
-            return null;
-        }
 
-        List<Big002mVO.TopicItem> topics = resultVO.getReturn_object().getTopics();
-        for (Big002mVO.TopicItem item : topics) {
+            if (resultVO.getResult() != 0) {
+                this.makeErrorLog(resultVO.getReason());
+                return null;
+            }
 
-            List<String> newsCluster = item.getNews_cluster();
-            this.newsClusterList.add(newsCluster);
+            List<Big002mVO.TopicItem> topics = resultVO.getReturn_object().getTopics();
+            for (Big002mVO.TopicItem item : topics) {
+
+                List<String> newsCluster = item.getNews_cluster();
+                this.newsClusterList.add(newsCluster);
 
 //            item.setNews_cluster(convertNesClusterListToString(newsCluster));
-            item.setArtcPblsDt(this.baseDt); // 20211124
-            item.setKcsRgrsYn(this.kcsRgrsYn);
-            item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
-            item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-            this.resultList.add(item);
-            log.info("{} >> newsCluster: {}", getCurrentJobId(), item.getNews_cluster());
-        }
-//        log.info("{} >> topics.size : {}, KcsKeywordYn : {}", getCurrentJobId(), topics.size(), this.kcsRgrsYn);
+                item.setArtcPblsDt(this.baseDt); // 20211124
+                item.setKcsRgrsYn(this.kcsRgrsYn);
+                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+                this.resultList.add(item);
+                log.info("[{}/{}] {} >> newsCluster.size: {}",
+                        this.itemCnt++, topics.size(), this.jobId, newsCluster.size());
+            }
 
-        // 파일생성
-        this.fileService.makeFile(this.resultList, true);
-        this.writeCmmnLogEnd();
+            // 파일생성
+            this.fileService.makeFile(this.resultList, true);
+
+        } catch (JsonProcessingException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (RestClientException e) {
+            this.makeErrorLog(e.getMessage());
+        } finally {
+            this.writeCmmnLogEnd();
+        }
 
         return RepeatStatus.FINISHED;
     }

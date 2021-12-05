@@ -40,13 +40,13 @@ scheduler:
     isActive: false
     cron: "* 0 07 * * ?"
   big:
-    isActive: true
+    isActive: false
     cron: "0 2 14 * * ?"
   som:
-    isActive: true
+    isActive: false
     cron: "30 2 14 * * ?"
   saf:
-    isActive: true
+    isActive: false
     cron: "* 0 07 * * ?"
   eba:
     isActive: false

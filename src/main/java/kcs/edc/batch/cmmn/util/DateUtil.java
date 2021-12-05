@@ -19,15 +19,10 @@ public class DateUtil {
      * @param offset  이동할 일수( -2147483648 ~ 2147483647 )
      * @return 변경된 날짜
      */
-    public static String getOffsetDate(String strDate, int offset) {
+    public static String getOffsetDate(String strDate, int offset) throws ParseException {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-        String result = null;
-        try {
-            Date date = fmt.parse(strDate);
-            result = getOffsetDate(date, offset, "yyyyMMdd");
-        } catch (ParseException e) {
-            log.error(e.getMessage());
-        }
+        Date date = fmt.parse(strDate);
+        String result = getOffsetDate(date, offset, "yyyyMMdd");
         return result;
     }
 
@@ -38,16 +33,11 @@ public class DateUtil {
      * @param offset  이동할 일수( -2147483648 ~ 2147483647 )
      * @return 변경된 날짜
      */
-    public static String getOffsetDate(String strDate, int offset, String pFormat) {
+    public static String getOffsetDate(String strDate, int offset, String pFormat) throws ParseException {
         SimpleDateFormat fmt = new SimpleDateFormat(pFormat);
-        String result = null;
-        try {
-            String formatDate = getFormatDate(strDate);
-            Date date = fmt.parse(formatDate);
-            result = getOffsetDate(date, offset, pFormat);
-        } catch (ParseException e) {
-            log.error(e.getMessage());
-        }
+        String formatDate = getFormatDate(strDate);
+        Date date = fmt.parse(formatDate);
+        String result = getOffsetDate(date, offset, pFormat);
         return result;
     }
 
@@ -82,31 +72,21 @@ public class DateUtil {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     }
 
-    public static String getFormatDate(String strDate) {
+    public static String getFormatDate(String strDate) throws ParseException {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-        String result = null;
-        try {
-            Date date = fmt.parse(strDate);
-            result = getOffsetDate(date, 0, "yyyy-MM-dd");
-        } catch (ParseException e) {
-            log.error(e.getMessage());
-        }
+        Date date = fmt.parse(strDate);
+        String result = getOffsetDate(date, 0, "yyyy-MM-dd");
         return result;
     }
 
-    public static String convertDateFormat(String strDate) {
+    public static String convertDateFormat(String strDate) throws ParseException {
 
-        String result = null;
-        try {
-            SimpleDateFormat beforeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date tempDate = beforeFormat.parse(strDate);
+        SimpleDateFormat beforeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date tempDate = beforeFormat.parse(strDate);
 
-            SimpleDateFormat afterFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-            result = afterFormat.format(tempDate);
+        SimpleDateFormat afterFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        String result = afterFormat.format(tempDate);
 
-        } catch (ParseException e) {
-            log.error(e.getMessage());
-        }
         return result;
     }
 

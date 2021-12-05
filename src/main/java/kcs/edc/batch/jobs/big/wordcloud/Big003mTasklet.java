@@ -14,9 +14,9 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestClientException;
 
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.List;
 
@@ -24,7 +24,7 @@ import java.util.List;
  * WordCloud(워드클라우드)
  */
 @Slf4j
-public class Big003mTasklet extends CmmnJob implements Tasklet{
+public class Big003mTasklet extends CmmnJob implements Tasklet {
 
     @Value("#{jobExecutionContext[keywordList]}")
     private List<String> keywordList;
@@ -64,46 +64,52 @@ public class Big003mTasklet extends CmmnJob implements Tasklet{
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
-        log.info("from: {}, until: {}", this.from, this.until);
+        log.info("from: {}, until: {}, KcsKeywordYn: {}, issueSrwrYn: {}", this.from, this.until, this.kcsRgrsYn, this.issueSrwrYn);
 
-        WCQueryVO queryVO = new WCQueryVO();
-        queryVO.setAccess_key(this.accessKey);
-        queryVO.getArgument().getPublished_at().setFrom(this.from);
-        queryVO.getArgument().getPublished_at().setUntil(this.until);
+        try {
+            WCQueryVO queryVO = new WCQueryVO();
+            queryVO.setAccess_key(this.accessKey);
+            queryVO.getArgument().getPublished_at().setFrom(this.from);
+            queryVO.getArgument().getPublished_at().setUntil(this.until);
 
-        for (String keyword : this.keywordList) {
-            queryVO.getArgument().setQuery(keyword);
+            for (String keyword : this.keywordList) {
+                queryVO.getArgument().setQuery(keyword);
 
-            URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-            Big003mVO resultVO = null;
-            try {
+                URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
+                Big003mVO resultVO = null;
+
                 resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big003mVO.class);
-            } catch (JsonProcessingException e) {
-                this.processError(e.getMessage());
-                return null;
-            } catch (RestClientException e) {
-                this.processError(e.getMessage());
-                return null;
+
+                if (resultVO.getResult() != 0) continue;
+
+                List<Big003mVO.NodeItem> nodes = resultVO.getReturn_object().getNodes();
+                for (Big003mVO.NodeItem item : nodes) {
+                    item.setArtcPblsDt(this.baseDt);
+                    item.setSrchQuesWordNm(keyword);
+                    item.setKcsRgrsYn(this.kcsRgrsYn);
+                    item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                    item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+                    this.resultList.add(item);
+                }
+                log.info("[{}/{}] {} >> keyword: {}, nodes.size: {}",
+                        this.itemCnt++, this.keywordList.size(), this.jobId, keyword, nodes.size());
             }
 
-            if(resultVO.getResult() != 0) continue;
+            // 파일생성
+//            this.fileService.makeFile(this.resultList, true);
+            this.fileService.makeTempFile(this.resultList, this.kcsRgrsYn);
 
-            List<Big003mVO.NodeItem> nodes = resultVO.getReturn_object().getNodes();
-            for (Big003mVO.NodeItem item : nodes) {
-                item.setArtcPblsDt(this.baseDt);
-                item.setSrchQuesWordNm(keyword);
-                item.setKcsRgrsYn(this.kcsRgrsYn);
-                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
-                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-                this.resultList.add(item);
-            }
-
-            log.info("{} >> keyword : {}, nodes.size: {}, KcsKeywordYn : {}",
-                    getCurrentJobId(), keyword, nodes.size(), this.kcsRgrsYn);
+        } catch (JsonProcessingException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (RestClientException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(e.getMessage());
+        } finally {
+            this.writeCmmnLogEnd();
         }
-        // 파일생성
-        this.fileService.makeFile(this.resultList, true);
-        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }

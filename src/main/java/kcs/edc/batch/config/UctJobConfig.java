@@ -72,8 +72,14 @@ public class UctJobConfig {
 
         // 수집기준년도 : 전년도, 전전년도 2년치
         String baseYear = null;
-        String day = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd"));
-        if(day.equals("1")) {
+//        String day = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd"));
+//        if(day.equals("1")) {
+//            baseYear = LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy"));
+//        } else {
+//            baseYear = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
+//        }
+        int day = Integer.getInteger(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd")));
+        if (day > 0 || day < 7) {
             baseYear = LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy"));
         } else {
             baseYear = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
@@ -111,11 +117,12 @@ public class UctJobConfig {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_JOB)
 //                .start(uctFileCleanStep(null)) // temp 파일 삭제
-                .start(uct001mPartitionStep(null))
+                .start(uct001mStep())
+//                .start(uct001mPartitionStep(null))
 //                .next(uctFileMergeStep(null, null))
 //                .start(uct001mStep())
-                .on("COMPLETED")
-                .to(uctFileMergeStep(null, null))
+//                .on("COMPLETED")
+//                .to(uctFileMergeStep(null, null))
                 .on("*")
                 .end()
 //                .from(uct001mPartitionStep(null))

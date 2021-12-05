@@ -34,10 +34,6 @@ public class ApiService {
     public void init(String jobId) {
 
         this.apiProp = this.apiProperties.getApiProp(jobId);
-
-        if (Objects.isNull(this.apiProp)) {
-            throw new NullPointerException("apiProperty is null");
-        }
         log.debug("ApiService init() >> jobId: {}", jobId);
     }
 
@@ -67,27 +63,21 @@ public class ApiService {
      * @param <T>
      * @return
      */
-    public <T> T sendApiForEntity(URI uri, Class<T> resonseType)  throws JsonProcessingException {
+    public <T> T sendApiForEntity(URI uri, Class<T> resonseType) throws JsonProcessingException, RestClientException {
 
-//        try {
-            ResponseEntity<String> forEntity = this.restTemplate.getForEntity(uri, String.class);
-            String resultJson = forEntity.getBody();
+        ResponseEntity<String> forEntity = this.restTemplate.getForEntity(uri, String.class);
+        String resultJson = forEntity.getBody();
 
-            if (Objects.isNull(resultJson)) {
-                log.info("uri {}", uri);
-                log.info("resultJson is null");
-                return null;
-            } else {
-                log.debug("uri {}", uri);
-                log.debug("resultJson {}", resultJson);
-            }
-            this.objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-            return this.objectMapper.readValue(resultJson, resonseType);
-
-//        } catch (JsonProcessingException | RestClientException e) {
-//            log.info(e.getMessage());
-//        }
-//        return null;
+        if (Objects.isNull(resultJson)) {
+            log.info("uri {}", uri);
+            log.info("resultJson is null");
+            return null;
+        } else {
+            log.debug("uri {}", uri);
+            log.debug("resultJson {}", resultJson);
+        }
+        this.objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+        return this.objectMapper.readValue(resultJson, resonseType);
     }
 
     /**
@@ -99,46 +89,35 @@ public class ApiService {
      */
     public <T> T sendApiPostForObject(URI uri, Object request, Class<T> targetClass) throws JsonProcessingException, RestClientException {
 
-//        try {
-            String resultJson = this.restTemplate.postForObject(uri, request, String.class);
+        String resultJson = this.restTemplate.postForObject(uri, request, String.class);
 
-            if (Objects.isNull(resultJson)) {
-                log.info("uri {}", uri);
-                log.info("resultJson is null");
-                return null;
-            } else {
-                log.debug("uri {}", uri);
-                log.debug("resultJson {}", resultJson);
-            }
-            return this.objectMapper.readValue(resultJson, targetClass);
+        if (Objects.isNull(resultJson)) {
+            log.info("uri {}", uri);
+            log.info("resultJson is null");
+            return null;
+        } else {
+            log.debug("uri {}", uri);
+            log.debug("resultJson {}", resultJson);
+        }
+        return this.objectMapper.readValue(resultJson, targetClass);
 
-//        } catch (JsonProcessingException | RestClientException e) {
-//            log.info(e.getMessage());
-//        }
-//        return null;
     }
 
-    public <T> T sendApiExchange(URI uri, HttpMethod httpMethod, HttpEntity<String> entity, Class<T> targetClass) {
+    public <T> T sendApiExchange(URI uri, HttpMethod httpMethod, HttpEntity<String> entity, Class<T> targetClass) throws JsonProcessingException {
 
+        ResponseEntity<String> exchange = this.restTemplate.exchange(uri, httpMethod, entity, String.class);
+        String resultJson = exchange.getBody();
 
-        try {
-            ResponseEntity<String> exchange = this.restTemplate.exchange(uri, httpMethod, entity, String.class);
-            String resultJson = exchange.getBody();
-
-            if (Objects.isNull(resultJson)) {
-                log.info("uri {}", uri);
-                log.info("resultJson is null");
-                return null;
-            } else {
-                log.debug("uri {}", uri);
-                log.debug("resultJson {}", resultJson);
-            }
-
-            return this.objectMapper.readValue(resultJson, targetClass);
-        } catch (JsonProcessingException | RestClientException e) {
-            log.info(e.getMessage());
+        if (Objects.isNull(resultJson)) {
+            log.info("uri {}", uri);
+            log.info("resultJson is null");
+            return null;
+        } else {
+            log.debug("uri {}", uri);
+            log.debug("resultJson {}", resultJson);
         }
-        return null;
+
+        return this.objectMapper.readValue(resultJson, targetClass);
     }
 
     /**

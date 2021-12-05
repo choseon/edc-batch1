@@ -60,55 +60,60 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
-        log.info("from: {}, until: {}", this.from, this.until);
+        log.info("from: {}, until: {}, KcsKeywordYn: {}, issueSrwrYn: {}", this.from, this.until, this.kcsRgrsYn, this.issueSrwrYn);
 
         try {
             String resourcePath = this.fileService.getResourcePath();
             String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_KCS_KEYWORD;
             this.kcsKeywordList = FileUtil.readTextFile(filePath);
-            log.info("kcsKeywordList.size() {}", kcsKeywordList.size());
 
+            TimelineQueryVO queryVO = new TimelineQueryVO();
+            queryVO.setAccess_key(this.accessKey);
+            queryVO.getArgument().getPublished_at().setFrom(this.from);
+            queryVO.getArgument().getPublished_at().setUntil(this.until);
+
+            for (String keyword : this.kcsKeywordList) {
+                queryVO.getArgument().setQuery(keyword);
+
+                URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
+
+                Thread.sleep(200);
+                Big004mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big004mVO.class);
+
+                if (resultVO.getResult() != 0) {
+                    log.info("[{}/{}] keyword: {}, resultVO.getResult(): {}", this.itemCnt++, this.kcsKeywordList.size(), keyword, resultVO.getResult());
+                } else {
+
+                    List<Big004mVO.TimeLineItem> time_line = resultVO.getReturn_object().getTime_line();
+                    for (Big004mVO.TimeLineItem item : time_line) {
+                        item.setSrchQuesWordNm(keyword);
+                        item.setKcsRgrsYn(this.kcsRgrsYn);
+                        item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                        item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+                        this.resultList.add(item);
+
+                        log.info("[{}/{}] {} >> keyword: {}, hits: {}",
+                                this.itemCnt++, this.kcsKeywordList.size(), this.jobId, keyword, item.getSrchDocGcnt());
+                    }
+                }
+            }
+
+            // 파일생성
+            this.fileService.makeFile(this.resultList, true);
+
+        } catch (JsonProcessingException e) {
+            this.makeErrorLog(e.getMessage());
         } catch (IOException e) {
-            this.processError(e.getMessage());
-            return null;
+            this.makeErrorLog(e.getMessage());
+        } catch (RestClientException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (InterruptedException e) {
+            this.makeErrorLog(e.getMessage());
+        } finally {
+            this.writeCmmnLogEnd();
         }
-
-        TimelineQueryVO queryVO = new TimelineQueryVO();
-        queryVO.setAccess_key(this.accessKey);
-        queryVO.getArgument().getPublished_at().setFrom(this.from);
-        queryVO.getArgument().getPublished_at().setUntil(this.until);
-
-        for(String keyword : this.kcsKeywordList) {
-            queryVO.getArgument().setQuery(keyword);
-
-            URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-            Big004mVO resultVO = null;
-            try {
-                resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big004mVO.class);
-            } catch (JsonProcessingException e) {
-                this.processError(e.getMessage());
-                return null;
-            } catch (RestClientException e) {
-                this.processError(e.getMessage());
-                return null;
-            }
-            if(resultVO.getResult() != 0) continue;
-
-            List<Big004mVO.TimeLineItem> time_line = resultVO.getReturn_object().getTime_line();
-            for (Big004mVO.TimeLineItem item : time_line) {
-                item.setSrchQuesWordNm(keyword);
-                item.setKcsRgrsYn(this.kcsRgrsYn);
-                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
-                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-                this.resultList.add(item);
-
-                log.info("{} >> keyword : {}, KcsKeywordYn : {}", getCurrentJobId(), keyword, this.kcsRgrsYn);
-            }
-        }
-        // 파일생성
-        this.fileService.makeFile(this.resultList, true);
-        this.writeCmmnLogEnd();
-
         return RepeatStatus.FINISHED;
     }
 }

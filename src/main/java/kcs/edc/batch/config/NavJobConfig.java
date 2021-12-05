@@ -66,7 +66,7 @@ public class NavJobConfig {
     public Job navJob() {
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_NAV + CmmnConst.POST_FIX_JOB)
                 .start(nav003mStep())
-//                .next(nav004mStep())
+                .next(nav004mStep())
                 .build();
     }
 

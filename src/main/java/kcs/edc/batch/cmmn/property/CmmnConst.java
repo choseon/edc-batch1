@@ -82,10 +82,7 @@ public class CmmnConst {
     /***********************************************************************************
      * FILE ACTION TYPE
      ***********************************************************************************/
-    public static final String CMMN_FILE_ACTION_TYPE_MERGE = "merge";
-    public static final String CMMN_FILE_ACTION_TYPE_CLEAN = "clean";
+    public static final String CMMN_FILE_ACTION_TYPE_MERGE = "FILE_MERGE";
+    public static final String CMMN_FILE_ACTION_TYPE_CLEAN = "FILE_CLEAN";
 
-    public static final String LOG_ERROR_MSG_FILE = "파일 생성 실패";
-    public static final String LOG_ERROR_MSG_API = "API 호출 오류";
-    public static final String LOG_ERROR_MSG_ = "";
 }

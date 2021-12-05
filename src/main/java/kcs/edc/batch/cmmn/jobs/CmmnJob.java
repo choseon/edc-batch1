@@ -11,9 +11,9 @@ import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @StepScope
@@ -37,8 +37,8 @@ public class CmmnJob implements StepExecutionListener {
     protected String jobGroupId;
     protected String jobId;
 
-    protected Boolean isFail = false;
-
+    protected int totalCnt = 1;
+    protected int itemCnt = 1;
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
@@ -61,7 +61,7 @@ public class CmmnJob implements StepExecutionListener {
         // 현재의 jobId를 공통으로 담아준다. FileMerge시 자동으로 jobId가 전달된다.
         this.jobExecutionContext.put("jobId", getCurrentJobId());
 
-        return isFail ? ExitStatus.FAILED : ExitStatus.COMPLETED;
+        return ExitStatus.COMPLETED;
     }
 
     protected String getJobGroupId() {
@@ -79,8 +79,8 @@ public class CmmnJob implements StepExecutionListener {
         String jobId = null;
         if (className.endsWith("Tasklet")) {
             jobId = className.replace("Tasklet", "").toLowerCase();
-            if(jobId.length() > 7) {
-                jobId = jobId.substring(0,7);
+            if (jobId.length() > 7) {
+                jobId = jobId.substring(0, 7);
                 log.info("jobId::::: {}", jobId);
             }
         } else {
@@ -142,11 +142,21 @@ public class CmmnJob implements StepExecutionListener {
         log.info("##########################################################################");
     }
 
-    public void processError(String msg) {
-        log.info(msg);
-        this.fileService.makeLogFile(msg);
-//        this.isFail = true;
-        this.writeCmmnLogEnd();
+    public void makeErrorLog(String msg) {
+        makeErrorLog(this.jobId, msg);
+    }
+
+    public void makeErrorLog(String jobId, String msg) {
+
+        try {
+            log.info(msg);
+            this.fileService.initFileVO(jobId);
+            this.fileService.makeLogFile(msg);
+        } catch (FileNotFoundException e) {
+            log.info(e.getMessage());
+        } catch (IllegalAccessException e) {
+            log.info(e.getMessage());
+        }
     }
 
 }

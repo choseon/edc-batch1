@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.w3c.dom.Document;
@@ -28,14 +29,20 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -70,36 +77,48 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
     }
 
     @Override
-    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
 
-        this.companyCodeList = getCompanyCodeList();
-        if (ObjectUtils.isEmpty(this.companyCodeList)) {
-            log.info("companyCodeList is empty");
-            return null;
-        } else {
-            log.info("companyCodeList.size(): {}", this.companyCodeList.size());
+        try {
+            this.companyCodeList = getCompanyCodeList();
+
+            for (String companyCode : this.companyCodeList) {
+
+                UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
+                builder.replaceQueryParam("crtfc_key", this.crtfcKey);
+                builder.replaceQueryParam("corp_code", companyCode);
+                URI uri = builder.build().toUri();
+
+                Thread.sleep(this.callApiDelayTime); //10분에 1000건을 넘지 않기 위한 지연
+                Opd001mVO resultVO = this.apiService.sendApiForEntity(uri, Opd001mVO.class);
+                resultVO.setCletFileCrtnDt(DateUtil.getCurrentDate());
+                this.resultList.add(resultVO);
+
+                log.info("corpCode: {}, corpName: {}", resultVO.getStock_code(), resultVO.getCorp_name());
+            }
+
+            // 파일생성
+            this.fileService.makeFile(this.resultList);
+
+        } catch (IOException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (ParserConfigurationException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (ParseException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (SAXException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (RestClientException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (InterruptedException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(e.getMessage());
+        } finally {
+            this.writeCmmnLogEnd();
         }
-
-        for (String companyCode : this.companyCodeList) {
-
-            UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
-            builder.replaceQueryParam("crtfc_key", this.crtfcKey);
-            builder.replaceQueryParam("corp_code", companyCode);
-            URI uri = builder.build().toUri();
-
-            Opd001mVO resultVO = this.apiService.sendApiForEntity(uri, Opd001mVO.class);
-            resultVO.setCletFileCrtnDt(DateUtil.getCurrentDate());
-            this.resultList.add(resultVO);
-
-            Thread.sleep(this.callApiDelayTime); //1분에 1000건을 넘지 않기 위한 지연
-            log.info("corpCode: {}, corpName: {}", resultVO.getStock_code(), resultVO.getCorp_name());
-        }
-
-        // 파일생성
-        this.fileService.makeFile(this.resultList);
-        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }
@@ -112,7 +131,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
      * @throws ParserConfigurationException
      * @throws SAXException
      */
-    private List<String> getCompanyCodeList() {
+    private List<String> getCompanyCodeList() throws IOException, ParserConfigurationException, ParseException, SAXException {
 
         // 고유번호 압축 파일 다운로드 URL
         UriComponentsBuilder builder = UriComponentsBuilder.newInstance().fromHttpUrl(this.corpCodeUrl);
@@ -134,50 +153,45 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         });
 
         List<String> resultList = null;
-        try {
-            // 압축 해제
-            String downloadFilePath = null;
-            byte[] buf = Files.readAllBytes(tempFile);
-            ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(buf));
+        // 압축 해제
+        String downloadFilePath = null;
+        byte[] buf = Files.readAllBytes(tempFile);
+        ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(buf));
 
-            // 압축파일 copy
-            String dataTempPath = this.fileService.getTempPath();
-            ZipEntry zipEntry = null;
+        // 압축파일 copy
+        String dataTempPath = this.fileService.getTempPath();
+        ZipEntry zipEntry = null;
 
-            zipEntry = zipInputStream.getNextEntry();
+        zipEntry = zipInputStream.getNextEntry();
 
-            if (zipEntry != null) {
-                File dir = new File(dataTempPath);
-                if (!dir.exists()) {
-                    if (!dir.mkdirs()) {
-                        log.info("폴더 생성 실패", dir.getPath());
-                        return null;
-                    }
+        if (zipEntry != null) {
+            File dir = new File(dataTempPath);
+            if (!dir.exists()) {
+                if (!dir.mkdirs()) {
+                    log.info("폴더 생성 실패", dir.getPath());
+                    return null;
                 }
-                downloadFilePath = dataTempPath + zipEntry.getName(); //압축 해제하여 생성한 파일명
-                File downloadFile = new File(downloadFilePath);
-                if (downloadFile.exists()) { // 파일이 존재하면 삭제
-                    Files.delete(downloadFile.toPath());
-                }
-                Files.copy(zipInputStream, Paths.get(downloadFilePath)); // 파일 복사
             }
-            zipInputStream.closeEntry();
-            zipInputStream.close();
-
-            // xml parsing
-            if (!ObjectUtils.isEmpty(downloadFilePath)) {
-                resultList = xmlParsing(downloadFilePath);
+            downloadFilePath = dataTempPath + zipEntry.getName(); //압축 해제하여 생성한 파일명
+            File downloadFile = new File(downloadFilePath);
+            if (downloadFile.exists()) { // 파일이 존재하면 삭제
+                Files.delete(downloadFile.toPath());
             }
-
-            // 압축파일 삭제
-            Files.delete(tempFile);
-
-            // 다운로드 Temp파일 삭제
-            this.fileService.cleanTempFile();
-
-        } catch (IOException e) {
-            log.info(e.getMessage());
+            Files.copy(zipInputStream, Paths.get(downloadFilePath)); // 파일 복사
         }
+        zipInputStream.closeEntry();
+        zipInputStream.close();
+
+        // xml parsing
+        if (!ObjectUtils.isEmpty(downloadFilePath)) {
+            resultList = xmlParsing(downloadFilePath);
+        }
+
+        // 압축파일 삭제
+        Files.delete(tempFile);
+
+        // 다운로드 Temp파일 삭제
+        this.fileService.cleanTempFile();
 
         return resultList;
 
@@ -192,7 +206,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
      * @throws SAXException
      * @throws IOException
      */
-    private List<String> xmlParsing(String xmlFilePath) {
+    private List<String> xmlParsing(String xmlFilePath) throws ParserConfigurationException, IOException, SAXException, ParseException {
         log.info("dwnlFileNm >> {}", xmlFilePath);
 
 //        String lastModifyDt = getLastModifyDt(); //이전 배치를 실행한 날짜
@@ -206,64 +220,53 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         // XML DOCTYPE 선언 비활성화
-        try {
-            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document document = db.parse(xmlFile);
-            document.getDocumentElement().normalize();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document document = db.parse(xmlFile);
+        document.getDocumentElement().normalize();
 
-            NodeList nList = document.getElementsByTagName("list");
+        NodeList nList = document.getElementsByTagName("list");
 
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
+        for (int temp = 0; temp < nList.getLength(); temp++) {
+            Node nNode = nList.item(temp);
 
-                if (nNode.getNodeType() != Node.ELEMENT_NODE) continue;
+            if (nNode.getNodeType() != Node.ELEMENT_NODE) continue;
 
-                Element eElement = (Element) nNode;
-                //고유번호 가져오기
-                modifyDt = eElement.getElementsByTagName("modify_date").item(0).getTextContent();
-                stockCd = eElement.getElementsByTagName("stock_code").item(0).getTextContent();
-                stockCd = stockCd.trim();
+            Element eElement = (Element) nNode;
+            //고유번호 가져오기
+            modifyDt = eElement.getElementsByTagName("modify_date").item(0).getTextContent();
+            stockCd = eElement.getElementsByTagName("stock_code").item(0).getTextContent();
+            stockCd = stockCd.trim();
 
-                if (ObjectUtils.isEmpty(stockCd)) continue;
+            if (ObjectUtils.isEmpty(stockCd)) continue;
 
-                //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
-                if (getNewDataYN(lastModifyDt, modifyDt)) {
-                    resultList.add(eElement.getElementsByTagName("corp_code").item(0).getTextContent());
-                }
+            //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
+            if (getNewDataYN(lastModifyDt, modifyDt)) {
+                resultList.add(eElement.getElementsByTagName("corp_code").item(0).getTextContent());
             }
-        } catch (ParserConfigurationException e) {
-            log.info(e.getMessage());
-        } catch (IOException e) {
-            log.info(e.getMessage());
-        } catch (SAXException e) {
-            log.info(e.getMessage());
         }
+
         return resultList;
     }
 
     //이전 배치 실행일자 이후에 개황정보 수정한 자료인지 여부
-    private boolean getNewDataYN(String lastModifyDt, String modifyDt) {
+    private boolean getNewDataYN(String lastModifyDt, String modifyDt) throws ParseException {
         boolean returnValue = false;
 
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DATE, -1);
-            String strYesterDay = dateFormat.format(calendar.getTime());
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -1);
+        String strYesterDay = dateFormat.format(calendar.getTime());
 
-            Date yesterDay = dateFormat.parse(strYesterDay); //어제날짜
-            Date lastModifyDate = dateFormat.parse(lastModifyDt);
-            Date modifyDate = dateFormat.parse(modifyDt);
+        Date yesterDay = dateFormat.parse(strYesterDay); //어제날짜
+        Date lastModifyDate = dateFormat.parse(lastModifyDt);
+        Date modifyDate = dateFormat.parse(modifyDt);
 
-            //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
-            if ((modifyDate.equals(lastModifyDate) || modifyDate.after(lastModifyDate)) && (modifyDate.equals(yesterDay) || modifyDate.before(yesterDay))) {
-                returnValue = true;
-            }
-        } catch (ParseException ex) {
-            log.info(ex.getMessage());
+        //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
+        if ((modifyDate.equals(lastModifyDate) || modifyDate.after(lastModifyDate)) && (modifyDate.equals(yesterDay) || modifyDate.before(yesterDay))) {
+            returnValue = true;
         }
         return returnValue;
     }

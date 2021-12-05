@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.saf.saf001l;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.Base64;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -35,7 +37,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
     private List<String> certNumList;
 
     @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
 
@@ -46,42 +48,82 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
 
         List<Saf001lVO.Item> resultList = new ArrayList<>();
 
-        for (String certNum : this.certNumList) {
+        try {
+            for (String certNum : this.certNumList) {
 
-            // parameter setting
-            UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder().replaceQueryParam("certNum", certNum);
-            URI uri = builder.build().toUri();
+                // parameter setting
+                UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder().replaceQueryParam("certNum", certNum);
+                URI uri = builder.build().toUri();
 
-            // send API
-            Saf001lVO resultVO = this.apiService.sendApiExchange(uri, HttpMethod.GET, entity, Saf001lVO.class);
-            if (Objects.isNull(resultVO)) continue;
+                // send API
+                Saf001lVO resultVO = null;
 
-            Saf001lVO.Item resultData = resultVO.getResultData();
-            resultList.add(resultData);
+                resultVO = this.apiService.sendApiExchange(uri, HttpMethod.GET, entity, Saf001lVO.class);
 
-            log.info("certNum: {}, saf001l: {}, saf002l: {}, saf003l: {}, saf004l: {}",
-                    certNum, resultData.getDerivationModels().size(), resultData.getSimilarCertifications().size(),
-                    resultData.getFactories().size(), resultData.getCertificationImageUrls().size());
+                if (Objects.isNull(resultVO)) continue;
+
+                Saf001lVO.Item resultData = resultVO.getResultData();
+                resultList.add(resultData);
+
+                log.info("[{}/{}] certNum: {}, saf001l: {}, saf002l: {}, saf003l: {}, saf004l: {}",
+                        this.itemCnt++, this.certNumList.size(), certNum, resultData.getDerivationModels().size(), resultData.getSimilarCertifications().size(),
+                        resultData.getFactories().size(), resultData.getCertificationImageUrls().size());
+            }
+
+        } catch (JsonProcessingException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF001L, e.getMessage());
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF002L, e.getMessage());
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF003L, e.getMessage());
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF004L, e.getMessage());
         }
 
         // HT_SAF001L 파생모델목록 파일생성
-        List<Saf001lVO.DerivationModelItem> derivationModelList = getDerivationModelList(resultList);
-        this.fileService.makeFile(CmmnConst.JOB_ID_SAF001L, derivationModelList);
+        try {
+            this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF001L);
+            List<Saf001lVO.DerivationModelItem> derivationModelList = getDerivationModelList(resultList);
+            this.fileService.makeFile(CmmnConst.JOB_ID_SAF001L, derivationModelList);
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF001L, e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF001L, e.getMessage());
+        }
 
         // HT_SAF002L 연관인증번호 목록 파일생성
-        this.fileService.setStartTime(DateUtil.getCurrentTime());
-        List<Saf001lVO.SimilarCertItem> similarCertificationList = getSimilarCertificationList(resultList);
-        this.fileService.makeFile(CmmnConst.JOB_ID_SAF002L, similarCertificationList);
+        try {
+            this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF002L);
+            this.fileService.setStartTime(DateUtil.getCurrentTime());
+            List<Saf001lVO.SimilarCertItem> similarCertificationList = getSimilarCertificationList(resultList);
+            this.fileService.makeFile(CmmnConst.JOB_ID_SAF002L, similarCertificationList);
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF002L, e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF002L, e.getMessage());
+        }
 
         // HT_SAF003L 제조공장목록 파일생성
-        this.fileService.setStartTime(DateUtil.getCurrentTime());
-        List<Saf001lVO.FatoryItem> factoryList = getFactoryList(resultList);
-        this.fileService.makeFile(CmmnConst.JOB_ID_SAF003L, factoryList);
+        try {
+            this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF003L);
+            this.fileService.setStartTime(DateUtil.getCurrentTime());
+            List<Saf001lVO.FatoryItem> factoryList = getFactoryList(resultList);
+            this.fileService.makeFile(CmmnConst.JOB_ID_SAF003L, factoryList);
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF003L, e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF003L, e.getMessage());
+        }
 
         // HT_SAF004L 이미지목록 파일생성
-        this.fileService.setStartTime(DateUtil.getCurrentTime());
-        List<Saf001lVO.CertificationImageUrlItem> certificationImageUrlList = getCertificationImageUrlList(resultList);
-        this.fileService.makeFile(CmmnConst.JOB_ID_SAF004L, certificationImageUrlList);
+        try {
+            this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF004L);
+            this.fileService.setStartTime(DateUtil.getCurrentTime());
+            List<Saf001lVO.CertificationImageUrlItem> certificationImageUrlList = getCertificationImageUrlList(resultList);
+            this.fileService.makeFile(CmmnConst.JOB_ID_SAF004L, certificationImageUrlList);
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF004L, e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_SAF004L, e.getMessage());
+        }
+
 
         this.writeCmmnLogEnd();
 

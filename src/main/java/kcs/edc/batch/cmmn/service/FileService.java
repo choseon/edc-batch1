@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,7 +151,7 @@ public class FileService {
      * @param list
      * @param <T>
      */
-    public <T> void makeFile(List<T> list) {
+    public <T> void makeFile(List<T> list) throws FileNotFoundException, IllegalAccessException {
         makeFile(this.jobId, list, false);
     }
 
@@ -160,7 +162,7 @@ public class FileService {
      * @param append
      * @param <T>
      */
-    public <T> void makeFile(List<T> list, Boolean append) {
+    public <T> void makeFile(List<T> list, Boolean append) throws FileNotFoundException, IllegalAccessException {
         makeFile(this.jobId, list, append);
     }
 
@@ -171,7 +173,7 @@ public class FileService {
      * @param list
      * @param <T>
      */
-    public <T> void makeFile(String jobId, List<T> list) {
+    public <T> void makeFile(String jobId, List<T> list) throws FileNotFoundException, IllegalAccessException {
         makeFile(jobId, list, false);
     }
 
@@ -183,7 +185,7 @@ public class FileService {
      * @param append
      * @param <T>
      */
-    public <T> void makeFile(String jobId, List<T> list, Boolean append) {
+    public <T> void makeFile(String jobId, List<T> list, Boolean append) throws FileNotFoundException, IllegalAccessException {
 
         initFileVO(jobId);
         makeDataFile(list, this.dataFileVO, append);
@@ -198,33 +200,25 @@ public class FileService {
      * @param append
      * @param <T>
      */
-    private <T> void makeDataFile(List<T> list, FileVO fileVO, Boolean append) {
+    private <T> void makeDataFile(List<T> list, FileVO fileVO, Boolean append) throws FileNotFoundException, IllegalAccessException {
 
-        if (ObjectUtils.isEmpty(list)) {
-            log.info("DataFile: listCnt is 0");
+        if (list.size() == 0) {
+            log.info("makeDataFile: listCnt is 0");
         } else {
             FileUtil.makeTsvFile(fileVO.getFilePath(), fileVO.getFileFullName(), list, append);
-            log.info("DataFile: {}, listCnt: {}", fileVO.getFullFilePath(), list.size());
+            log.info("makeDataFile: {}, listCnt: {}", fileVO.getFullFilePath(), list.size());
         }
     }
 
-    /**
-     * 성공 로그파일 생성
-     *
-     * @param list
-     * @param logFileVO
-     * @param <T>
-     */
-    private <T> void makeLogFile(List<T> list, FileVO logFileVO, FileVO dataFileVO) {
-
+    private <T> void makeLogFile(int listCnt, FileVO logFileVO, FileVO dataFileVO) throws FileNotFoundException, IllegalAccessException {
         Log001mVO log001mVO = new Log001mVO();
         log001mVO.setParamYmd(DateUtil.getCurrentDate()); // 작업일자
         log001mVO.setStep(this.LOG_FILE_STEP);
         log001mVO.setTableName(dataFileVO.getFileDirName());
         log001mVO.setStartTime(this.startTime);
         log001mVO.setEndTime(DateUtil.getCurrentTime());
-        log001mVO.setJobStat(LOG_JOB_STAT_SUCCEEDED);
-        log001mVO.setTargSuccessRows(list.size());
+        log001mVO.setJobStat(this.LOG_JOB_STAT_SUCCEEDED);
+        log001mVO.setTargSuccessRows(listCnt);
         log001mVO.setBaseDt(this.baseDt);
 
         // 데이터 파일용량
@@ -238,7 +232,19 @@ public class FileService {
 
         // 로그 파일 생성
         FileUtil.makeTsvFile(logFileVO.getFilePath(), logFileVO.getFileFullName(), arrayList);
-        log.info("logFile: {}", logFileVO.getFullFilePath());
+        log.info("makeLogFile: {}", logFileVO.getFullFilePath());
+    }
+
+    /**
+     * 성공 로그파일 생성
+     *
+     * @param list
+     * @param logFileVO
+     * @param <T>
+     */
+    private <T> void makeLogFile(List<T> list, FileVO logFileVO, FileVO dataFileVO) throws FileNotFoundException, IllegalAccessException {
+        makeLogFile(list.size(), logFileVO, dataFileVO);
+
     }
 
     /**
@@ -246,7 +252,7 @@ public class FileService {
      *
      * @param msg
      */
-    public void makeLogFile(String msg) {
+    public void makeLogFile(String msg) throws FileNotFoundException, IllegalAccessException {
 
         Log001mVO log001mVO = new Log001mVO();
         log001mVO.setParamYmd(DateUtil.getCurrentDate()); // 작업일자
@@ -254,7 +260,7 @@ public class FileService {
         log001mVO.setTableName(this.dataFileVO.getFileDirName());
         log001mVO.setStartTime(this.startTime);
         log001mVO.setEndTime(DateUtil.getCurrentTime());
-        log001mVO.setJobStat(LOG_JOB_STAT_FAIL);
+        log001mVO.setJobStat(this.LOG_JOB_STAT_FAIL);
         log001mVO.setErrm(msg);
         log001mVO.setTargSuccessRows(0);
         log001mVO.setBaseDt(this.baseDt);
@@ -264,7 +270,7 @@ public class FileService {
 
         // 로그 파일 생성
         FileUtil.makeTsvFile(this.logFileVO.getFilePath(), this.logFileVO.getFileFullName(), arrayList);
-        log.info("logFile: {}", this.logFileVO.getFullFilePath());
+        log.info("makeLogFile: {}", this.logFileVO.getFullFilePath());
 
     }
 
@@ -275,12 +281,12 @@ public class FileService {
      * @param appendingFileName
      * @param <T>
      */
-    public <T> void makeTempFile(List<T> list, String appendingFileName) {
+    public <T> void makeTempFile(List<T> list, String appendingFileName) throws FileNotFoundException, IllegalAccessException {
 
         this.tempFileVO.setAppendingFileName(appendingFileName);
 
         FileUtil.makeTsvFile(this.tempFileVO.getFilePath(), this.tempFileVO.getFileFullName(), list);
-        log.info("TempFile: {}, listCnt: {} ", this.tempFileVO.getFullFilePath(), list.size());
+        log.info("makeTempFile: {}, listCnt: {} ", this.tempFileVO.getFullFilePath(), list.size());
     }
 
 
@@ -289,11 +295,42 @@ public class FileService {
      *
      * @param jobId
      */
-    public void mergeTempFile(String jobId) {
+    public void mergeTempFile(String jobId) throws IOException, IllegalAccessException {
 
         initFileVO(jobId);
-        FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileFullName());
-        FileUtil.deleteFile(this.tempFileVO.getFilePath());
+
+        int listCnt = FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileFullName());
+        log.info("mergeTempFile: {}, listCnt: {} ", this.dataFileVO.getFullFilePath(), listCnt);
+
+        makeLogFile(listCnt, this.logFileVO, this.dataFileVO);
+
+        cleanTempFile(jobId);
+    }
+
+    public void mergeTempFile(String jobId, String appendingFileName) throws IOException, IllegalAccessException {
+
+        initFileVO(jobId);
+        this.dataFileVO.setAppendingFileName(appendingFileName);
+
+        int listCnt = FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileFullName());
+        log.info("mergeTempFile: {}, listCnt: {} ", this.dataFileVO.getFullFilePath(), listCnt);
+
+        makeLogFile(listCnt, this.logFileVO, this.dataFileVO);
+
+        cleanTempFile(jobId);
+
+    }
+
+    /**
+     * 임시파일 갯수 조회
+     * @return
+     */
+    public int getTempFileCnt() {
+
+        String filePath = this.tempFileVO.getFilePath();
+        int fileCnt = FileUtil.getFileCnt(filePath);
+
+        return fileCnt;
     }
 
     /**

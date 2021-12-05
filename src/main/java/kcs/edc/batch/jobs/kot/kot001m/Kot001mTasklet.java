@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.kot.kot001m;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
@@ -15,6 +16,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.imageio.ImageIO;
@@ -22,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,75 +79,106 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
     }
 
     @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
 
-        // 기준일부터 period 기간동안 api 호출
-        for (int i = 0; i < this.period; i++) {
+        try {
 
-            String searchDate = DateUtil.getOffsetDate(this.baseDt, (i * -1));
-            log.info(">>> searchDate: {}", searchDate);
+            // 기준일부터 period 기간동안 api 호출
+            for (int i = 0; i < this.period; i++) {
 
-            UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
-            builder.replaceQueryParam("search4", searchDate);
+                String searchDate = DateUtil.getOffsetDate(this.baseDt, (i * -1));
+                log.info(">>> searchDate: {}", searchDate);
 
-            // serviceKey에 encoding이 되어 있기 때문에 encoding을 하지 않는 설정으로 build한다.
-            URI uri = builder.build(true).toUri();
+                UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();
+                builder.replaceQueryParam("search4", searchDate);
 
-            Kot001mVO resultVO = this.apiService.sendApiForEntity(uri, Kot001mVO.class);
-            if (!resultVO.getResultCode().equals("00")) {
-//                log.info("uri: {}", uri);
-                log.info("resultVO: {}", resultVO.getResultMsg());
-                continue;
-            }
+                // serviceKey에 encoding이 되어 있기 때문에 encoding을 하지 않는 설정으로 build한다.
+                URI uri = builder.build(true).toUri();
 
-            // 결과리스트 데이터 가공
-            for (Kot001mVO.Item item : resultVO.getItems()) {
+                Kot001mVO resultVO = this.apiService.sendApiForEntity(uri, Kot001mVO.class);
 
-                item.setResultCode(resultVO.getResultCode());
-                item.setResultMsg(resultVO.getResultMsg());
-                item.setNumOfRows(resultVO.getNumOfRows());
-                item.setPageNo(resultVO.getPageNo());
-                item.setTotalCount(resultVO.getTotalCount());
-
-                String source = item.getNewsBdt(); // html소스
-
-                // html DB 셋팅경로 : BA201/kotra/html/bbstxSn_뉴스번호.html
-                String fileDirName = this.fileService.getAttachFileVO().getFileDirName();
-                String htmlFileName = "bbstxSn_" + item.getBbstxSn() + ".html";
-//                String htmlPath = fileDirName + "/html/" + htmlFileName;
-                String htmlPath = this.htmlDBPath + htmlFileName;
-                item.setNewsBdt(htmlPath); // htmlPath 셋팅
-
-                // 시간 포맷 변환하여 셋팅 (yyyy-MM-dd HH:mm:ss -> yyyyMMddHHmmss)
-                item.setNewsWrtDt(DateUtil.convertDateFormat(item.getNewsWrtDt()));
-                item.setRegDt(DateUtil.convertDateFormat(item.getRegDt()));
-                item.setUpdDt(DateUtil.convertDateFormat(item.getUpdDt()));
-
-                item.setCletFileCrtnDt(DateUtil.getCurrentDate());
-                this.resultList.add(item);
-
-                if (Objects.nonNull(item.getKwrd())) {
-                    List<Kot002mVO> keywordList = getKeywordList(item);
-                    this.newsKeywordList.addAll(keywordList);
+                if (!resultVO.getResultCode().equals("00")) {
+                    log.info("resultVO: {}", resultVO.getResultMsg());
+                    continue;
                 }
 
-                // html 실제파일경로 : /app_nas/anl_data/BA201/kotra/html/bbstxSn_뉴스번호.html
-                String htmlFilePath = this.attachedFilePath + "html/" + htmlFileName;
-                makeHtmlFile(htmlFilePath, source);
+                // 결과리스트 데이터 가공
+                for (Kot001mVO.Item item : resultVO.getItems()) {
+
+                    item.setResultCode(resultVO.getResultCode());
+                    item.setResultMsg(resultVO.getResultMsg());
+                    item.setNumOfRows(resultVO.getNumOfRows());
+                    item.setPageNo(resultVO.getPageNo());
+                    item.setTotalCount(resultVO.getTotalCount());
+
+                    String source = item.getNewsBdt(); // html소스
+
+                    // html DB 셋팅경로 : BA201/kotra/html/bbstxSn_뉴스번호.html
+                    String htmlFileName = "bbstxSn_" + item.getBbstxSn() + ".html";
+                    String htmlPath = this.htmlDBPath + htmlFileName;
+                    item.setNewsBdt(htmlPath); // htmlPath 셋팅
+
+                    // 시간 포맷 변환하여 셋팅 (yyyy-MM-dd HH:mm:ss -> yyyyMMddHHmmss)
+                    item.setNewsWrtDt(DateUtil.convertDateFormat(item.getNewsWrtDt()));
+                    item.setRegDt(DateUtil.convertDateFormat(item.getRegDt()));
+                    item.setUpdDt(DateUtil.convertDateFormat(item.getUpdDt()));
+
+                    item.setCletFileCrtnDt(DateUtil.getCurrentDate());
+                    this.resultList.add(item);
+
+                    if (Objects.nonNull(item.getKwrd())) {
+                        List<Kot002mVO> keywordList = getKeywordList(item);
+                        this.newsKeywordList.addAll(keywordList);
+                    }
+
+                    // html 실제파일경로 : /app_nas/anl_data/BA201/kotra/html/bbstxSn_뉴스번호.html
+                    String htmlFilePath = this.attachedFilePath + "html/" + htmlFileName;
+                    makeHtmlFile(htmlFilePath, source);
+                }
             }
+
+        } catch (JsonProcessingException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+        } catch (IOException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+        } catch (RestClientException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+        } catch (ParseException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
         }
 
-
         // kot001m 파일생성
-        this.fileService.makeFile(CmmnConst.JOB_ID_KOT001M, this.resultList);
+        try {
+            this.fileService.makeFile(CmmnConst.JOB_ID_KOT001M, this.resultList);
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
+        }
 
         // kot002m 파일생성
-        this.fileService.makeFile(CmmnConst.JOB_ID_KOT002M, this.newsKeywordList);
+        try {
+            this.fileService.makeFile(CmmnConst.JOB_ID_KOT002M, this.newsKeywordList);
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+        }
 
         // 이미지파일 다운로드 실행
-        execImageDownload();
+        try {
+            execImageDownload();
+        } catch (IOException e) {
+            log.info(e.getMessage());
+        } catch (InterruptedException e) {
+            log.info(e.getMessage());
+        }
 
         this.writeCmmnLogEnd();
 
@@ -180,7 +214,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
      * @param htmlPath html 파일경로
      * @param input    내용
      */
-    private void makeHtmlFile(String htmlPath, String input) {
+    private void makeHtmlFile(String htmlPath, String input) throws IOException {
 
         String source = replaceImageUrlPath(input);
         FileUtil.makeFile(htmlPath, source);
@@ -194,12 +228,11 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
      * @param source html소스
      * @return
      */
-    private String replaceImageUrlPath(String source) {
+    private String replaceImageUrlPath(String source) throws IOException {
         String replaceSource = source;
 
         List<String> imageUrlPath = findImageUrlPath(source);
         for (String url : imageUrlPath) {
-//            String changeSourceImageUrlPath = getChangeImageUrlPath(url, "anl_data/BA201/kotra/image/");
             String changeSourceImageUrlPath = getChangeImageUrlPath(url, this.changImgUrlPath);
 
             log.info("originalImagePath: {}", url);
@@ -217,7 +250,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
      * @param source html 소스
      * @return
      */
-    private List<String> findImageUrlPath(String source) {
+    private List<String> findImageUrlPath(String source) throws IOException {
 
         // src를 추출하는 정규식
         Pattern regex = Pattern.compile("<*src=[\"']?([^>\"']+)[\"']?[^>]*>");
@@ -276,14 +309,9 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
      * @param url
      * @return
      */
-    private Boolean isImageFile(String url) {
-        try {
-            BufferedImage readImage = ImageIO.read(new URL(url));
-            return readImage != null;
-        } catch (IOException e) {
-            log.info(e.getMessage());
-        }
-        return false;
+    private Boolean isImageFile(String url) throws IOException {
+        BufferedImage readImage = ImageIO.read(new URL(url));
+        return readImage != null;
     }
 
     /**
@@ -305,7 +333,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
     /**
      * 이미지 다운로드 스크립트 실행
      */
-    private void execImageDownload() {
+    private void execImageDownload() throws IOException, InterruptedException {
 
         // 스크립트 소스 생성
         String source = makeScriptSource();
@@ -313,29 +341,14 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
         // 스크립트 파일 생성
         String filePath = this.scriptPath + this.scriptFileName;
         FileUtil.makeFile(filePath, source);
-        log.info("scriptFile: {}", filePath);
 
-        BufferedReader br = null;
-        try {
-            // 스크립트 파일 실행
-            Process process = Runtime.getRuntime().exec(filePath);
-
-            // 스크립트 로그 출력
-            br = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = null;
-            while((line = br.readLine()) != null) {
-                log.info(line);
-            }
-        } catch (IOException e) {
-            log.info(e.getMessage());
-        } finally {
-            if(br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    log.info(e.getMessage());
-                }
-            }
+        // 스크립트 파일 실행
+        log.info("runScriptFile: {}", filePath);
+        Process process = Runtime.getRuntime().exec(filePath);
+        int waitFor = process.waitFor();
+        if (waitFor == 0) {
+            log.info("Success! download image files");
         }
+
     }
 }

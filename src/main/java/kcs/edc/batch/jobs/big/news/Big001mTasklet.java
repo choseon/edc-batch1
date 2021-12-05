@@ -8,7 +8,6 @@ import kcs.edc.batch.jobs.big.news.vo.Big001mVO;
 import kcs.edc.batch.jobs.big.news.vo.NewsQueryVO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
@@ -19,9 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestClientException;
 
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * News Search(뉴스검색)
@@ -60,85 +59,82 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         writeCmmnLogStart();
-        log.info("from: {}, until: {}", this.from, this.until);
+        log.info("from: {}, until: {}, KcsKeywordYn: {}, issueSrwrYn: {}", this.from, this.until, this.kcsRgrsYn, this.issueSrwrYn);
 
-        NewsQueryVO queryVO = new NewsQueryVO();
-        queryVO.setAccess_key(this.accessKey);
-        queryVO.getArgument().getPublished_at().setFrom(this.from);
-        queryVO.getArgument().getPublished_at().setUntil(this.until);
+        try {
+            NewsQueryVO queryVO = new NewsQueryVO();
+            queryVO.setAccess_key(this.accessKey);
+            queryVO.getArgument().getPublished_at().setFrom(this.from);
+            queryVO.getArgument().getPublished_at().setUntil(this.until);
 
-        NewNationWideComCode code = new NewNationWideComCode();
+            NewNationWideComCode code = new NewNationWideComCode();
 
-        if (!ObjectUtils.isEmpty(this.newsClusterList)) {
+            if (!ObjectUtils.isEmpty(this.newsClusterList)) {
 
-            // 뉴스상세검색
-            for (List<String> nesClusters : this.newsClusterList) {
-                queryVO.getArgument().setNewsIds(nesClusters);
+                // 뉴스상세검색
+                for (List<String> nesClusters : this.newsClusterList) {
+                    queryVO.getArgument().setNewsIds(nesClusters);
 
-                URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-                Big001mVO resultVO = null;
-                try {
+                    URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
+                    Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
+
+                    List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
+                    for (Big001mVO.DocumentItem item : documents) {
+                        item.setSrchQuesWordNm(queryVO.getArgument().getQuery());
+                        item.setOxprClsfNm(code.getNewsNationName(item.getOxprNm()));
+                        item.setIssueSrwrYn(this.issueSrwrYn);
+                        item.setKcsRgrsYn(this.kcsRgrsYn);
+                        item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                        item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+
+                        this.resultList.add(item);
+                    }
+                    log.info("[{}/{}] {} >> documents.size: {}",
+                            this.itemCnt++, this.newsClusterList.size(), this.jobId, documents.size());
+                }
+
+            } else {
+
+                // 뉴스 키워드 검색
+                for (String keyword : this.keywordList) {
+                    queryVO.getArgument().setQuery(keyword);
+
+                    URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
+                    Big001mVO resultVO = null;
                     resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
-                } catch (JsonProcessingException e) {
-                    this.processError(e.getMessage());
-                    return null;
-                } catch (RestClientException e) {
-                    this.processError(e.getMessage());
-                    return null;
+
+                    if (resultVO.getResult() != 0) continue;
+
+                    List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
+                    for (Big001mVO.DocumentItem item : documents) {
+                        item.setSrchQuesWordNm(keyword);
+                        item.setOxprClsfNm(code.getNewsNationName(item.getOxprNm()));
+                        item.setIssueSrwrYn(this.issueSrwrYn);
+                        item.setKcsRgrsYn(this.kcsRgrsYn);
+                        item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                        item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+                        this.resultList.add(item);
+                    }
+                    log.info("[{}/{}] {} >> keyword: {}, documents.size: {}",
+                            this.itemCnt++, this.keywordList.size(), this.jobId, keyword, documents.size());
                 }
-
-                List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
-                for (Big001mVO.DocumentItem item : documents) {
-                    item.setSrchQuesWordNm(queryVO.getArgument().getQuery());
-                    item.setOxprClsfNm(code.getNewsNationName(item.getOxprNm()));
-                    item.setIssueSrwrYn(this.issueSrwrYn);
-                    item.setKcsRgrsYn(this.kcsRgrsYn);
-                    item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
-                    item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-
-                    this.resultList.add(item);
-                }
-                log.info("{} >> newsClusterList.size : {}, documents.size: {}, KcsKeywordYn : {}",
-                        getCurrentJobId(), nesClusters.size(), documents.size(), this.kcsRgrsYn);
-
             }
-        } else {
 
-            // 뉴스 키워드 검색
-            for (String keyword : this.keywordList) {
-                queryVO.getArgument().setQuery(keyword);
+            // 파일생성
+//            this.fileService.makeFile(this.resultList, true);
+            this.fileService.makeTempFile(this.resultList, this.kcsRgrsYn);
 
-                URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-                Big001mVO resultVO = null;
-                try {
-                    resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
-                } catch (JsonProcessingException e) {
-                    this.processError(e.getMessage());
-                    return null;
-                } catch (RestClientException e) {
-                    this.processError(e.getMessage());
-                    return null;
-                }
-                if (resultVO.getResult() != 0) continue;
-
-                List<Big001mVO.DocumentItem> documents = resultVO.getReturn_object().getDocuments();
-                for (Big001mVO.DocumentItem item : documents) {
-                    item.setSrchQuesWordNm(keyword);
-                    item.setOxprClsfNm(code.getNewsNationName(item.getOxprNm()));
-                    item.setIssueSrwrYn(this.issueSrwrYn);
-                    item.setKcsRgrsYn(this.kcsRgrsYn);
-                    item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
-                    item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-                    this.resultList.add(item);
-                }
-                log.info("{} >> keyword : {}, documents.size: {}, KcsKeywordYn : {}",
-                        getCurrentJobId(), keyword, documents.size(), this.kcsRgrsYn);
-            }
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (JsonProcessingException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (RestClientException e) {
+            this.makeErrorLog(e.getMessage());
+        } finally {
+            this.writeCmmnLogEnd();
         }
-
-        // 파일생성
-        this.fileService.makeFile(this.resultList, true);
-        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }

@@ -1,5 +1,6 @@
 package kcs.edc.batch.jobs.uct.uct001m;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -21,10 +23,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -48,39 +52,72 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     @Value("${uct.period}")
     private int period;
 
-    private List<String> baseYearList = new ArrayList<>();
+    int totalFileCnt;
 
     @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-
-        this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
+    public void beforeStep(StepExecution stepExecution) {
 
         if (ObjectUtils.isEmpty(this.baseDt)) {
             this.baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
         }
+        super.beforeStep(stepExecution);
+    }
 
-        // apiService에  Custom RestTemplate Setting
-        this.apiService.setRestTemplate(getRestTemplate());
+    @Override
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
-        // 신고국가 목록
-        List<String> rList = ObjectUtils.isEmpty(this.partitionList) ? getAreaList() : this.partitionList;
+        if (ObjectUtils.isEmpty(this.threadNum)) {
+            this.writeCmmnLogStart();
+        } else {
+            this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
+        }
 
-        // 파트너국가 목록
-        List<String> pList = getAreaList();
+        try {
 
-        // 2년치 데이터 돌린 후 exceptionCnt 체크하여 반복
-        // 이미 생성된 파일은 체크하여 바로 넘어기 때문에 생성안된 파일만 다시 api 호출하여 파일생성하고 끝난다.
-        int resultCnt = 0;
-        do {
-//            for (int i = 0; i < this.period; i++) {
-//                String year = String.valueOf(Integer.parseInt(this.baseYear) - i);
-//                this.baseYearList.add(year);
-            resultCnt = callApi(rList, pList, this.baseYear);
-//            }
-        } while (resultCnt != 0);
+            // apiService에  Custom RestTemplate Setting
+            this.apiService.setRestTemplate(getRestTemplate());
 
+            // 신고국가 목록
+            List<String> rList = ObjectUtils.isEmpty(this.partitionList) ? getAreaList() : this.partitionList;
+            // 파트너국가 목록
+            List<String> pList = getAreaList();
+            // 생성되어야할 총파일갯수
+            this.totalFileCnt = rList.size() * (pList.size() - 1);
 
-        this.writeCmmnLogEnd(this.threadNum, this.partitionList.size());
+            int resultCnt = 0;
+            do {
+                resultCnt = callApi(rList, pList, this.baseYear);
+            } while (resultCnt > 0);
+
+            if (resultCnt == 0) {
+
+                // 파일생성전 최종검증차원에서 한번 더 돌린다
+                // 이미 생성된 파일은 바로 넘어가기 때문에 정상적으로 파일이 생성된 상태라면 짧은시간 소요됨.
+                callApi(rList, pList, this.baseYear);
+
+                // 생성되어야할 총파일갯수 생성된 임시파일갯수 비교교
+               int tempFileCnt = this.fileService.getTempFileCnt();
+                if(this.totalFileCnt == tempFileCnt) {
+                    // 파일병합 및 로그파일생성
+                    this.fileService.mergeTempFile(this.jobId, this.baseYear);
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (JsonProcessingException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (IOException e) {
+            this.makeErrorLog(e.getMessage());
+        } finally {
+            if (ObjectUtils.isEmpty(this.threadNum)) {
+                this.writeCmmnLogEnd();
+            } else {
+                this.writeCmmnLogEnd(this.threadNum, this.partitionList.size());
+            }
+        }
 
         return RepeatStatus.FINISHED;
     }
@@ -94,17 +131,23 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
      * @param ps          년도
      * @return
      */
-    private int callApi(List<String> reportList, List<String> partnerList, String ps) {
+    private int callApi(List<String> reportList, List<String> partnerList, String ps) throws FileNotFoundException, IllegalAccessException, JsonProcessingException {
+
+        int index = 0;
         int resultCnt = 0;
         for (String r : reportList) { // 신고국가
             for (String p : partnerList) { // 파트너국가
 
                 if (r.equals(p)) continue;
 
+                if (++index % 1000 == 0) {
+                    log.info("[{}/{}]", index, this.totalFileCnt);
+                }
+
                 String suffixFileName = ps + "_" + r + "_" + p;
                 boolean tempFileExsists = this.fileService.isTempFileExsists(suffixFileName);
                 if (tempFileExsists) {
-                    log.info("tempFileExsists: {}", suffixFileName);
+                    log.info("[{}/{}] tempFileExsists: {}", index, this.totalFileCnt, suffixFileName);
                     continue;
                 }
 
@@ -132,7 +175,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                             // 결과값 체크
                             if (item.getYr().equals("0") || item.getRtCode().equals("0") ||
                                     item.getPtTitle().equals("0") || item.getPtCode().equals("0")) {
-                                throw new Exception("result is '0'");
+                                throw new RestClientException("result is '0'");
                             }
 
                             item.setCletFileCrtnDt(this.baseDt);
@@ -143,10 +186,14 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                         this.fileService.makeTempFile(this.resultList, suffixFileName);
                         this.resultList.clear();
 
-                        break; // 무한루프를 종료
+                        break; // 무한루프 종료
 
-                    } catch (Exception e) {
+                    } catch (RestClientException e) {
 
+                        if (e.getMessage().contains("UnknownHostException")) {
+                            this.makeErrorLog(e.getMessage());
+                            return -1;
+                        }
                         if (e.getMessage().contains("500")) {
                             log.debug("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, ps, e.getMessage());
                         } else {
@@ -194,25 +241,20 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
      *
      * @return
      */
-    public List<String> getAreaList() {
+    public List<String> getAreaList() throws FileNotFoundException {
 
         List<String> pList = new ArrayList<>();
         JsonArray jsonArray = null;
-        try {
 
-            String resourcePath = this.fileService.getResourcePath();
-            String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_UCT_AREA;
-            jsonArray = FileUtil.readJsonFile(filePath, "results");
+        String resourcePath = this.fileService.getResourcePath();
+        String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_UCT_AREA;
+        jsonArray = FileUtil.readJsonFile(filePath, "results");
 
-            for (JsonElement jsonElement : jsonArray) {
-                JsonObject jsonObject = jsonElement.getAsJsonObject();
-                String id = jsonObject.get("id").getAsString();
-                if (id.equals("all")) continue;
-                pList.add(id);
-            }
-
-        } catch (FileNotFoundException e) {
-            log.info(e.getMessage());
+        for (JsonElement jsonElement : jsonArray) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            String id = jsonObject.get("id").getAsString();
+            if (id.equals("all")) continue;
+            pList.add(id);
         }
 
         return pList;

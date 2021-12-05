@@ -141,9 +141,9 @@ api:
         ps:
     opd:
       header:
-#        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4 #운영
+        crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4 #운영
 #        crtfcKey: 8c45ec2be39327de0815ab43c7a766b1d47bbcd6 #로컬
-        crtfcKey: f1f19f844829a7a7154088ee926b6a9085f7eaad #로컬
+#        crtfcKey: f1f19f844829a7a7154088ee926b6a9085f7eaad #로컬
     opd001m:
       baseUrl: https://opendart.fss.or.kr/api/company.json
       param:
@@ -222,7 +222,7 @@ opd:
   attachDBPath: BA204/opendart/ # DB에 저장될 첨부파일 root 경로
 uct:
   areaListFileName: uct_area.txt
-  gridSize: 3 # multiThread 갯수
+  gridSize: 5 # multiThread 갯수
   period: 2 # 데이터수집 기간 (2년)
 som:
   somKcsKeywordFileName: som_kcs_keyword.txt

@@ -66,9 +66,7 @@ public class CmmnFileTasklet implements Tasklet {
             }
         }
 
-        log.info("####################################################");
         log.info("END JOB :::: {}", this.getClass().getSimpleName());
-        log.info("####################################################");
 
         return RepeatStatus.FINISHED;
     }
