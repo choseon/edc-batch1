@@ -96,7 +96,8 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
                 resultVO.setCletFileCrtnDt(DateUtil.getCurrentDate());
                 this.resultList.add(resultVO);
 
-                log.info("corpCode: {}, corpName: {}", resultVO.getStock_code(), resultVO.getCorp_name());
+                log.info("[{}/{}] corpCode: {}, corpName: {}",
+                        this.itemCnt++, this.companyCodeList.size(), resultVO.getStock_code(), resultVO.getCorp_name());
             }
 
             // 파일생성

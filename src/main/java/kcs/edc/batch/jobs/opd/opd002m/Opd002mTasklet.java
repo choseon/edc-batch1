@@ -101,7 +101,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                             item.setReport_nm(item.getReport_nm().replaceAll("\'", "")); // '(싱글따옴표) 제거
 //                            item.setSrbk_file_nm("[" + item.getCorp_name() + "]" + item.getReport_nm() + ".zip");
 
-                            String saveFileNm = item.getReport_nm() + "_" + pblntfType + "_" + pblnt + ".zip";
+                            String saveFileNm = item.getRcept_no() + "_" + pblntfType + "_" + pblnt + ".zip";
                             item.setSorg_file_nm(saveFileNm);
 
                             item.setCletFileCrtnDt(DateUtil.getCurrentDate());
