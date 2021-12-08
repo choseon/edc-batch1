@@ -3,12 +3,12 @@ package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.issue.Big002mTasklet;
 import kcs.edc.batch.jobs.big.news.Big001mTasklet;
 import kcs.edc.batch.jobs.big.ranking.Big005mTasklet;
 import kcs.edc.batch.jobs.big.timeline.Big004mTasklet;
 import kcs.edc.batch.jobs.big.wordcloud.Big003mTasklet;
-import kcs.edc.batch.jobs.uct.uct001m.Uct001mMergeTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
@@ -27,8 +27,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,28 +45,28 @@ public class BigJobConfig {
     @Value("${scheduler.big.isActive}")
     private Boolean isActive;
 
+    @Value("${scheduler.big.baseline}")
+    private String baseline;
+
     /**
      * 한국언론진흥재단 빅카인드 데이터수집 Batch launcher 설정
      */
     @Scheduled(cron = "${scheduler.big.cron}")
     public void launcher() {
 
-        log.info("BigJobConfig launcher...");
-        log.info("isActive: {}", this.isActive);
+        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
+        String baseDt = DateUtil.getBaseLineDate(this.baseline);
+        log.info(">>>>> baseline: {}, baseDt: {}", this.baseline, baseDt);
+
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("baseDt", baseDt)
+                .addLong("time", System.currentTimeMillis())
+                .toJobParameters();
+
         try {
-
-            // 기준일 (D-1)
-            String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-
-            JobParameters jobParameters = new JobParametersBuilder()
-                    .addString("baseDt", baseDt)
-                    .addLong("time", System.currentTimeMillis())
-                    .toJobParameters();
-
             jobLauncher.run(bigJob(), jobParameters);
-
         } catch (JobExecutionAlreadyRunningException e) {
             log.error(e.getMessage());
         } catch (JobRestartException e) {
@@ -105,18 +103,14 @@ public class BigJobConfig {
         Flow bigFlow3 = new FlowBuilder<Flow>("bigFlow3")
                 .start(big005mStep(null)) // query_rank
                 .next(big003mStep(null, null, null, null)) // Word Cloud
-                .on("COMPLETED")
-                .to(bigFileMergeStep(null)) // file merge
                 .next(big001mStep(null, null, null, null, null)) // News Search
-//                .on("COMPLETED")
-//                .to(bigFileMergeStep(null)) // file merge
                 .build();
 
         return jobBuilderFactory.get("bigJob")
                 .start(bigFlow1)
                 .next(bigFlow2)
                 .next(bigFlow3)
-                .next(bigFileMergeStep(null))
+                .next(bigFileMergeStep()) // 임시파일병합
                 .end()
                 .build();
     }
@@ -269,20 +263,30 @@ public class BigJobConfig {
     }
 
 
+    /**
+     * 한국언론진흥재단 빅카인드 파일 병합 Step 설정
+     * @return
+     */
     @Bean
     @JobScope
-    public Step bigFileMergeStep(
-            @Value("#{jobExecutionContext[jobId]}") String jobId) {
+    public Step bigFileMergeStep() {
 
         return stepBuilderFactory.get(CmmnConst.JOB_GRP_ID_BIG + CmmnConst.POST_FIX_FILE_MERGE_STEP)
                 .tasklet(bigFileMergeTasklet(null))
                 .build();
     }
 
+    /**
+     * 한국언론진흥재단 빅카인드 파일병합 Tasklet 설정
+     * @return
+     */
     @Bean
     @StepScope
-    public CmmnFileTasklet bigFileMergeTasklet(
-            @Value("#{jobExecutionContext[jobId]}") String jobId) {
-        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE);
+    public CmmnFileTasklet bigFileMergeTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+        List<String> jobList = new ArrayList<>();
+        jobList.add(CmmnConst.JOB_ID_BIG001M);
+        jobList.add(CmmnConst.JOB_ID_BIG003M);
+        jobList.add(CmmnConst.JOB_ID_BIG004M);
+        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE, jobList);
     }
 }

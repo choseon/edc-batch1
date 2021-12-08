@@ -39,27 +39,32 @@ scheduler:
   biz:
     isActive: false
     cron: "* 0 07 * * ?"
+    baseline: D-1
   big:
     isActive: false
-    cron: "* 0 07 * * ?"
+    cron: "0 2 14 * * ?"
+    baseline: D-1
   som:
-    isActive: true
-    cron: "* 30 03 * * ?"
+    isActive: false
+    cron: "30 2 14 * * ?"
+    baseline: D-1
   saf:
     isActive: false
     cron: "* 0 07 * * ?"
-  eba:
-    isActive: false
-    cron: "* 0 07 * * ?"
+    baseline: D-1
   nav:
     isActive: false
     cron: "0 10 12 * * ?"
+    baseline: D-4
   kot:
     isActive: false
     cron: "0 10 12 * * ?"
+    baseline: D-1
   opd:
     isActive: false
     cron: "0 10 12 * * ?"
+    baseline: D-1
   uct:
     isActive: false
     cron: "0 0 07-23 1-14 * ?"
+    baseline: Y-1

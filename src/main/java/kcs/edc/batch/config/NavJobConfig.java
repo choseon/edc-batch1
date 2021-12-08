@@ -1,6 +1,7 @@
 package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.nav.nav003m.Nav003mTasklet;
 import kcs.edc.batch.jobs.nav.nav004m.Nav004mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +20,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -34,15 +32,17 @@ public class NavJobConfig {
     @Value("${scheduler.nav.isActive}")
     private Boolean isActive;
 
+    @Value("${scheduler.nav.baseline}")
+    private String baseline;
+
     @Scheduled(cron = "${scheduler.nav.cron}")
     public void launcher() {
 
-        log.info("NAVJobConfig launcher...");
-        log.info("isActive: {}", this.isActive);
+        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        // D-4일 기준
-        String baseDt = LocalDateTime.now().minusDays(4).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String baseDt = DateUtil.getBaseLineDate(this.baseline);
+        log.info("baseline: {}, baseDt: {}", this.baseline, baseDt);
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)

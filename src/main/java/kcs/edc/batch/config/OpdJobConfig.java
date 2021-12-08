@@ -1,6 +1,7 @@
 package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.opd.opd001m.Opd001mTasklet;
 import kcs.edc.batch.jobs.opd.opd002m.Opd002mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -38,6 +37,9 @@ public class OpdJobConfig {
     @Value("${scheduler.opd.isActive}")
     private Boolean isActive;
 
+    @Value("${scheduler.opd.baseline}")
+    private String baseline;
+
     /**
      * 금융감독원 OpenDart Job launcher
      *
@@ -46,11 +48,11 @@ public class OpdJobConfig {
     @Scheduled(cron = "${scheduler.opd.cron}")
     public void launcher() {
 
-        log.info("OpdJobConfig launcher ::: active: {}", this.isActive);
+        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        // 수집기준일 : D-1
-        String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String baseDt = DateUtil.getBaseLineDate(this.baseline);
+        log.info("baseline: {}, baseDt: {}", this.baseline, baseDt);
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)

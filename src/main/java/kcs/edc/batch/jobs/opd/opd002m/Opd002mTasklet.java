@@ -65,8 +65,6 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
             int pageNo = 1;
             int totPageNo = 0;
 
-            int downloadCnt = 0;
-
             for (String pblnt : this.pblntfDetailList) { // 공시상세유형 목록
 
                 do {
@@ -108,10 +106,6 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                             this.resultList.add(item);
 
                             log.info("corpName: {}, reportNm: {}, pblnt: {}", item.getCorp_name(), item.getReport_nm(), pblnt);
-
-                            if (!ObjectUtils.isEmpty(item.getStock_code().trim())) {
-                                downloadCnt++;
-                            }
                         }
                         pageNo++;
 
@@ -128,26 +122,18 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
 
 
             // 첨부파일 다운로드
-            if (downloadCnt > 0) {
-                log.info("start report File download: {}", downloadCnt);
-                int cnt = 0;
-                for (Object o : this.resultList) {
-                    Opd002mVO.Item item = (Opd002mVO.Item) o;
-                    if (!ObjectUtils.isEmpty(item.getStock_code().trim())) {
-                        // 공시 뷰어에 접속하여 보고서 첨부파일 번호 목록 갖고 오기
-                        ArrayList<String> dcmNoList = null;
-                        dcmNoList = getDcmNoList(item.getRcept_no());
-                        //압축파일명 = 첨부파일 다운로드 및 압축하기
-                        String saveFileNm = saveRptFile(dcmNoList, item.getRcept_no(), item.getPblntf_ty(), item.getPblntf_detail_ty(), item.getReport_nm());
-                        if (!ObjectUtils.isEmpty(saveFileNm)) {
-                            log.info("[{}/{}] Success download corpName: {}, saveFileNm: {}",
-                                    ++cnt, downloadCnt, item.getCorp_name(), saveFileNm);
-                        } else {
-                            log.info("[{}/{}] Fail download corpName: {}, saveFileNm: {}",
-                                    ++cnt, downloadCnt, item.getCorp_name(), saveFileNm);
-                        }
-
-                    }
+            int cnt = 1;
+            for (Object o : this.resultList) {
+                Opd002mVO.Item item = (Opd002mVO.Item) o;
+                if (!ObjectUtils.isEmpty(item.getStock_code().trim())) {
+                    // 공시 뷰어에 접속하여 보고서 첨부파일 번호 목록 갖고 오기
+                    ArrayList<String> dcmNoList = getDcmNoList(item.getRcept_no());
+                    //압축파일명 = 첨부파일 다운로드 및 압축하기
+                    String saveFileNm = saveRptFile(dcmNoList, item.getRcept_no(), item.getPblntf_ty(), item.getPblntf_detail_ty(), item.getReport_nm());
+                    log.info("[{}/{}] downloadFile: corpName: {}, saveFileNm: {}",
+                            cnt++, this.resultList.size(), item.getCorp_name(), saveFileNm);
+                } else {
+                    log.info("[{}/{}] no download File", cnt++, this.resultList.size());
                 }
             }
 

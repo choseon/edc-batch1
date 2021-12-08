@@ -68,7 +68,6 @@ public class FileService {
      * @param jobId
      */
     public void initFileVO(String jobId) {
-//        this.fileVO = new CmmnFileVO(this.fileProperty, this.jobId);
 
         // 파일 확장자
         String fileExtension = this.fileProperty.getDataFileExtension();
@@ -84,8 +83,7 @@ public class FileService {
         // 로그 디렉토리명
         String logDirName = this.fileProperty.getLogDirName();
         // 로그파일명
-              String logFileName = dataFileName + "_" + DateUtil.getCurrentTime2();
-//        String logFileName = dataDirName + "_" + this.baseDt + "_" + DateUtil.getCurrentTime2();
+        String logFileName = dataFileName + "_" + DateUtil.getCurrentTime2();
         this.logFileVO = new FileVO(fileRootPath, logDirName, logFileName, fileExtension);
 
         // 임시파일 디렉토리명
@@ -223,7 +221,7 @@ public class FileService {
 
         // 데이터 파일용량
         File file = new File(dataFileVO.getFullFilePath());
-        if(file.exists()) {
+        if (file.exists()) {
             log001mVO.setBytes(file.length());
         }
 
@@ -282,7 +280,21 @@ public class FileService {
      * @param <T>
      */
     public <T> void makeTempFile(List<T> list, String appendingFileName) throws FileNotFoundException, IllegalAccessException {
+        makeTempFile(this.jobId, list, appendingFileName, false);
+    }
 
+    public <T> void makeTempFile(List<T> list, String appendingFileName, Boolean isForce) throws FileNotFoundException, IllegalAccessException {
+        makeTempFile(this.jobId, list, appendingFileName, isForce);
+    }
+
+    public <T> void makeTempFile(String jobId, List<T> list, String appendingFileName) throws FileNotFoundException, IllegalAccessException {
+        makeTempFile(jobId, list, appendingFileName, false);
+    }
+
+    public <T> void makeTempFile(String jobId, List<T> list, String appendingFileName, Boolean isForce) throws FileNotFoundException, IllegalAccessException {
+
+        if(!isForce && list.size() == 0) return;
+        this.initFileVO(jobId);
         this.tempFileVO.setAppendingFileName(appendingFileName);
 
         FileUtil.makeTsvFile(this.tempFileVO.getFilePath(), this.tempFileVO.getFileFullName(), list);
@@ -296,33 +308,33 @@ public class FileService {
      * @param jobId
      */
     public void mergeTempFile(String jobId) throws IOException, IllegalAccessException {
-
-        initFileVO(jobId);
-
-        int listCnt = FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileFullName());
-        log.info("mergeTempFile: {}, listCnt: {} ", this.dataFileVO.getFullFilePath(), listCnt);
-
-        makeLogFile(listCnt, this.logFileVO, this.dataFileVO);
-
-        cleanTempFile(jobId);
+        mergeTempFile(jobId, null);
     }
 
     public void mergeTempFile(String jobId, String appendingFileName) throws IOException, IllegalAccessException {
 
         initFileVO(jobId);
-        this.dataFileVO.setAppendingFileName(appendingFileName);
+        if(!ObjectUtils.isEmpty(appendingFileName)) {
+            this.dataFileVO.setAppendingFileName(appendingFileName);
+        }
 
-        int listCnt = FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileFullName());
-        log.info("mergeTempFile: {}, listCnt: {} ", this.dataFileVO.getFullFilePath(), listCnt);
-
-        makeLogFile(listCnt, this.logFileVO, this.dataFileVO);
-
-        cleanTempFile(jobId);
-
+        // temp 폴더 존재여부 확인
+        if(!new File(this.tempFileVO.getFilePath()).exists()) {
+            log.info("tempPath: {} is not exists", this.tempFileVO.getFilePath());
+        } else {
+            // 임시파일 병합하여 데이터파일 생성
+            int listCnt = FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileFullName());
+            log.info("makeDataFile: {}, listCnt: {} ", this.dataFileVO.getFullFilePath(), listCnt);
+            // 로그파일 생성
+            makeLogFile(listCnt, this.logFileVO, this.dataFileVO);
+            // 임시파일 삭제
+            cleanTempFile(jobId);
+        }
     }
 
     /**
      * 임시파일 갯수 조회
+     *
      * @return
      */
     public int getTempFileCnt() {
@@ -370,7 +382,4 @@ public class FileService {
         return tempFileVO;
     }
 
-    public FileVO getAttachFileVO() {
-        return attachFileVO;
-    }
 }

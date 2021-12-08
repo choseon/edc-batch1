@@ -3,6 +3,7 @@ package kcs.edc.batch.config;
 import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
 import kcs.edc.batch.cmmn.jobs.CmmnPartitioner;
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.som.som001m.Som001mTasklet;
 import kcs.edc.batch.jobs.som.som002m.Som002mTasklet;
 import kcs.edc.batch.jobs.som.som003m.Som003mTasklet;
@@ -28,8 +29,6 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,23 +52,26 @@ public class SomJobConfig {
     @Value("${scheduler.som.isActive}")
     private Boolean isActive;
 
+    @Value("${scheduler.som.baseline}")
+    private String baseline;
+
     /**
      * 바이브컴퍼티 썸트랜드 데이터수집 Batch Launcher 설정
      */
     @Scheduled(cron = "${scheduler.som.cron}")
     public void launcher() {
 
-        log.info("SomConfiguration launcher...");
-        log.info("isActive: {}", this.isActive);
+        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        try {
-            String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            JobParameters jobParameters = new JobParametersBuilder()
-                    .addString("baseDt", baseDt)
-                    .addLong("time", System.currentTimeMillis())
-                    .toJobParameters();
+        String baseDt = DateUtil.getBaseLineDate(this.baseline);
+        log.info("baseline: {}, baseDt: {}", this.baseline, baseDt);
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("baseDt", baseDt)
+                .addLong("time", System.currentTimeMillis())
+                .toJobParameters();
 
+        try {
             jobLauncher.run(somJob(), jobParameters);
 
         } catch (JobExecutionAlreadyRunningException e) {

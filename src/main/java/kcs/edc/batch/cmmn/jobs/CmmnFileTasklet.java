@@ -10,7 +10,9 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,7 +23,56 @@ import java.util.Objects;
 @StepScope
 public class CmmnFileTasklet implements Tasklet {
 
+    @Value("#{jobParameters[baseDt]}")
+    protected String baseDt; // 수집기준일
+
     @Autowired
+    private FileService fileService = new FileService();
+
+    private String actionType;
+
+    private List<String> jobList = new ArrayList<>();
+
+    @Value("#{jobExecutionContext[jobId]}")
+    public String jobId;
+
+    public CmmnFileTasklet(String actionType) {
+        this.actionType = actionType;
+    }
+
+    public CmmnFileTasklet(String actionType, List<String> jobList) {
+        this(actionType);
+        this.jobList = jobList;
+    }
+
+    @Override
+    public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+
+        log.info("####################################################");
+        log.info("START JOB :::: {} ", this.getClass().getSimpleName());
+        log.info("####################################################");
+        log.info("actionType : {}", this.actionType);
+
+        if(ObjectUtils.isEmpty(this.jobId)) {
+            this.jobList.add(this.jobId);
+        }
+
+        for (String jobId : this.jobList) {
+
+            log.info(">> jobId: {}", jobId);
+            if(this.actionType.equals(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE)) {
+                this.fileService.mergeTempFile(jobId);
+            } else if(this.actionType.equals(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN)) {
+                this.fileService.cleanTempFile(jobId);
+            }
+        }
+
+        log.info("END JOB :::: {}", this.getClass().getSimpleName());
+
+        return RepeatStatus.FINISHED;
+    }
+
+    /*    @Autowired
     private FileService fileService = new FileService();
 
     private String actionType;
@@ -69,5 +120,5 @@ public class CmmnFileTasklet implements Tasklet {
         log.info("END JOB :::: {}", this.getClass().getSimpleName());
 
         return RepeatStatus.FINISHED;
-    }
+    }*/
 }

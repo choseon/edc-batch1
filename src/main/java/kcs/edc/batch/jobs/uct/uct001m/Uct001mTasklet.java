@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.uct.uct001m.vo.Uct001mVO;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,9 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -52,14 +55,15 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     @Value("${uct.period}")
     private int period;
 
+    @Value("${scheduler.uct.baseline}")
+    private String baseline;
+
     int totalFileCnt;
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
 
-        if (ObjectUtils.isEmpty(this.baseDt)) {
-            this.baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
-        }
+
         super.beforeStep(stepExecution);
     }
 
@@ -72,7 +76,35 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
             this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
         }
 
+
         try {
+
+            if (ObjectUtils.isEmpty(this.baseDt)) {
+                this.baseDt = DateUtil.getCurrentDate("yyyyMM");
+            }
+
+            if (!ObjectUtils.isEmpty(this.baseYear)) {
+                saveLastModified("", "");
+            } else {
+
+//                this.baseYear = DateUtil.getBaseLineDate("Y-1");
+//
+//                Properties prop = getLastModified();
+//                String propBaseYear = (String) prop.get("baseYear");
+//                String propBaseDt = (String) prop.get("baseDt");
+//                log.info("propBaseYear: {}, propBaseDt: {}", propBaseYear, propBaseDt);
+//
+//                if (ObjectUtils.isEmpty(propBaseDt) && ObjectUtils.isEmpty(propBaseYear)) {
+//                    this.baseYear = DateUtil.getBaseLineDate("Y-1");
+//                    saveLastModified(this.baseDt, this.baseYear);
+//                } else {
+//                    this.baseYear = DateUtil.getBaseLineDate("Y-2");
+//                }
+//                if(this.baseDt.equals(propBaseDt) && !this.baseYear.equals(propBaseYear)) {
+//                    this.baseYear = propBaseYear;
+//                }
+            }
+            log.info("baseYear: {}", this.baseYear);
 
             // apiService에  Custom RestTemplate Setting
             this.apiService.setRestTemplate(getRestTemplate());
@@ -96,10 +128,12 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 callApi(rList, pList, this.baseYear);
 
                 // 생성되어야할 총파일갯수 생성된 임시파일갯수 비교교
-               int tempFileCnt = this.fileService.getTempFileCnt();
-                if(this.totalFileCnt == tempFileCnt) {
+                int tempFileCnt = this.fileService.getTempFileCnt();
+                if (this.totalFileCnt == tempFileCnt) {
                     // 파일병합 및 로그파일생성
                     this.fileService.mergeTempFile(this.jobId, this.baseYear);
+                    // 최종수정일 prop update
+                    saveLastModified(this.baseDt, this.baseYear);
                 }
             }
 
@@ -118,6 +152,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 this.writeCmmnLogEnd(this.threadNum, this.partitionList.size());
             }
         }
+
 
         return RepeatStatus.FINISHED;
     }
@@ -259,4 +294,31 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
         return pList;
     }
+
+    public void saveLastModified(String baseDt, String baseYear) throws IOException {
+
+        String filePath = this.fileService.getResourcePath();
+        String fileName = "uct_last_modified.txt";
+        FileOutputStream stream = new FileOutputStream(filePath + fileName);
+
+        Properties prop = new Properties();
+        prop.setProperty("baseDt", baseDt);
+        prop.setProperty("baseYear", baseYear);
+        prop.setProperty("lastModified", DateUtil.getCurrentTime());
+
+        prop.store(stream, "saveLastModified");
+        stream.close();
+    }
+
+    public Properties getLastModified() throws IOException {
+        String filePath = this.fileService.getResourcePath();
+        String fileName = "uct_last_modified.txt";
+        FileInputStream stream = new FileInputStream(filePath + fileName);
+
+        Properties prop = new Properties();
+        prop.load(stream);
+        stream.close();
+        return prop;
+    }
+
 }

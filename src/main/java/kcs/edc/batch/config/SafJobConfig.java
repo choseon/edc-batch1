@@ -1,5 +1,6 @@
 package kcs.edc.batch.config;
 
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.saf.saf001l.Saf001lTasklet;
 import kcs.edc.batch.jobs.saf.saf001m.Saf001mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -37,6 +36,9 @@ public class SafJobConfig {
     @Value("${scheduler.saf.isActive}")
     private Boolean isActive;
 
+    @Value("${scheduler.saf.baseline}")
+    private String baseline;
+
     /**
      * 국가기술표준원 제품안전정보센터 데이터수집 Batch Launcher 설정
      *
@@ -45,11 +47,12 @@ public class SafJobConfig {
     @Scheduled(cron = "${scheduler.saf.cron}")
     public void launcher() {
 
-        log.info("SomConfiguration launcher...");
-        log.info("isActive: {}", this.isActive);
+        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String baseDt = DateUtil.getBaseLineDate(this.baseline);
+        log.info("baseline: {}, baseDt: {}", this.baseline, baseDt);
+
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)
                 .addLong("time", System.currentTimeMillis())

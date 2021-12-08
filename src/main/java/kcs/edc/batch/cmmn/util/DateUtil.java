@@ -1,6 +1,7 @@
 package kcs.edc.batch.cmmn.util;
 
 import lombok.extern.slf4j.Slf4j;
+import sun.util.calendar.CalendarDate;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,18 +61,63 @@ public class DateUtil {
         return ret;
     }
 
+    /**
+     * 현재시간 구하기
+     *
+     * @return
+     */
     public static String getCurrentTime() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
+    /**
+     * 현재시간 구하기
+     *
+     * @return
+     */
     public static String getCurrentTime2() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     }
 
+    /**
+     * 현재일자 구하기
+     *
+     * @return
+     */
     public static String getCurrentDate() {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        return getCurrentDate("yyyyMMdd");
     }
 
+    public static String getCurrentDate(String format) {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern(format));
+    }
+
+    public static String getBaseLineDate(String baseline) {
+        String result = null;
+
+        String period = baseline.substring(0, 1);
+        int minusValue = Integer.parseInt(baseline.substring(2, 3));
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if(period.equals("D")) {
+            result = now.minusDays(minusValue).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        } else if(period.equals("M")) {
+            result = now.minusMonths(minusValue).format(DateTimeFormatter.ofPattern("yyyyMM"));
+        } else if(period.equals("Y")) {
+            result = now.minusYears(minusValue).format(DateTimeFormatter.ofPattern("yyyy"));
+        }
+        return result;
+    }
+
+    /**
+     * 날짜 형식 변환 (yyyyMMdd -> yyyy-MM-dd)
+     *
+     * @param strDate
+     * @return
+     * @throws ParseException
+     */
     public static String getFormatDate(String strDate) throws ParseException {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
         Date date = fmt.parse(strDate);
@@ -79,6 +125,13 @@ public class DateUtil {
         return result;
     }
 
+    /**
+     * 날짜 형식 변환 (yyyyMMddHHmmss -> yyyy-MM-dd HH:mm:ss)
+     *
+     * @param strDate
+     * @return
+     * @throws ParseException
+     */
     public static String convertDateFormat(String strDate) throws ParseException {
 
         SimpleDateFormat beforeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -90,9 +143,7 @@ public class DateUtil {
         return result;
     }
 
-    public static String getYesterDayDtlDttm() {
-        return LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-    }
+
 }
 
 

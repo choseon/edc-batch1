@@ -228,6 +228,7 @@ som:
   somKcsKeywordFileName: som_kcs_keyword.txt
 big:
   bigKcsKeywordFileName: big_kcs_keyword.txt
+  period: 1
 
 
 

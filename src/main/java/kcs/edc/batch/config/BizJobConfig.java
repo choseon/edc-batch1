@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -18,9 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * 중소기업연구원 중소벤처기업부 기업마당 데이터수집 Batch Configuration
@@ -37,6 +33,9 @@ public class BizJobConfig {
     @Value("${scheduler.biz.isActive}")
     private Boolean isActive;
 
+    @Value("${scheduler.biz.baseline}")
+    private String baseline;
+
     /**
      * 중소기업연구원 중소벤처기업부 기업마당 데이터수집 Batch Launcher 설정
      *
@@ -45,12 +44,11 @@ public class BizJobConfig {
     @Scheduled(cron = "${scheduler.biz.cron}")
     public void launcher() {
 
-        log.info("BIZJobConfig launcher...");
-        log.info("isActive: {}", this.isActive);
+        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        // 수집기준일 : D-1
-        String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String baseDt = DateUtil.getBaseLineDate(this.baseline);
+        log.info(">>>>> baseline: {}, baseDt: {}", this.baseline, baseDt);
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)

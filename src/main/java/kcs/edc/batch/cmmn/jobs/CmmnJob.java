@@ -2,6 +2,7 @@ package kcs.edc.batch.cmmn.jobs;
 
 import kcs.edc.batch.cmmn.service.ApiService;
 import kcs.edc.batch.cmmn.service.FileService;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
@@ -10,10 +11,12 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ObjectUtils;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @StepScope
@@ -37,7 +40,6 @@ public class CmmnJob implements StepExecutionListener {
     protected String jobGroupId;
     protected String jobId;
 
-    protected int totalCnt = 1;
     protected int itemCnt = 1;
 
     @Override
@@ -45,6 +47,10 @@ public class CmmnJob implements StepExecutionListener {
 
         this.jobId = getCurrentJobId();
         this.jobGroupId = getCurrentJobGroupId(this.jobId);
+
+        if(ObjectUtils.isEmpty(this.baseDt)) {
+            this.baseDt = DateUtil.getCurrentDate();
+        }
 
         this.apiService.init(this.jobId);
         this.fileService.init(this.jobId, this.baseDt);

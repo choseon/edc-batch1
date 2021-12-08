@@ -1,6 +1,7 @@
 package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.kot.kot001m.Kot001mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -33,14 +31,18 @@ public class KotJobConfig {
     @Value("${scheduler.kot.isActive}")
     private Boolean isActive;
 
+    @Value("${scheduler.kot.baseline}")
+    private String baseline;
+
     @Scheduled(cron = "${scheduler.kot.cron}")
     public void launcher() {
 
-        log.info("KotJobConfig launcher...");
-        log.info("isActive: {}", this.isActive);
+        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        String baseDt = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String baseDt = DateUtil.getBaseLineDate(this.baseline);
+        log.info("baseline: {}, baseDt: {}", this.baseline, baseDt);
+
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)
                 .addLong("time", System.currentTimeMillis())

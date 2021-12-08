@@ -2,6 +2,7 @@ package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
 import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mMergeTasklet;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mPartitioner;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mTasklet;
@@ -13,7 +14,6 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
@@ -27,8 +27,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,6 +53,9 @@ public class UctJobConfig {
     @Value("${scheduler.uct.isActive}")
     private Boolean isActive;
 
+    @Value("${scheduler.uct.baseline}")
+    private String baseline;
+
     /**
      * UN Comtrade Batch launcher (월배치)
      * 매월 1일 전년도, 전전년도 2년치 데이터 수집하여
@@ -63,27 +64,48 @@ public class UctJobConfig {
     @Scheduled(cron = "${scheduler.uct.cron}")
     public void launcher() {
 
-        log.info("UctConfiguration launcher...");
-        log.info("isActive: {}", this.isActive);
+        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
+        String baseDt = DateUtil.getCurrentDate("yyyyMM");
+
+//        String baseYear = null;
+        int day = Integer.parseInt(DateUtil.getCurrentDate("dd"));
+//        if (day < 7) {
+//            baseYear = DateUtil.getBaseLineDate("Y-1");
+//
+//        } else {
+//            baseYear = DateUtil.getBaseLineDate("Y-2");
+//        }
+//        if(day > 7) {
+//            this.baseline = "Y-2";
+//        }
+        this.baseline = (day < 7) ? "Y-1" : "Y-2";
+        String baseYear = DateUtil.getBaseLineDate(this.baseline);
+
+        log.info(">>>>> baseline: {}, baseDt: {}, baseYear: {}", this.baseline, baseDt, baseYear);
+
+
+
+
+
         // 수집기준일 : 월배치 이므로 수집기준일은 금월로 설정한다
-        String baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
+//        String baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
 
         // 수집기준년도 : 전년도, 전전년도 2년치
-        String baseYear = null;
+//        String baseYear = null;
 //        String day = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd"));
 //        if(day.equals("1")) {
 //            baseYear = LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy"));
 //        } else {
 //            baseYear = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
 //        }
-        int day = Integer.getInteger(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd")));
-        if (day > 0 || day < 7) {
-            baseYear = LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy"));
-        } else {
-            baseYear = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
-        }
+//        int day = Integer.getInteger(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd")));
+//        if (day > 0 || day < 7) {
+//            baseYear = LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy"));
+//        } else {
+//            baseYear = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
+//        }
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("baseDt", baseDt)

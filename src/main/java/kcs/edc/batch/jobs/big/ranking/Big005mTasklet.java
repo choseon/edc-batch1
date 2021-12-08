@@ -72,9 +72,7 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
             queryVO.getArgument().setFrom(this.from);
             queryVO.getArgument().setUntil(this.until);
 
-            Big005mVO resultVO = null;
-
-            resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big005mVO.class);
+            Big005mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big005mVO.class);
 
             List<Big005mVO.QueryItem> queries = resultVO.getReturn_object().getQueries();
             for (Big005mVO.QueryItem item : queries) {
@@ -90,7 +88,8 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
             }
 
             // 파일생성
-            this.fileService.makeFile(CmmnConst.JOB_ID_BIG004M, resultList, true);
+//            this.fileService.makeFile(CmmnConst.JOB_ID_BIG004M, resultList, true);
+            this.fileService.makeTempFile(CmmnConst.JOB_ID_BIG004M, this.resultList, DateUtil.getCurrentTime2());
 
         } catch (JsonProcessingException e) {
             this.makeErrorLog(e.getMessage());

@@ -38,7 +38,7 @@ public class Biz001mTasklet extends CmmnJob implements Tasklet {
             for (Biz001mVO.Item item : jsonArray) {
 
                 // frst_regr_dtl_dttm, last_chng_dtl_dttm을 D-1로 셋팅 (1차 소스 그대로 적용)
-                String yesterday = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                String yesterday = LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
                 item.setFrstRgsrDtlDttm(yesterday);
                 item.setLastChngDtlDttm(yesterday);

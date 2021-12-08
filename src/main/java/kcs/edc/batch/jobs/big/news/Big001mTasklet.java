@@ -100,8 +100,7 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
                     queryVO.getArgument().setQuery(keyword);
 
                     URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-                    Big001mVO resultVO = null;
-                    resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
+                    Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
 
                     if (resultVO.getResult() != 0) continue;
 
