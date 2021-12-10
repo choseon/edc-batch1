@@ -34,10 +34,10 @@ public class OpdJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.opd.isActive}")
+    @Value("${scheduler.jobs.opd.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.opd.baseline}")
+    @Value("${scheduler.jobs.opd.baseline}")
     private String baseline;
 
     /**
@@ -45,7 +45,7 @@ public class OpdJobConfig {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "${scheduler.opd.cron}")
+    @Scheduled(cron = "${scheduler.jobs.opd.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);

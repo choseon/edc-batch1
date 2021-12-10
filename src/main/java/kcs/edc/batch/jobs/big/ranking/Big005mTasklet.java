@@ -19,6 +19,7 @@ import org.springframework.web.client.RestClientException;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,22 +32,7 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     private String kcsRgrsYn = "N";
     private String issueSrwrYn = "N";
 
-    private String from;
-    private String until;
-    private String accessKey;
-
     private List<String> keywordList = new ArrayList<>();
-
-    @SneakyThrows
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-
-        super.beforeStep(stepExecution);
-
-        this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
-        this.from = DateUtil.getOffsetDate(this.baseDt, 0, "yyyy-MM-dd");
-        this.until = DateUtil.getOffsetDate(this.baseDt, 1, "yyyy-MM-dd");
-    }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
@@ -62,15 +48,16 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
-        log.info("from: {}, until: {}, KcsKeywordYn: {}, issueSrwrYn: {}", this.from, this.until, this.kcsRgrsYn, this.issueSrwrYn);
+        log.info("KcsKeywordYn: {}, issueSrwrYn: {}", this.kcsRgrsYn, this.issueSrwrYn);
 
         try {
             URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
 
             RankingQueryVO queryVO = new RankingQueryVO();
-            queryVO.setAccess_key(this.accessKey);
-            queryVO.getArgument().setFrom(this.from);
-            queryVO.getArgument().setUntil(this.until);
+            String accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
+            queryVO.setAccess_key(accessKey);
+            queryVO.getArgument().setFrom(DateUtil.getFormatDate(this.startDt));
+            queryVO.getArgument().setUntil(DateUtil.getFormatDate(this.endDt));
 
             Big005mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big005mVO.class);
 
@@ -93,13 +80,13 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
         } catch (JsonProcessingException e) {
             this.makeErrorLog(e.getMessage());
-            return null;
         } catch (RestClientException e) {
             this.makeErrorLog(e.getMessage());
-            return null;
         } catch (FileNotFoundException e) {
             this.makeErrorLog(e.getMessage());
         } catch (IllegalAccessException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (ParseException e) {
             this.makeErrorLog(e.getMessage());
         } finally {
             this.writeCmmnLogEnd();

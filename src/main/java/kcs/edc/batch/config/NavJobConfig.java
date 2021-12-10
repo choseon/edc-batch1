@@ -29,13 +29,13 @@ public class NavJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.nav.isActive}")
+    @Value("${scheduler.jobs.nav.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.nav.baseline}")
+    @Value("${scheduler.jobs.nav.baseline}")
     private String baseline;
 
-    @Scheduled(cron = "${scheduler.nav.cron}")
+    @Scheduled(cron = "${scheduler.jobs.nav.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);

@@ -88,7 +88,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
             // 기준일부터 period 기간동안 api 호출
             for (int i = 0; i < this.period; i++) {
 
-                String searchDate = DateUtil.getOffsetDate(this.baseDt, (i * -1));
+                String searchDate = DateUtil.getOffsetDate(this.startDt, i);
                 log.info(">>> searchDate: {}", searchDate);
 
                 UriComponentsBuilder builder = this.apiService.getUriComponetsBuilder();

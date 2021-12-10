@@ -18,6 +18,7 @@ import org.springframework.web.client.RestClientException;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -35,21 +36,6 @@ public class Big003mTasklet extends CmmnJob implements Tasklet {
     @Value("#{jobExecutionContext[issueSrwrYn]}")
     private String issueSrwrYn;
 
-    private String from;
-    private String until;
-    private String accessKey;
-
-    @SneakyThrows
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-
-        super.beforeStep(stepExecution);
-
-        this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
-        this.from = DateUtil.getOffsetDate(this.baseDt, 0, "yyyy-MM-dd");
-        this.until = DateUtil.getOffsetDate(this.baseDt, 1, "yyyy-MM-dd");
-    }
-
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
 
@@ -64,21 +50,20 @@ public class Big003mTasklet extends CmmnJob implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
-        log.info("from: {}, until: {}, KcsKeywordYn: {}, issueSrwrYn: {}", this.from, this.until, this.kcsRgrsYn, this.issueSrwrYn);
+        log.info("KcsKeywordYn: {}, issueSrwrYn: {}", this.kcsRgrsYn, this.issueSrwrYn);
 
         try {
             WCQueryVO queryVO = new WCQueryVO();
-            queryVO.setAccess_key(this.accessKey);
-            queryVO.getArgument().getPublished_at().setFrom(this.from);
-            queryVO.getArgument().getPublished_at().setUntil(this.until);
+            String accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
+            queryVO.setAccess_key(accessKey);
+            queryVO.getArgument().getPublished_at().setFrom(DateUtil.getFormatDate(this.startDt));
+            queryVO.getArgument().getPublished_at().setUntil(DateUtil.getFormatDate(this.endDt));
 
             for (String keyword : this.keywordList) {
                 queryVO.getArgument().setQuery(keyword);
 
                 URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-                Big003mVO resultVO = null;
-
-                resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big003mVO.class);
+                Big003mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big003mVO.class);
 
                 if (resultVO.getResult() != 0) continue;
 
@@ -106,6 +91,8 @@ public class Big003mTasklet extends CmmnJob implements Tasklet {
         } catch (FileNotFoundException e) {
             this.makeErrorLog(e.getMessage());
         } catch (IllegalAccessException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (ParseException e) {
             this.makeErrorLog(e.getMessage());
         } finally {
             this.writeCmmnLogEnd();

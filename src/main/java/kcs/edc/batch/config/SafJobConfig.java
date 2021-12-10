@@ -33,10 +33,10 @@ public class SafJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.saf.isActive}")
+    @Value("${scheduler.jobs.saf.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.saf.baseline}")
+    @Value("${scheduler.jobs.saf.baseline}")
     private String baseline;
 
     /**
@@ -44,7 +44,7 @@ public class SafJobConfig {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "${scheduler.saf.cron}")
+    @Scheduled(cron = "${scheduler.jobs.saf.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);

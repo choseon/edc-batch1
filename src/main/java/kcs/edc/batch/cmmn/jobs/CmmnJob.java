@@ -2,13 +2,19 @@ package kcs.edc.batch.cmmn.jobs;
 
 import kcs.edc.batch.cmmn.service.ApiService;
 import kcs.edc.batch.cmmn.service.FileService;
+import kcs.edc.batch.cmmn.service.SchedulerService;
 import kcs.edc.batch.cmmn.util.DateUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
@@ -16,7 +22,6 @@ import org.springframework.util.ObjectUtils;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @StepScope
@@ -28,11 +33,17 @@ public class CmmnJob implements StepExecutionListener {
     @Autowired
     protected FileService fileService;
 
+    @Autowired
+    protected SchedulerService schedulerService;
+
     @Value("#{jobParameters[baseDt]}")
     protected String baseDt; // 수집기준일
 
-    @Value("#{jobParameters[fromDt]}")
-    protected String fromDt; // 수집시작일
+    protected String startDt; // 시작일
+    protected String endDt; // 종료일
+
+//    @Value("#{jobParameters[period]}")
+    protected int period = 1;
 
     protected List<Object> resultList = new ArrayList<>(); // 최종결과리스트
     protected ExecutionContext jobExecutionContext;
@@ -42,23 +53,36 @@ public class CmmnJob implements StepExecutionListener {
 
     protected int itemCnt = 1;
 
+    @SneakyThrows
     @Override
     public void beforeStep(StepExecution stepExecution) {
-
-        this.jobId = getCurrentJobId();
-        this.jobGroupId = getCurrentJobGroupId(this.jobId);
-
-        if(ObjectUtils.isEmpty(this.baseDt)) {
-            this.baseDt = DateUtil.getCurrentDate();
-        }
-
-        this.apiService.init(this.jobId);
-        this.fileService.init(this.jobId, this.baseDt);
 
         // step간 파라미터 넘겨주기 위해 jobExcutionContext 초기화
         // afterStep에서 넘겨줄 값 셋팅해준다
         this.jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
 
+        this.jobId = getCurrentJobId();
+        this.jobGroupId = getCurrentJobGroupId(this.jobId);
+
+        this.schedulerService.init(this.jobGroupId);
+        if (ObjectUtils.isEmpty(this.baseDt)) {
+
+            String baseLine = this.schedulerService.getBaseLine();
+            this.baseDt = DateUtil.getBaseLineDate(baseLine);
+            this.period = this.schedulerService.getPeriod();
+        }
+
+        this.endDt = this.baseDt;
+
+        if(baseDt.length() == 4) {
+            this.startDt = DateUtil.getOffsetYear(this.baseDt, (this.period -1) * -1);
+        } else {
+            this.startDt = DateUtil.getOffsetDate(this.baseDt, (this.period -1) * -1);
+        }
+        log.debug(">> baseDt: {}, startDt: {}, endDt: {}, period: {}", this.baseDt, this.startDt, this.endDt, this.period);
+
+        this.apiService.init(this.jobId);
+        this.fileService.init(this.jobId, this.baseDt);
     }
 
     @Override
@@ -110,7 +134,7 @@ public class CmmnJob implements StepExecutionListener {
         log.info("##########################################################################");
         log.info("START JOB :::: {} ", jobId);
         log.info("##########################################################################");
-        log.info("baseDt : {}", this.baseDt);
+        log.info("baseDt: {}, startDt: {}, endDt: {}, period: {}", this.baseDt, this.startDt, this.endDt, this.period);
     }
 
     /**

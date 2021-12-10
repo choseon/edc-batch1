@@ -30,10 +30,10 @@ public class BizJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.biz.isActive}")
+    @Value("${scheduler.jobs.biz.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.biz.baseline}")
+    @Value("${scheduler.jobs.biz.baseline}")
     private String baseline;
 
     /**
@@ -41,7 +41,7 @@ public class BizJobConfig {
      *
      * @throws Exception
      */
-    @Scheduled(cron = "${scheduler.biz.cron}")
+    @Scheduled(cron = "${scheduler.jobs.biz.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);

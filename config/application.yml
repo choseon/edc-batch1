@@ -222,7 +222,7 @@ opd:
   attachDBPath: BA204/opendart/ # DB에 저장될 첨부파일 root 경로
 uct:
   areaListFileName: uct_area.txt
-  gridSize: 5 # multiThread 갯수
+  gridSize: 1 # multiThread 갯수
   period: 2 # 데이터수집 기간 (2년)
 som:
   somKcsKeywordFileName: som_kcs_keyword.txt

@@ -20,6 +20,7 @@ import org.springframework.web.client.RestClientException;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -40,32 +41,18 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     @Value("#{jobExecutionContext[newsClusterList]}")
     private List<List<String>> newsClusterList;
 
-    private String from;
-    private String until;
-    private String accessKey;
-
-    @SneakyThrows
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-
-        super.beforeStep(stepExecution);
-
-        this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
-        this.from = DateUtil.getOffsetDate(this.baseDt, 0, "yyyy-MM-dd");
-        this.until = DateUtil.getOffsetDate(this.baseDt, 1, "yyyy-MM-dd");
-    }
-
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         writeCmmnLogStart();
-        log.info("from: {}, until: {}, KcsKeywordYn: {}, issueSrwrYn: {}", this.from, this.until, this.kcsRgrsYn, this.issueSrwrYn);
+        log.info("KcsKeywordYn: {}, issueSrwrYn: {}", this.kcsRgrsYn, this.issueSrwrYn);
 
         try {
             NewsQueryVO queryVO = new NewsQueryVO();
-            queryVO.setAccess_key(this.accessKey);
-            queryVO.getArgument().getPublished_at().setFrom(this.from);
-            queryVO.getArgument().getPublished_at().setUntil(this.until);
+            String accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
+            queryVO.setAccess_key(accessKey);
+            queryVO.getArgument().getPublished_at().setFrom(DateUtil.getFormatDate(this.startDt));
+            queryVO.getArgument().getPublished_at().setUntil(DateUtil.getFormatDate(this.endDt));
 
             NewNationWideComCode code = new NewNationWideComCode();
 
@@ -130,6 +117,8 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
         } catch (IllegalAccessException e) {
             this.makeErrorLog(e.getMessage());
         } catch (RestClientException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (ParseException e) {
             this.makeErrorLog(e.getMessage());
         } finally {
             this.writeCmmnLogEnd();

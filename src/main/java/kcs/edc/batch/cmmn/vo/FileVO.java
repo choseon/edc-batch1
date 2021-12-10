@@ -38,6 +38,10 @@ public class FileVO {
         this.fileName = this.baseFileName + "_" + appendFileName;
     }
 
+    public void setAppendingFilePath(String appendFileFilePath) {
+        this.filePath = this.filePath + appendFileFilePath + "/";
+    }
+
     public String getFileFullName() {
         return this.fileName + "." + this.fileExtension;
     }

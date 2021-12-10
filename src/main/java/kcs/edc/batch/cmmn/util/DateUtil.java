@@ -61,6 +61,18 @@ public class DateUtil {
         return ret;
     }
 
+    public static String getOffsetYear(String strDate, int offset) throws ParseException {
+
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy");
+        Calendar c = Calendar.getInstance();
+        Date pDate = fmt.parse(strDate);
+        c.setTime(pDate);
+        c.add(Calendar.YEAR, offset);
+        String ret = fmt.format(c.getTime());
+
+        return ret;
+    }
+
     /**
      * 현재시간 구하기
      *
@@ -101,11 +113,11 @@ public class DateUtil {
 
         LocalDateTime now = LocalDateTime.now();
 
-        if(period.equals("D")) {
+        if (period.equals("D")) {
             result = now.minusDays(minusValue).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        } else if(period.equals("M")) {
+        } else if (period.equals("M")) {
             result = now.minusMonths(minusValue).format(DateTimeFormatter.ofPattern("yyyyMM"));
-        } else if(period.equals("Y")) {
+        } else if (period.equals("Y")) {
             result = now.minusYears(minusValue).format(DateTimeFormatter.ofPattern("yyyy"));
         }
         return result;

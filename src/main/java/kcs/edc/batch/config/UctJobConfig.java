@@ -50,10 +50,10 @@ public class UctJobConfig {
     @Value("${uct.gridSize}")
     private int POOL_SIZE; // gridSize와 동일하게 적용
 
-    @Value("${scheduler.uct.isActive}")
+    @Value("${scheduler.jobs.uct.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.uct.baseline}")
+    @Value("${scheduler.jobs.uct.baseline}")
     private String baseline;
 
     /**
@@ -61,7 +61,7 @@ public class UctJobConfig {
      * 매월 1일 전년도, 전전년도 2년치 데이터 수집하여
      * 15일 이전에 내부 hlo1db에서 데이터 조회되도록 스케쥴링 필요.
      */
-    @Scheduled(cron = "${scheduler.uct.cron}")
+    @Scheduled(cron = "${scheduler.jobs.uct.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);

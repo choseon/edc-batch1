@@ -291,11 +291,29 @@ public class FileService {
         makeTempFile(jobId, list, appendingFileName, false);
     }
 
-    public <T> void makeTempFile(String jobId, List<T> list, String appendingFileName, Boolean isForce) throws FileNotFoundException, IllegalAccessException {
+    public <T> void makeTempFile(String jobId, List<T> list, String appendingFileName, Boolean isForce)
+            throws FileNotFoundException, IllegalAccessException {
 
-        if(!isForce && list.size() == 0) return;
+        makeTempFile(jobId, list, null, appendingFileName, isForce);
+/*        if(!isForce && list.size() == 0) return;
         this.initFileVO(jobId);
         this.tempFileVO.setAppendingFileName(appendingFileName);
+
+        FileUtil.makeTsvFile(this.tempFileVO.getFilePath(), this.tempFileVO.getFileFullName(), list);
+        log.info("makeTempFile: {}, listCnt: {} ", this.tempFileVO.getFullFilePath(), list.size());*/
+    }
+
+    public <T> void makeTempFile(String jobId, List<T> list, String appendingFilePath, String appendingFileName, Boolean isForce)
+            throws FileNotFoundException, IllegalAccessException {
+        if(!isForce && list.size() == 0) return;
+//        this.initFileVO(jobId);
+
+        if(!ObjectUtils.isEmpty(appendingFilePath)) {
+            this.tempFileVO.setAppendingFilePath(appendingFilePath);
+        }
+        if(!ObjectUtils.isEmpty(appendingFileName)) {
+            this.tempFileVO.setAppendingFileName(appendingFileName);
+        }
 
         FileUtil.makeTsvFile(this.tempFileVO.getFilePath(), this.tempFileVO.getFileFullName(), list);
         log.info("makeTempFile: {}, listCnt: {} ", this.tempFileVO.getFullFilePath(), list.size());
@@ -313,7 +331,7 @@ public class FileService {
 
     public void mergeTempFile(String jobId, String appendingFileName) throws IOException, IllegalAccessException {
 
-        initFileVO(jobId);
+//        initFileVO(jobId);
         if(!ObjectUtils.isEmpty(appendingFileName)) {
             this.dataFileVO.setAppendingFileName(appendingFileName);
         }
@@ -345,6 +363,11 @@ public class FileService {
         return fileCnt;
     }
 
+    public int getFleCnt(String filePath) {
+        int fileCnt = FileUtil.getFileCnt(filePath);
+        return fileCnt;
+    }
+
     /**
      * 임시파일 제거
      *
@@ -372,6 +395,11 @@ public class FileService {
         File file = new File(this.tempFileVO.getFullFilePath());
 
         return file.exists();
+    }
+
+    public boolean isTempPathExsists() {
+        String filePath = this.tempFileVO.getFilePath();
+        return new File(filePath).exists();
     }
 
     public void setStartTime(String startTime) {

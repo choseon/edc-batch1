@@ -20,6 +20,7 @@ import org.springframework.web.client.RestClientException;
 
 import java.io.IOException;
 import java.net.URI;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -31,21 +32,6 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     private List<String> kcsKeywordList;
     private String kcsRgrsYn = "Y";
     private String issueSrwrYn = "N";
-
-    private String from;
-    private String until;
-    private String accessKey;
-
-    @SneakyThrows
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-
-        super.beforeStep(stepExecution);
-
-        this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
-        this.from = DateUtil.getOffsetDate(this.baseDt, 0, "yyyy-MM-dd");
-        this.until = DateUtil.getOffsetDate(this.baseDt, 1, "yyyy-MM-dd");
-    }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
@@ -60,7 +46,7 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
-        log.info("from: {}, until: {}, KcsKeywordYn: {}, issueSrwrYn: {}", this.from, this.until, this.kcsRgrsYn, this.issueSrwrYn);
+        log.info("KcsKeywordYn: {}, issueSrwrYn: {}", this.kcsRgrsYn, this.issueSrwrYn);
 
         try {
             String resourcePath = this.fileService.getResourcePath();
@@ -68,16 +54,16 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
             this.kcsKeywordList = FileUtil.readTextFile(filePath);
 
             TimelineQueryVO queryVO = new TimelineQueryVO();
-            queryVO.setAccess_key(this.accessKey);
-            queryVO.getArgument().getPublished_at().setFrom(this.from);
-            queryVO.getArgument().getPublished_at().setUntil(this.until);
+            String accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
+            queryVO.setAccess_key(accessKey);
+            queryVO.getArgument().getPublished_at().setFrom(DateUtil.getFormatDate(this.startDt));
+            queryVO.getArgument().getPublished_at().setUntil(DateUtil.getFormatDate(this.endDt));
 
             for (String keyword : this.kcsKeywordList) {
                 queryVO.getArgument().setQuery(keyword);
 
                 URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
 
-                Thread.sleep(50);
                 Big004mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big004mVO.class);
 
                 if (resultVO.getResult() != 0) {
@@ -110,7 +96,7 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
             this.makeErrorLog(e.getMessage());
         } catch (IllegalAccessException e) {
             this.makeErrorLog(e.getMessage());
-        } catch (InterruptedException e) {
+        } catch (ParseException e) {
             this.makeErrorLog(e.getMessage());
         } finally {
             this.writeCmmnLogEnd();

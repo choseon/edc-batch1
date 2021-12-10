@@ -42,16 +42,16 @@ public class BigJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.big.isActive}")
+    @Value("${scheduler.jobs.big.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.big.baseline}")
+    @Value("${scheduler.jobs.big.baseline}")
     private String baseline;
 
     /**
      * 한국언론진흥재단 빅카인드 데이터수집 Batch launcher 설정
      */
-    @Scheduled(cron = "${scheduler.big.cron}")
+    @Scheduled(cron = "${scheduler.jobs.big.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
@@ -85,6 +85,9 @@ public class BigJobConfig {
      */
     @Bean
     public Job bigJob() {
+
+        log.info(">>>>> {} start..... isActive: {}", "bigJob", this.isActive);
+        if (!this.isActive) return null;
 
         // News TimeLine(뉴스타임라인) -> Word Cloud(워드클라우드) -> News Search(뉴스조회)
         Flow bigFlow1 = new FlowBuilder<Flow>("bigFlow1")

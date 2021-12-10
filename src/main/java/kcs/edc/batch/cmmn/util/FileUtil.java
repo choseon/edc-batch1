@@ -137,6 +137,7 @@ public class FileUtil {
         int resultCnt = 0;
         File dir = new File(filePath);
         if (dir == null) return resultCnt;
+        if (dir.isFile()) return resultCnt;
         File[] files = dir.listFiles();
         if (files == null) return resultCnt;
 

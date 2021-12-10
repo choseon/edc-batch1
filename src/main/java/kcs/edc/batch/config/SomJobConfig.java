@@ -49,16 +49,16 @@ public class SomJobConfig {
 
     private String currentJobId;
 
-    @Value("${scheduler.som.isActive}")
+    @Value("${scheduler.jobs.som.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.som.baseline}")
+    @Value("${scheduler.jobs.som.baseline}")
     private String baseline;
 
     /**
      * 바이브컴퍼티 썸트랜드 데이터수집 Batch Launcher 설정
      */
-    @Scheduled(cron = "${scheduler.som.cron}")
+    @Scheduled(cron = "${scheduler.jobs.som.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);

@@ -33,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -55,17 +56,10 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     @Value("${uct.period}")
     private int period;
 
-    @Value("${scheduler.uct.baseline}")
+    @Value("${scheduler.jobs.uct.baseline}")
     private String baseline;
 
     int totalFileCnt;
-
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-
-
-        super.beforeStep(stepExecution);
-    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
@@ -76,35 +70,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
             this.writeCmmnLogStart(this.threadNum, this.partitionList.size());
         }
 
-
         try {
-
-            if (ObjectUtils.isEmpty(this.baseDt)) {
-                this.baseDt = DateUtil.getCurrentDate("yyyyMM");
-            }
-
-            if (!ObjectUtils.isEmpty(this.baseYear)) {
-                saveLastModified("", "");
-            } else {
-
-//                this.baseYear = DateUtil.getBaseLineDate("Y-1");
-//
-//                Properties prop = getLastModified();
-//                String propBaseYear = (String) prop.get("baseYear");
-//                String propBaseDt = (String) prop.get("baseDt");
-//                log.info("propBaseYear: {}, propBaseDt: {}", propBaseYear, propBaseDt);
-//
-//                if (ObjectUtils.isEmpty(propBaseDt) && ObjectUtils.isEmpty(propBaseYear)) {
-//                    this.baseYear = DateUtil.getBaseLineDate("Y-1");
-//                    saveLastModified(this.baseDt, this.baseYear);
-//                } else {
-//                    this.baseYear = DateUtil.getBaseLineDate("Y-2");
-//                }
-//                if(this.baseDt.equals(propBaseDt) && !this.baseYear.equals(propBaseYear)) {
-//                    this.baseYear = propBaseYear;
-//                }
-            }
-            log.info("baseYear: {}", this.baseYear);
 
             // apiService에  Custom RestTemplate Setting
             this.apiService.setRestTemplate(getRestTemplate());
@@ -117,23 +83,36 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
             this.totalFileCnt = rList.size() * (pList.size() - 1);
 
             int resultCnt = 0;
-            do {
-                resultCnt = callApi(rList, pList, this.baseYear);
-            } while (resultCnt > 0);
+
+            for (int i = 0; i < this.period; i++) {
+
+                String ps = DateUtil.getOffsetYear(this.startDt, i);
+                log.info(">>> ps: {}", ps);
+
+                this.fileService.getTempFileVO().setAppendingFilePath(ps); // temp파일 path 추가
+
+//                String tempFilePath = this.fileService.getTempFileVO().getFilePath() + ps + "/";
+                if(this.fileService.isTempPathExsists() && this.fileService.getTempFileCnt() == this.totalFileCnt) {
+                    log.info("completed: {}", this.fileService.getTempFileVO().getFilePath());
+                    continue;
+                }
+
+//                do {
+                    resultCnt = callApi(rList, pList, ps);
+//                } while (resultCnt > 0);
+            }
 
             if (resultCnt == 0) {
 
                 // 파일생성전 최종검증차원에서 한번 더 돌린다
                 // 이미 생성된 파일은 바로 넘어가기 때문에 정상적으로 파일이 생성된 상태라면 짧은시간 소요됨.
-                callApi(rList, pList, this.baseYear);
+//                callApi(rList, pList, this.baseYear);
 
                 // 생성되어야할 총파일갯수 생성된 임시파일갯수 비교교
                 int tempFileCnt = this.fileService.getTempFileCnt();
                 if (this.totalFileCnt == tempFileCnt) {
                     // 파일병합 및 로그파일생성
                     this.fileService.mergeTempFile(this.jobId, this.baseYear);
-                    // 최종수정일 prop update
-                    saveLastModified(this.baseDt, this.baseYear);
                 }
             }
 
@@ -145,6 +124,8 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
             this.makeErrorLog(e.getMessage());
         } catch (IOException e) {
             this.makeErrorLog(e.getMessage());
+        } catch (ParseException e) {
+            this.makeErrorLog(e.getMessage());
         } finally {
             if (ObjectUtils.isEmpty(this.threadNum)) {
                 this.writeCmmnLogEnd();
@@ -152,7 +133,6 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 this.writeCmmnLogEnd(this.threadNum, this.partitionList.size());
             }
         }
-
 
         return RepeatStatus.FINISHED;
     }
@@ -218,7 +198,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                         }
 
                         // temp파일 생성 후 리스트 초기화
-                        this.fileService.makeTempFile(this.resultList, suffixFileName);
+                        this.fileService.makeTempFile(this.jobId, this.resultList, ps, suffixFileName, true);
                         this.resultList.clear();
 
                         break; // 무한루프 종료
@@ -293,32 +273,6 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
         }
 
         return pList;
-    }
-
-    public void saveLastModified(String baseDt, String baseYear) throws IOException {
-
-        String filePath = this.fileService.getResourcePath();
-        String fileName = "uct_last_modified.txt";
-        FileOutputStream stream = new FileOutputStream(filePath + fileName);
-
-        Properties prop = new Properties();
-        prop.setProperty("baseDt", baseDt);
-        prop.setProperty("baseYear", baseYear);
-        prop.setProperty("lastModified", DateUtil.getCurrentTime());
-
-        prop.store(stream, "saveLastModified");
-        stream.close();
-    }
-
-    public Properties getLastModified() throws IOException {
-        String filePath = this.fileService.getResourcePath();
-        String fileName = "uct_last_modified.txt";
-        FileInputStream stream = new FileInputStream(filePath + fileName);
-
-        Properties prop = new Properties();
-        prop.load(stream);
-        stream.close();
-        return prop;
     }
 
 }

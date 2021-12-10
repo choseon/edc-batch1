@@ -17,6 +17,7 @@ import org.springframework.web.client.RestClientException;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,21 +30,6 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
     private String kcsRgrsYn = "N";
     private String issueSrwrYn = "Y";
     private List<List<String>> newsClusterList = new ArrayList<>();
-
-    private String from;
-    private String until;
-    private String accessKey;
-
-    @SneakyThrows
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-
-        super.beforeStep(stepExecution);
-
-        this.accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
-        this.from = DateUtil.getOffsetDate(this.baseDt, 0, "yyyy-MM-dd");
-        this.until = DateUtil.getOffsetDate(this.baseDt, 1, "yyyy-MM-dd");
-    }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
@@ -59,38 +45,40 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
 
         this.writeCmmnLogStart();
-        log.info("from: {}, until: {}, KcsKeywordYn: {}, issueSrwrYn: {}", this.from, this.until, this.kcsRgrsYn, this.issueSrwrYn);
+        log.info("KcsKeywordYn: {}, issueSrwrYn: {}", this.kcsRgrsYn, this.issueSrwrYn);
 
         try {
 
-            IssueRankQueryVO queryVO = new IssueRankQueryVO();
-            queryVO.setAccess_key(this.accessKey);
-            queryVO.getArgument().setDate(this.from); // ex) 2021-11-24
+            for (int i = 0; i < this.period; i++) {
+                IssueRankQueryVO queryVO = new IssueRankQueryVO();
+                String accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
+                queryVO.setAccess_key(accessKey);
 
-            URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
-            Big002mVO resultVO = null;
+                String date = DateUtil.getOffsetDate(this.startDt, i, "yyyy-MM-dd");
+                queryVO.getArgument().setDate(date); // ex) 2021-11-24
 
-            resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big002mVO.class);
+                URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
+                Big002mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big002mVO.class);
 
-            if (resultVO.getResult() != 0) {
-                this.makeErrorLog(resultVO.getReason());
-                return null;
-            }
+                List<Big002mVO.TopicItem> topics = resultVO.getReturn_object().getTopics();
+                if(topics == null) {
+                    this.makeErrorLog("topics is null");
+                }
 
-            List<Big002mVO.TopicItem> topics = resultVO.getReturn_object().getTopics();
-            for (Big002mVO.TopicItem item : topics) {
+                for (Big002mVO.TopicItem item : topics) {
 
-                List<String> newsCluster = item.getNews_cluster();
-                this.newsClusterList.add(newsCluster);
+                    List<String> newsCluster = item.getNews_cluster();
+                    this.newsClusterList.add(newsCluster);
 
 //            item.setNews_cluster(convertNesClusterListToString(newsCluster));
-                item.setArtcPblsDt(this.baseDt); // 20211124
-                item.setKcsRgrsYn(this.kcsRgrsYn);
-                item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
-                item.setLastChngDtlDttm(DateUtil.getCurrentTime());
-                this.resultList.add(item);
-                log.info("[{}/{}] {} >> newsCluster.size: {}",
-                        this.itemCnt++, topics.size(), this.jobId, newsCluster.size());
+                    item.setArtcPblsDt(date); // 20211124
+                    item.setKcsRgrsYn(this.kcsRgrsYn);
+                    item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
+                    item.setLastChngDtlDttm(DateUtil.getCurrentTime());
+                    this.resultList.add(item);
+                    log.info("[{}/{}] {} >> newsCluster.size: {}",
+                            this.itemCnt++, topics.size(), this.jobId, newsCluster.size());
+                }
             }
 
             // 파일생성
@@ -103,6 +91,8 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
         } catch (IllegalAccessException e) {
             this.makeErrorLog(e.getMessage());
         } catch (RestClientException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (ParseException e) {
             this.makeErrorLog(e.getMessage());
         } finally {
             this.writeCmmnLogEnd();

@@ -28,13 +28,13 @@ public class KotJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.kot.isActive}")
+    @Value("${scheduler.jobs.kot.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.kot.baseline}")
+    @Value("${scheduler.jobs.kot.baseline}")
     private String baseline;
 
-    @Scheduled(cron = "${scheduler.kot.cron}")
+    @Scheduled(cron = "${scheduler.jobs.kot.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
