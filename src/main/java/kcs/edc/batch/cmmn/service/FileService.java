@@ -1,5 +1,6 @@
 package kcs.edc.batch.cmmn.service;
 
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.property.FileProperty;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
@@ -62,12 +63,18 @@ public class FileService {
         log.debug("FileService init() >> jobId: {}", this.jobId);
     }
 
+    public void initFileVO() {
+        initFileVO(this.jobId);
+    }
+
     /**
      * fileVO 초기화
      *
      * @param jobId
      */
     public void initFileVO(String jobId) {
+
+        this.jobId = jobId;
 
         // 파일 확장자
         String fileExtension = this.fileProperty.getDataFileExtension();
@@ -77,7 +84,12 @@ public class FileService {
         // 데이터 디렉토리명
         String dataDirName = dataFilePrefixName + jobId;
         // 데이터 파일명
-        String dataFileName = dataDirName + "_" + this.baseDt;
+        String dataFileName = null;
+        if(this.jobId.equals(CmmnConst.JOB_ID_UCT001M)) {
+            dataFileName = dataDirName;
+        } else {
+            dataFileName = dataDirName + "_" + this.baseDt;
+        }
         this.dataFileVO = new FileVO(fileRootPath, dataDirName, dataFileName, fileExtension);
 
         // 로그 디렉토리명
@@ -294,24 +306,9 @@ public class FileService {
     public <T> void makeTempFile(String jobId, List<T> list, String appendingFileName, Boolean isForce)
             throws FileNotFoundException, IllegalAccessException {
 
-        makeTempFile(jobId, list, null, appendingFileName, isForce);
-/*        if(!isForce && list.size() == 0) return;
-        this.initFileVO(jobId);
-        this.tempFileVO.setAppendingFileName(appendingFileName);
+        if (!isForce && list.size() == 0) return;
 
-        FileUtil.makeTsvFile(this.tempFileVO.getFilePath(), this.tempFileVO.getFileFullName(), list);
-        log.info("makeTempFile: {}, listCnt: {} ", this.tempFileVO.getFullFilePath(), list.size());*/
-    }
-
-    public <T> void makeTempFile(String jobId, List<T> list, String appendingFilePath, String appendingFileName, Boolean isForce)
-            throws FileNotFoundException, IllegalAccessException {
-        if(!isForce && list.size() == 0) return;
-//        this.initFileVO(jobId);
-
-        if(!ObjectUtils.isEmpty(appendingFilePath)) {
-            this.tempFileVO.setAppendingFilePath(appendingFilePath);
-        }
-        if(!ObjectUtils.isEmpty(appendingFileName)) {
+        if (!ObjectUtils.isEmpty(appendingFileName)) {
             this.tempFileVO.setAppendingFileName(appendingFileName);
         }
 
@@ -320,24 +317,23 @@ public class FileService {
     }
 
 
+
     /**
      * 임시파일 병합
-     *
-     * @param jobId
      */
-    public void mergeTempFile(String jobId) throws IOException, IllegalAccessException {
-        mergeTempFile(jobId, null);
+    public void mergeTempFile() throws IOException, IllegalAccessException {
+        mergeTempFile(null);
     }
 
-    public void mergeTempFile(String jobId, String appendingFileName) throws IOException, IllegalAccessException {
+    public void mergeTempFile(String appendingFileName) throws IOException, IllegalAccessException {
 
 //        initFileVO(jobId);
-        if(!ObjectUtils.isEmpty(appendingFileName)) {
+        if (!ObjectUtils.isEmpty(appendingFileName)) {
             this.dataFileVO.setAppendingFileName(appendingFileName);
         }
 
         // temp 폴더 존재여부 확인
-        if(!new File(this.tempFileVO.getFilePath()).exists()) {
+        if (!new File(this.tempFileVO.getFilePath()).exists()) {
             log.info("tempPath: {} is not exists", this.tempFileVO.getFilePath());
         } else {
             // 임시파일 병합하여 데이터파일 생성
@@ -346,7 +342,7 @@ public class FileService {
             // 로그파일 생성
             makeLogFile(listCnt, this.logFileVO, this.dataFileVO);
             // 임시파일 삭제
-            cleanTempFile(jobId);
+            cleanTempFile();
         }
     }
 
@@ -371,16 +367,10 @@ public class FileService {
     /**
      * 임시파일 제거
      *
-     * @param jobId
      */
-    public void cleanTempFile(String jobId) {
-
-        initFileVO(jobId);
-        FileUtil.deleteFile(this.tempFileVO.getFilePath());
-    }
-
     public void cleanTempFile() {
-        cleanTempFile(this.jobId);
+
+        FileUtil.deleteFile(this.tempFileVO.getFilePath());
     }
 
     /**
@@ -407,7 +397,11 @@ public class FileService {
     }
 
     public FileVO getTempFileVO() {
-        return tempFileVO;
+        return this.tempFileVO;
+    }
+
+    public FileVO getDataFileVO() {
+        return this.dataFileVO;
     }
 
 }

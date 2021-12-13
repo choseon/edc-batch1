@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.batch.core.StepContribution;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -28,14 +27,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.text.ParseException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -53,13 +48,8 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     @Value("#{jobParameters[baseYear]}")
     private String baseYear;
 
-    @Value("${uct.period}")
-    private int period;
-
-    @Value("${scheduler.jobs.uct.baseline}")
-    private String baseline;
-
     int totalFileCnt;
+    List<String> psList = new ArrayList<>();
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
@@ -84,36 +74,45 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
 
             int resultCnt = 0;
 
+            log.info("period: {}", this.period);
             for (int i = 0; i < this.period; i++) {
 
                 String ps = DateUtil.getOffsetYear(this.startDt, i);
-                log.info(">>> ps: {}", ps);
+                log.info(">>> START CAll API >>> ps: {}", ps);
 
+                this.psList.add(ps);
+                this.fileService.initFileVO();
                 this.fileService.getTempFileVO().setAppendingFilePath(ps); // temp파일 path 추가
 
-//                String tempFilePath = this.fileService.getTempFileVO().getFilePath() + ps + "/";
-                if(this.fileService.isTempPathExsists() && this.fileService.getTempFileCnt() == this.totalFileCnt) {
-                    log.info("completed: {}", this.fileService.getTempFileVO().getFilePath());
+                if (this.fileService.isTempPathExsists() && this.fileService.getTempFileCnt() == this.totalFileCnt) {
+                    log.info("completed: {}, fileCnt: {}", this.fileService.getTempFileVO().getFilePath(), this.fileService.getTempFileCnt());
                     continue;
                 }
 
 //                do {
-                    resultCnt = callApi(rList, pList, ps);
+                resultCnt = callApi(rList, pList, ps);
 //                } while (resultCnt > 0);
+
+                log.info(">>> END CALL API >>> ps: {}", ps);
             }
 
-            if (resultCnt == 0) {
+            for (String ps : this.psList) {
 
-                // 파일생성전 최종검증차원에서 한번 더 돌린다
+                // 파일 병합
+                this.fileService.initFileVO();
+                this.fileService.getTempFileVO().setAppendingFilePath(ps); // temp파일 path 추가
+
+                // 최종검증
                 // 이미 생성된 파일은 바로 넘어가기 때문에 정상적으로 파일이 생성된 상태라면 짧은시간 소요됨.
-//                callApi(rList, pList, this.baseYear);
+                log.info(">>> START VERIFY >>> ps: {}", ps);
+                callApi(rList, pList, ps);
+                log.info(">>> END VERIFY >>> ps: {}", ps);
 
-                // 생성되어야할 총파일갯수 생성된 임시파일갯수 비교교
-                int tempFileCnt = this.fileService.getTempFileCnt();
-                if (this.totalFileCnt == tempFileCnt) {
-                    // 파일병합 및 로그파일생성
-                    this.fileService.mergeTempFile(this.jobId, this.baseYear);
-                }
+                // 리눅스 명령으로 1차 파일병합
+                runMergeScriptFile(ps);
+
+                // 10개로 병합된 파일을 최종 1개로 병합
+                this.fileService.mergeTempFile(ps + "_" + DateUtil.getCurrentDate("yyyyMM"));
             }
 
         } catch (FileNotFoundException e) {
@@ -125,6 +124,8 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
         } catch (IOException e) {
             this.makeErrorLog(e.getMessage());
         } catch (ParseException e) {
+            this.makeErrorLog(e.getMessage());
+        } catch (InterruptedException e) {
             this.makeErrorLog(e.getMessage());
         } finally {
             if (ObjectUtils.isEmpty(this.threadNum)) {
@@ -156,7 +157,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 if (r.equals(p)) continue;
 
                 if (++index % 1000 == 0) {
-                    log.info("[{}/{}]", index, this.totalFileCnt);
+                    log.info("currentCnt: {}, totalCnt: {}]", index, this.totalFileCnt);
                 }
 
                 String suffixFileName = ps + "_" + r + "_" + p;
@@ -198,7 +199,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                         }
 
                         // temp파일 생성 후 리스트 초기화
-                        this.fileService.makeTempFile(this.jobId, this.resultList, ps, suffixFileName, true);
+                        this.fileService.makeTempFile(this.resultList, suffixFileName, true);
                         this.resultList.clear();
 
                         break; // 무한루프 종료
@@ -273,6 +274,55 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
         }
 
         return pList;
+    }
+
+    /**
+     * filePattern 형식을 조회하여 filePath로 병합하고
+     * filePattern에 해당하는 파일들은 삭제하는 스크립트 생성하여 실행
+     *
+     * @param ps
+     * @throws IOException
+     */
+    public void runMergeScriptFile(String ps) throws IOException, InterruptedException {
+
+        // 스크립트 소스 생성
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 1; i < 10; i++) {
+
+            String prefixFileName = ps + "_" + i;
+            this.fileService.getTempFileVO().setAppendingFileName(prefixFileName);
+
+            // /hdata/ht_uct001m/temp/2021/ht_uct001m_2020_1
+            String filePattern = this.fileService.getTempFileVO().getFilePath() + this.fileService.getTempFileVO().getFileName();
+
+            // /hdata/ht_uct001m/2021/ht_uct001m_2020_1.txt
+            String filePath = this.fileService.getTempFileVO().getFullFilePath();
+
+            // 리눅스 파일병합 명령어
+            // ls /hdata/ht_uct001m/temp/2021/ht_uct001m_2020_1* | xargs cat > /hdata/ht_uct001m/2021/ht_uct001m_2020_1.txt
+            String commandline = String.format("ls %s*_* | xargs cat > %s", filePattern, filePath);
+            stringBuffer.append(commandline);
+            stringBuffer.append("\n");
+
+            // 리눅스 파일삭제 명령어
+            // rm -rf /hdata/ht_uct001m/temp/2021/ht_uct001m_2020_1*
+            commandline = String.format("rm -rf %s*_*", filePattern);
+            stringBuffer.append(commandline);
+            stringBuffer.append("\n");
+        }
+
+        // 스크립트 파일 생성
+        String scriptPath = this.fileService.getResourcePath() + CmmnConst.RESOURCE_FILE_NAME_UCT_SCRIPT;
+        FileUtil.makeFile(scriptPath, stringBuffer.toString());
+        log.info("makeScriptFile: {}", scriptPath);
+        log.info("script: {}", stringBuffer.toString());
+
+        // 스크립트 파일 실행
+        Process process = Runtime.getRuntime().exec(scriptPath);
+        int waitFor = process.waitFor();
+        if (waitFor == 0) {
+            log.info("Success! runScriptFile: {}", scriptPath);
+        }
     }
 
 }

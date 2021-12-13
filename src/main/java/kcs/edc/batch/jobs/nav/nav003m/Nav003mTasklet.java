@@ -42,7 +42,7 @@ public class Nav003mTasklet extends CmmnJob implements Tasklet {
             ChannelSftp channelSftp = this.sftpService.connectSFTP();
 
             String fileName = String.format(this.fileNamePattern, jobId.toUpperCase(), this.baseDt);
-            String downloadPath = this.fileService.getTempPath(jobId);
+            String downloadPath = this.fileService.getTempPath();
             // File SFTP Download
             File downloadFile = this.sftpService.download(channelSftp, fileName, downloadPath);
             // CSV -> List Conversion
@@ -57,7 +57,7 @@ public class Nav003mTasklet extends CmmnJob implements Tasklet {
             // Make TSV File
             this.fileService.makeFile(jobId, csvToList);
             // Download TempFile 삭제
-            this.fileService.cleanTempFile(jobId);
+            this.fileService.cleanTempFile();
 
         } catch (JSchException e) {
             this.makeErrorLog(e.getMessage());

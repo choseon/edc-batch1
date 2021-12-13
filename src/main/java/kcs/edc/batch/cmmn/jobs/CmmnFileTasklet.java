@@ -63,9 +63,9 @@ public class CmmnFileTasklet implements Tasklet {
             this.fileService.initFileVO(jobId);
 
             if(this.actionType.equals(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE)) {
-                this.fileService.mergeTempFile(jobId);
+                this.fileService.mergeTempFile();
             } else if(this.actionType.equals(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN)) {
-                this.fileService.cleanTempFile(jobId);
+                this.fileService.cleanTempFile();
             }
         }
 

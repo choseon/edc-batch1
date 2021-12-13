@@ -7,7 +7,6 @@ import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.big.timeline.vo.Big004mVO;
 import kcs.edc.batch.jobs.big.timeline.vo.TimelineQueryVO;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
@@ -66,8 +65,9 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
                 Big004mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big004mVO.class);
 
+
                 if (resultVO.getResult() != 0) {
-                    log.info("[{}/{}] keyword: {}, resultVO.getResult(): {}", this.itemCnt++, this.kcsKeywordList.size(), keyword, resultVO.getResult());
+                    log.info("[{}/{}] keyword: {}, resultVO.getResult(): {}", this.itemCnt, this.kcsKeywordList.size(), keyword, resultVO.getResult());
                 } else {
 
                     List<Big004mVO.TimeLineItem> time_line = resultVO.getReturn_object().getTime_line();
@@ -78,10 +78,11 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
                         item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                         this.resultList.add(item);
 
-                        log.info("[{}/{}] {} >> keyword: {}, hits: {}",
-                                this.itemCnt++, this.kcsKeywordList.size(), this.jobId, keyword, item.getSrchDocGcnt());
+                        log.info("[{}/{}] {} >> keyword: {}, artcPblsDt: {}, hits: {}",
+                                this.itemCnt, this.kcsKeywordList.size(), this.jobId, keyword, item.getArtcPblsDt(), item.getSrchDocGcnt());
                     }
                 }
+                this.itemCnt++;
             }
 
             // 파일생성

@@ -82,7 +82,7 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
             }
 
             // 파일생성
-            this.fileService.makeFile(this.resultList, true);
+            this.fileService.makeFile(this.resultList);
 
         } catch (JsonProcessingException e) {
             this.makeErrorLog(e.getMessage());

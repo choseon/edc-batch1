@@ -1,2 +1,216 @@
-2021-12-10 04:44:51 WARN HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=10h52m8s770ms786µs300ns).
-2021-12-10 09:09:01 WARN HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=4h24m10s211ms223µs400ns).
+2021-12-13 14:49:23 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 12992 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2021-12-13 14:49:23 INFO The following profiles are active: local
+2021-12-13 14:49:25 INFO Tomcat initialized with port(s): 8080 (http)
+2021-12-13 14:49:25 INFO Root WebApplicationContext: initialization completed in 1632 ms
+2021-12-13 14:49:26 INFO No database type set, using meta data indicating: H2
+2021-12-13 14:49:26 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2021-12-13 14:49:26 INFO Tomcat started on port(s): 8080 (http) with context path ''
+2021-12-13 14:49:26 INFO Started EdcBatchApplication in 3.337 seconds (JVM running for 4.36)
+2021-12-13 14:49:26 INFO Running default command line with: [baseDt=20211130]
+2021-12-13 14:49:26 INFO Job: [FlowJob: [name=bigJob]] launched with the following parameters: [{baseDt=20211130}]
+2021-12-13 14:49:26 INFO Executing step: [big004mStep]
+2021-12-13 14:50:00 INFO Step: [big004mStep] executed in 34s361ms
+2021-12-13 14:50:00 INFO Executing step: [big003mStep]
+2021-12-13 14:51:17 INFO Step: [big003mStep] executed in 1m16s321ms
+2021-12-13 14:51:17 INFO Executing step: [big001mStep]
+2021-12-13 14:52:18 INFO Step: [big001mStep] executed in 1m0s962ms
+2021-12-13 14:52:18 INFO Executing step: [big002mStep]
+2021-12-13 14:52:19 INFO Step: [big002mStep] executed in 1s99ms
+2021-12-13 14:52:19 INFO Duplicate step [big001mStep] detected in execution of job=[bigJob]. If either step fails, both will be executed again on restart.
+2021-12-13 14:52:19 INFO Executing step: [big001mStep]
+2021-12-13 14:54:39 INFO Step: [big001mStep] executed in 2m20s42ms
+2021-12-13 14:54:39 INFO Executing step: [big005mStep]
+2021-12-13 14:54:39 INFO Step: [big005mStep] executed in 236ms
+2021-12-13 14:54:39 INFO Duplicate step [big003mStep] detected in execution of job=[bigJob]. If either step fails, both will be executed again on restart.
+2021-12-13 14:54:39 INFO Executing step: [big003mStep]
+2021-12-13 14:55:57 INFO Step: [big003mStep] executed in 1m17s368ms
+2021-12-13 14:55:57 INFO Duplicate step [big001mStep] detected in execution of job=[bigJob]. If either step fails, both will be executed again on restart.
+2021-12-13 14:55:57 INFO Executing step: [big001mStep]
+2021-12-13 14:56:33 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 7384 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2021-12-13 14:56:33 INFO The following profiles are active: local
+2021-12-13 14:56:35 INFO Tomcat initialized with port(s): 8080 (http)
+2021-12-13 14:56:35 INFO Root WebApplicationContext: initialization completed in 1357 ms
+2021-12-13 14:56:36 INFO No database type set, using meta data indicating: H2
+2021-12-13 14:56:36 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2021-12-13 14:56:36 INFO Tomcat started on port(s): 8080 (http) with context path ''
+2021-12-13 14:56:36 INFO Started EdcBatchApplication in 2.934 seconds (JVM running for 3.629)
+2021-12-13 14:56:36 INFO Running default command line with: []
+2021-12-13 15:00:06 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 18476 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2021-12-13 15:00:06 INFO The following profiles are active: local
+2021-12-13 15:00:07 INFO Tomcat initialized with port(s): 8080 (http)
+2021-12-13 15:00:07 INFO Root WebApplicationContext: initialization completed in 1424 ms
+2021-12-13 15:00:08 INFO No database type set, using meta data indicating: H2
+2021-12-13 15:00:08 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2021-12-13 15:00:08 INFO Tomcat started on port(s): 8080 (http) with context path ''
+2021-12-13 15:00:08 INFO Started EdcBatchApplication in 2.988 seconds (JVM running for 3.751)
+2021-12-13 15:00:08 INFO Running default command line with: []
+2021-12-13 15:01:53 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 17144 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2021-12-13 15:01:53 INFO The following profiles are active: local
+2021-12-13 15:01:55 INFO Tomcat initialized with port(s): 8080 (http)
+2021-12-13 15:01:55 INFO Root WebApplicationContext: initialization completed in 1538 ms
+2021-12-13 15:01:55 INFO >>>>> bigJob start..... isActive: true
+2021-12-13 15:01:55 INFO HikariPool-1 - Starting...
+2021-12-13 15:01:55 INFO HikariPool-1 - Start completed.
+2021-12-13 15:01:56 INFO No database type set, using meta data indicating: H2
+2021-12-13 15:01:56 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2021-12-13 15:01:56 INFO Tomcat started on port(s): 8080 (http) with context path ''
+2021-12-13 15:01:56 INFO Started EdcBatchApplication in 3.035 seconds (JVM running for 3.713)
+2021-12-13 15:01:56 INFO Running default command line with: []
+2021-12-13 15:02:42 INFO HikariPool-1 - Shutdown initiated...
+2021-12-13 15:02:42 INFO HikariPool-1 - Shutdown completed.
+2021-12-13 15:02:45 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 15028 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2021-12-13 15:02:45 INFO The following profiles are active: local
+2021-12-13 15:02:46 INFO Tomcat initialized with port(s): 8080 (http)
+2021-12-13 15:02:46 INFO Root WebApplicationContext: initialization completed in 1391 ms
+2021-12-13 15:02:46 INFO >>>>> bigJob start..... isActive: true
+2021-12-13 15:02:47 INFO HikariPool-1 - Starting...
+2021-12-13 15:02:47 INFO HikariPool-1 - Start completed.
+2021-12-13 15:02:47 INFO No database type set, using meta data indicating: H2
+2021-12-13 15:02:47 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2021-12-13 15:02:47 INFO Tomcat started on port(s): 8080 (http) with context path ''
+2021-12-13 15:02:47 INFO Started EdcBatchApplication in 2.882 seconds (JVM running for 3.602)
+2021-12-13 15:02:47 INFO Running default command line with: [baseDt=20211201]
+2021-12-13 15:02:47 INFO Job: [FlowJob: [name=uctJob]] launched with the following parameters: [{baseDt=20211201}]
+2021-12-13 15:02:47 INFO Executing step: [uct001mStep]
+2021-12-13 15:02:47 INFO SchedulerService init() >> jobGroupId: uct
+2021-12-13 15:02:47 INFO ##########################################################################
+2021-12-13 15:02:47 INFO START JOB :::: uct001m 
+2021-12-13 15:02:47 INFO ##########################################################################
+2021-12-13 15:02:47 INFO baseDt: 20211201, startDt: 20211201, endDt: 20211201, period: 1
+2021-12-13 15:02:48 INFO readJsonFile: C:/dev/edc-batch/resources/uct_area.txt, listCnt: 8
+2021-12-13 15:02:48 INFO readJsonFile: C:/dev/edc-batch/resources/uct_area.txt, listCnt: 8
+2021-12-13 15:02:48 INFO period: 1
+2021-12-13 15:02:48 INFO >>> START CAll API >>> ps: 20211201
+2021-12-13 15:03:18 INFO HikariPool-1 - Shutdown initiated...
+2021-12-13 15:03:18 INFO HikariPool-1 - Shutdown completed.
+2021-12-13 15:03:39 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 17704 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2021-12-13 15:03:39 INFO The following profiles are active: local
+2021-12-13 15:03:40 INFO Tomcat initialized with port(s): 8080 (http)
+2021-12-13 15:03:40 INFO Root WebApplicationContext: initialization completed in 1307 ms
+2021-12-13 15:03:40 INFO >>>>> bigJob start..... isActive: true
+2021-12-13 15:03:41 INFO HikariPool-1 - Starting...
+2021-12-13 15:03:41 INFO HikariPool-1 - Start completed.
+2021-12-13 15:03:41 INFO No database type set, using meta data indicating: H2
+2021-12-13 15:03:41 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2021-12-13 15:03:41 INFO Tomcat started on port(s): 8080 (http) with context path ''
+2021-12-13 15:03:41 INFO Started EdcBatchApplication in 2.808 seconds (JVM running for 3.489)
+2021-12-13 15:03:41 INFO Running default command line with: [baseDt=20211201]
+2021-12-13 15:03:41 INFO Job: [FlowJob: [name=bigJob]] launched with the following parameters: [{baseDt=20211201}]
+2021-12-13 15:03:41 INFO Executing step: [big004mStep]
+2021-12-13 15:03:41 INFO SchedulerService init() >> jobGroupId: big
+2021-12-13 15:03:41 INFO ##########################################################################
+2021-12-13 15:03:41 INFO START JOB :::: big004m 
+2021-12-13 15:03:41 INFO ##########################################################################
+2021-12-13 15:03:41 INFO baseDt: 20211201, startDt: 20211125, endDt: 20211201, period: 7
+2021-12-13 15:03:41 INFO KcsKeywordYn: Y, issueSrwrYn: N
+2021-12-13 15:03:41 INFO readTextFile: C:/dev/edc-batch/resources/big_kcs_keyword.txt, listCnt: 100
+2021-12-13 15:03:42 INFO [1/100] big004m >> keyword: 코로나, artcPblsDt: 20211125, hits: 2392
+2021-12-13 15:03:42 INFO [1/100] big004m >> keyword: 코로나, artcPblsDt: 20211126, hits: 1772
+2021-12-13 15:03:42 INFO [1/100] big004m >> keyword: 코로나, artcPblsDt: 20211127, hits: 611
+2021-12-13 15:03:42 INFO [1/100] big004m >> keyword: 코로나, artcPblsDt: 20211128, hits: 1207
+2021-12-13 15:03:42 INFO [1/100] big004m >> keyword: 코로나, artcPblsDt: 20211129, hits: 2680
+2021-12-13 15:03:42 INFO [1/100] big004m >> keyword: 코로나, artcPblsDt: 20211130, hits: 2815
+2021-12-13 15:03:42 INFO [2/100] big004m >> keyword: 일본, artcPblsDt: 20211125, hits: 466
+2021-12-13 15:03:42 INFO [2/100] big004m >> keyword: 일본, artcPblsDt: 20211126, hits: 398
+2021-12-13 15:03:42 INFO [2/100] big004m >> keyword: 일본, artcPblsDt: 20211127, hits: 131
+2021-12-13 15:03:42 INFO [2/100] big004m >> keyword: 일본, artcPblsDt: 20211128, hits: 221
+2021-12-13 15:03:42 INFO [2/100] big004m >> keyword: 일본, artcPblsDt: 20211129, hits: 477
+2021-12-13 15:03:42 INFO [2/100] big004m >> keyword: 일본, artcPblsDt: 20211130, hits: 540
+2021-12-13 15:03:43 INFO [3/100] big004m >> keyword: 마스크, artcPblsDt: 20211125, hits: 152
+2021-12-13 15:03:43 INFO [3/100] big004m >> keyword: 마스크, artcPblsDt: 20211126, hits: 167
+2021-12-13 15:03:43 INFO [3/100] big004m >> keyword: 마스크, artcPblsDt: 20211127, hits: 59
+2021-12-13 15:03:43 INFO [3/100] big004m >> keyword: 마스크, artcPblsDt: 20211128, hits: 98
+2021-12-13 15:03:43 INFO [3/100] big004m >> keyword: 마스크, artcPblsDt: 20211129, hits: 256
+2021-12-13 15:03:43 INFO [3/100] big004m >> keyword: 마스크, artcPblsDt: 20211130, hits: 204
+2021-12-13 15:03:43 INFO [4/100] big004m >> keyword: 방역, artcPblsDt: 20211125, hits: 703
+2021-12-13 15:03:43 INFO [4/100] big004m >> keyword: 방역, artcPblsDt: 20211126, hits: 538
+2021-12-13 15:03:43 INFO [4/100] big004m >> keyword: 방역, artcPblsDt: 20211127, hits: 218
+2021-12-13 15:03:43 INFO [4/100] big004m >> keyword: 방역, artcPblsDt: 20211128, hits: 395
+2021-12-13 15:03:43 INFO [4/100] big004m >> keyword: 방역, artcPblsDt: 20211129, hits: 875
+2021-12-13 15:03:43 INFO [4/100] big004m >> keyword: 방역, artcPblsDt: 20211130, hits: 835
+2021-12-13 15:03:43 INFO [5/100] big004m >> keyword: 마약, artcPblsDt: 20211125, hits: 44
+2021-12-13 15:03:43 INFO [5/100] big004m >> keyword: 마약, artcPblsDt: 20211126, hits: 12
+2021-12-13 15:03:43 INFO [5/100] big004m >> keyword: 마약, artcPblsDt: 20211127, hits: 3
+2021-12-13 15:03:43 INFO [5/100] big004m >> keyword: 마약, artcPblsDt: 20211128, hits: 8
+2021-12-13 15:03:43 INFO [5/100] big004m >> keyword: 마약, artcPblsDt: 20211129, hits: 23
+2021-12-13 15:03:43 INFO [5/100] big004m >> keyword: 마약, artcPblsDt: 20211130, hits: 31
+2021-12-13 15:03:44 INFO [6/100] big004m >> keyword: 압수수색, artcPblsDt: 20211125, hits: 45
+2021-12-13 15:03:44 INFO [6/100] big004m >> keyword: 압수수색, artcPblsDt: 20211126, hits: 123
+2021-12-13 15:03:44 INFO [6/100] big004m >> keyword: 압수수색, artcPblsDt: 20211127, hits: 36
+2021-12-13 15:03:44 INFO [6/100] big004m >> keyword: 압수수색, artcPblsDt: 20211128, hits: 26
+2021-12-13 15:03:44 INFO [6/100] big004m >> keyword: 압수수색, artcPblsDt: 20211129, hits: 101
+2021-12-13 15:03:44 INFO [6/100] big004m >> keyword: 압수수색, artcPblsDt: 20211130, hits: 93
+2021-12-13 15:03:44 INFO [7/100] big004m >> keyword: 소송, artcPblsDt: 20211125, hits: 190
+2021-12-13 15:03:44 INFO [7/100] big004m >> keyword: 소송, artcPblsDt: 20211126, hits: 133
+2021-12-13 15:03:44 INFO [7/100] big004m >> keyword: 소송, artcPblsDt: 20211127, hits: 28
+2021-12-13 15:03:44 INFO [7/100] big004m >> keyword: 소송, artcPblsDt: 20211128, hits: 61
+2021-12-13 15:03:44 INFO [7/100] big004m >> keyword: 소송, artcPblsDt: 20211129, hits: 123
+2021-12-13 15:03:44 INFO [7/100] big004m >> keyword: 소송, artcPblsDt: 20211130, hits: 170
+2021-12-13 15:03:44 INFO [8/100] big004m >> keyword: 가상화폐, artcPblsDt: 20211125, hits: 49
+2021-12-13 15:03:44 INFO [8/100] big004m >> keyword: 가상화폐, artcPblsDt: 20211126, hits: 27
+2021-12-13 15:03:44 INFO [8/100] big004m >> keyword: 가상화폐, artcPblsDt: 20211127, hits: 6
+2021-12-13 15:03:44 INFO [8/100] big004m >> keyword: 가상화폐, artcPblsDt: 20211128, hits: 8
+2021-12-13 15:03:44 INFO [8/100] big004m >> keyword: 가상화폐, artcPblsDt: 20211129, hits: 39
+2021-12-13 15:03:44 INFO [8/100] big004m >> keyword: 가상화폐, artcPblsDt: 20211130, hits: 48
+2021-12-13 15:03:45 INFO [9/100] big004m >> keyword: 방사능, artcPblsDt: 20211125, hits: 10
+2021-12-13 15:03:45 INFO [9/100] big004m >> keyword: 방사능, artcPblsDt: 20211126, hits: 6
+2021-12-13 15:03:45 INFO [9/100] big004m >> keyword: 방사능, artcPblsDt: 20211127, hits: 0
+2021-12-13 15:03:45 INFO [9/100] big004m >> keyword: 방사능, artcPblsDt: 20211128, hits: 1
+2021-12-13 15:03:45 INFO [9/100] big004m >> keyword: 방사능, artcPblsDt: 20211129, hits: 3
+2021-12-13 15:03:45 INFO [9/100] big004m >> keyword: 방사능, artcPblsDt: 20211130, hits: 4
+2021-12-13 15:03:45 INFO [10/100] big004m >> keyword: 갑질, artcPblsDt: 20211125, hits: 28
+2021-12-13 15:03:45 INFO [10/100] big004m >> keyword: 갑질, artcPblsDt: 20211126, hits: 11
+2021-12-13 15:03:45 INFO [10/100] big004m >> keyword: 갑질, artcPblsDt: 20211127, hits: 19
+2021-12-13 15:03:45 INFO [10/100] big004m >> keyword: 갑질, artcPblsDt: 20211128, hits: 31
+2021-12-13 15:03:45 INFO [10/100] big004m >> keyword: 갑질, artcPblsDt: 20211129, hits: 26
+2021-12-13 15:03:45 INFO [10/100] big004m >> keyword: 갑질, artcPblsDt: 20211130, hits: 30
+2021-12-13 15:03:46 INFO [11/100] big004m >> keyword: 비트코인, artcPblsDt: 20211125, hits: 32
+2021-12-13 15:03:46 INFO [11/100] big004m >> keyword: 비트코인, artcPblsDt: 20211126, hits: 19
+2021-12-13 15:03:46 INFO [11/100] big004m >> keyword: 비트코인, artcPblsDt: 20211127, hits: 12
+2021-12-13 15:03:46 INFO [11/100] big004m >> keyword: 비트코인, artcPblsDt: 20211128, hits: 11
+2021-12-13 15:03:46 INFO [11/100] big004m >> keyword: 비트코인, artcPblsDt: 20211129, hits: 32
+2021-12-13 15:03:46 INFO [11/100] big004m >> keyword: 비트코인, artcPblsDt: 20211130, hits: 55
+2021-12-13 15:03:46 INFO [12/100] big004m >> keyword: 담보, artcPblsDt: 20211125, hits: 141
+2021-12-13 15:03:46 INFO [12/100] big004m >> keyword: 담보, artcPblsDt: 20211126, hits: 107
+2021-12-13 15:03:46 INFO [12/100] big004m >> keyword: 담보, artcPblsDt: 20211127, hits: 19
+2021-12-13 15:03:46 INFO [12/100] big004m >> keyword: 담보, artcPblsDt: 20211128, hits: 45
+2021-12-13 15:03:46 INFO [12/100] big004m >> keyword: 담보, artcPblsDt: 20211129, hits: 115
+2021-12-13 15:03:46 INFO [12/100] big004m >> keyword: 담보, artcPblsDt: 20211130, hits: 120
+2021-12-13 15:03:46 INFO [13/100] big004m >> keyword: 직구, artcPblsDt: 20211125, hits: 53
+2021-12-13 15:03:46 INFO [13/100] big004m >> keyword: 직구, artcPblsDt: 20211126, hits: 21
+2021-12-13 15:03:46 INFO [13/100] big004m >> keyword: 직구, artcPblsDt: 20211127, hits: 7
+2021-12-13 15:03:46 INFO [13/100] big004m >> keyword: 직구, artcPblsDt: 20211128, hits: 9
+2021-12-13 15:03:46 INFO [13/100] big004m >> keyword: 직구, artcPblsDt: 20211129, hits: 20
+2021-12-13 15:03:46 INFO [13/100] big004m >> keyword: 직구, artcPblsDt: 20211130, hits: 15
+2021-12-13 15:03:47 INFO [14/100] big004m >> keyword: 후쿠시마, artcPblsDt: 20211125, hits: 11
+2021-12-13 15:03:47 INFO [14/100] big004m >> keyword: 후쿠시마, artcPblsDt: 20211126, hits: 8
+2021-12-13 15:03:47 INFO [14/100] big004m >> keyword: 후쿠시마, artcPblsDt: 20211127, hits: 0
+2021-12-13 15:03:47 INFO [14/100] big004m >> keyword: 후쿠시마, artcPblsDt: 20211128, hits: 3
+2021-12-13 15:03:47 INFO [14/100] big004m >> keyword: 후쿠시마, artcPblsDt: 20211129, hits: 4
+2021-12-13 15:03:47 INFO [14/100] big004m >> keyword: 후쿠시마, artcPblsDt: 20211130, hits: 5
+2021-12-13 15:03:47 INFO [15/100] big004m >> keyword: 면세점, artcPblsDt: 20211125, hits: 30
+2021-12-13 15:03:47 INFO [15/100] big004m >> keyword: 면세점, artcPblsDt: 20211126, hits: 18
+2021-12-13 15:03:47 INFO [15/100] big004m >> keyword: 면세점, artcPblsDt: 20211127, hits: 4
+2021-12-13 15:03:47 INFO [15/100] big004m >> keyword: 면세점, artcPblsDt: 20211128, hits: 5
+2021-12-13 15:03:47 INFO [15/100] big004m >> keyword: 면세점, artcPblsDt: 20211129, hits: 12
+2021-12-13 15:03:47 INFO [15/100] big004m >> keyword: 면세점, artcPblsDt: 20211130, hits: 29
+2021-12-13 15:03:47 INFO [16/100] big004m >> keyword: 인천공항, artcPblsDt: 20211125, hits: 36
+2021-12-13 15:03:47 INFO [16/100] big004m >> keyword: 인천공항, artcPblsDt: 20211126, hits: 19
+2021-12-13 15:03:47 INFO [16/100] big004m >> keyword: 인천공항, artcPblsDt: 20211127, hits: 9
+2021-12-13 15:03:47 INFO [16/100] big004m >> keyword: 인천공항, artcPblsDt: 20211128, hits: 18
+2021-12-13 15:03:47 INFO [16/100] big004m >> keyword: 인천공항, artcPblsDt: 20211129, hits: 30
+2021-12-13 15:03:47 INFO [16/100] big004m >> keyword: 인천공항, artcPblsDt: 20211130, hits: 15
+2021-12-13 15:03:48 INFO [17/100] big004m >> keyword: 폐기물, artcPblsDt: 20211125, hits: 66
+2021-12-13 15:03:48 INFO [17/100] big004m >> keyword: 폐기물, artcPblsDt: 20211126, hits: 46
+2021-12-13 15:03:48 INFO [17/100] big004m >> keyword: 폐기물, artcPblsDt: 20211127, hits: 8
+2021-12-13 15:03:48 INFO [17/100] big004m >> keyword: 폐기물, artcPblsDt: 20211128, hits: 27
+2021-12-13 15:03:48 INFO [17/100] big004m >> keyword: 폐기물, artcPblsDt: 20211129, hits: 86
+2021-12-13 15:03:48 INFO [17/100] big004m >> keyword: 폐기물, artcPblsDt: 20211130, hits: 111
+2021-12-13 15:03:48 INFO [18/100] big004m >> keyword: 관세, artcPblsDt: 20211125, hits: 46
+2021-12-13 15:03:48 INFO [18/100] big004m >> keyword: 관세, artcPblsDt: 20211126, hits: 18
+2021-12-13 15:03:48 INFO [18/100] big004m >> keyword: 관세, artcPblsDt: 20211127, hits: 6
+2021-12-13 15:03:48 INFO [18/100] big004m >> keyword: 관세, artcPblsDt: 20211128, hits: 9
+2021-12-13 15:03:48 INFO [18/100] big004m >> keyword: 관세, artcPblsDt: 20211129, hits: 47
+2021-12-13 15:03:48 INFO [18/100] big004m >> keyword: 관세, artcPblsDt: 20211130, hits: 39
+2021-12-13 15:03:48 INFO HikariPool-1 - Shutdown initiated...
+2021-12-13 15:03:48 INFO HikariPool-1 - Shutdown completed.

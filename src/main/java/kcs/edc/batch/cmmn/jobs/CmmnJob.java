@@ -1,5 +1,6 @@
 package kcs.edc.batch.cmmn.jobs;
 
+import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.service.ApiService;
 import kcs.edc.batch.cmmn.service.FileService;
 import kcs.edc.batch.cmmn.service.SchedulerService;
@@ -42,7 +43,7 @@ public class CmmnJob implements StepExecutionListener {
     protected String startDt; // 시작일
     protected String endDt; // 종료일
 
-//    @Value("#{jobParameters[period]}")
+    //    @Value("#{jobParameters[period]}")
     protected int period = 1;
 
     protected List<Object> resultList = new ArrayList<>(); // 최종결과리스트
@@ -62,27 +63,34 @@ public class CmmnJob implements StepExecutionListener {
         this.jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
 
         this.jobId = getCurrentJobId();
-        this.jobGroupId = getCurrentJobGroupId(this.jobId);
+        this.apiService.init(this.jobId);
+        this.fileService.init(this.jobId, this.baseDt);
 
+        this.jobGroupId = getCurrentJobGroupId(this.jobId);
         this.schedulerService.init(this.jobGroupId);
+        this.period = this.schedulerService.getPeriod();
+
         if (ObjectUtils.isEmpty(this.baseDt)) {
 
             String baseLine = this.schedulerService.getBaseLine();
             this.baseDt = DateUtil.getBaseLineDate(baseLine);
-            this.period = this.schedulerService.getPeriod();
+
+        } else {
+            if(this.jobId.equals(CmmnConst.JOB_ID_UCT001M)) {
+                this.period = 1;
+            }
         }
 
         this.endDt = this.baseDt;
 
-        if(baseDt.length() == 4) {
-            this.startDt = DateUtil.getOffsetYear(this.baseDt, (this.period -1) * -1);
+        if (baseDt.length() == 4) {
+            this.startDt = DateUtil.getOffsetYear(this.baseDt, (this.period - 1) * -1);
         } else {
-            this.startDt = DateUtil.getOffsetDate(this.baseDt, (this.period -1) * -1);
+            this.startDt = DateUtil.getOffsetDate(this.baseDt, (this.period - 1) * -1);
         }
         log.debug(">> baseDt: {}, startDt: {}, endDt: {}, period: {}", this.baseDt, this.startDt, this.endDt, this.period);
 
-        this.apiService.init(this.jobId);
-        this.fileService.init(this.jobId, this.baseDt);
+
     }
 
     @Override
