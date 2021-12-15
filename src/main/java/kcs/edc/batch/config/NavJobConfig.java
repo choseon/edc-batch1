@@ -32,25 +32,14 @@ public class NavJobConfig {
     @Value("${scheduler.jobs.nav.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.jobs.nav.baseline}")
-    private String baseline;
-
     @Scheduled(cron = "${scheduler.jobs.nav.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        String baseDt = DateUtil.getBaseLineDate(this.baseline);
-        log.info("baseline: {}, baseDt: {}", this.baseline, baseDt);
-
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("baseDt", baseDt)
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters();
-
         try {
-            jobLauncher.run(navJob(), jobParameters);
+            this.jobLauncher.run(navJob(), new JobParameters());
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {
@@ -62,8 +51,10 @@ public class NavJobConfig {
         }
     }
 
+
     @Bean
     public Job navJob() {
+
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_NAV + CmmnConst.POST_FIX_JOB)
                 .start(nav003mStep())
                 .next(nav004mStep())

@@ -12,10 +12,12 @@ import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.uct.uct001m.vo.Uct001mVO;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -45,11 +47,31 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     @Value("#{stepExecutionContext[partitionList]}")
     private List<String> partitionList;
 
-    @Value("#{jobParameters[baseYear]}")
-    private String baseYear;
+    @Value("#{jobParameters[ps]}")
+    private String ps;
 
-    int totalFileCnt;
-    List<String> psList = new ArrayList<>();
+    private int totalFileCnt;
+
+
+    @SneakyThrows
+    @Override
+    public void beforeStep(StepExecution stepExecution) {
+        super.beforeStep(stepExecution);
+
+        this.baseDt = DateUtil.getCurrentDate("yyyyMM");
+        if(ObjectUtils.isEmpty(this.ps)) {
+            String baseLine = this.schedulerService.getBaseLine();
+            this.endDt = DateUtil.getBaseLineDate(baseLine).substring(0,4);
+            this.startDt = DateUtil.getOffsetYear(this.endDt, (this.period - 1) * -1);
+        } else {
+            this.period = 1;
+            this.startDt = this.ps;
+            this.endDt = this.ps;
+        }
+
+        // baseDt를 초기화하므로 fileService도 초기화 해줘야한다.
+        this.fileService.init(this.jobId, this.baseDt);
+    }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) {
@@ -69,36 +91,39 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
             List<String> rList = ObjectUtils.isEmpty(this.partitionList) ? getAreaList() : this.partitionList;
             // 파트너국가 목록
             List<String> pList = getAreaList();
+            // 년도 목록
+            List<String> psList = new ArrayList<>();
+
             // 생성되어야할 총파일갯수
             this.totalFileCnt = rList.size() * (pList.size() - 1);
 
             int resultCnt = 0;
+            Boolean success = true;
 
-            log.info("period: {}", this.period);
             for (int i = 0; i < this.period; i++) {
 
                 String ps = DateUtil.getOffsetYear(this.startDt, i);
                 log.info(">>> START CAll API >>> ps: {}", ps);
 
-                this.psList.add(ps);
+                psList.add(ps);
                 this.fileService.initFileVO();
                 this.fileService.getTempFileVO().setAppendingFilePath(ps); // temp파일 path 추가
 
                 if (this.fileService.isTempPathExsists() && this.fileService.getTempFileCnt() == this.totalFileCnt) {
                     log.info("completed: {}, fileCnt: {}", this.fileService.getTempFileVO().getFilePath(), this.fileService.getTempFileCnt());
-                    continue;
+                } else {
+                    resultCnt = callApi(rList, pList, ps);
+                    if (resultCnt == -1) {
+                        success = false;
+                        break;
+                    }
                 }
-
-//                do {
-                resultCnt = callApi(rList, pList, ps);
-//                } while (resultCnt > 0);
-
                 log.info(">>> END CALL API >>> ps: {}", ps);
             }
 
-            for (String ps : this.psList) {
+            if (!success) return null;
+            for (String ps : psList) {
 
-                // 파일 병합
                 this.fileService.initFileVO();
                 this.fileService.getTempFileVO().setAppendingFilePath(ps); // temp파일 path 추가
 
@@ -111,8 +136,9 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 // 리눅스 명령으로 1차 파일병합
                 runMergeScriptFile(ps);
 
-                // 10개로 병합된 파일을 최종 1개로 병합
-                this.fileService.mergeTempFile(ps + "_" + DateUtil.getCurrentDate("yyyyMM"));
+                // 리눅스에서 병합된 파일을 2차 파일병합
+//                this.fileService.mergeTempFile(ps + "_" + DateUtil.getCurrentDate("yyyyMM"));
+                this.fileService.mergeTempFile(ps);
             }
 
         } catch (FileNotFoundException e) {
@@ -211,9 +237,9 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                             return -1;
                         }
                         if (e.getMessage().contains("500")) {
-                            log.debug("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, ps, e.getMessage());
+                            log.debug("ps {}, r {}, p {},  >> {}", ps, r, p, e.getMessage());
                         } else {
-                            log.info("thread #{}, r {}, p {}, ps {} >> {}", this.threadNum, r, p, ps, e.getMessage());
+                            log.info("ps {}, r {}, p {},  >> {}", ps, r, p, e.getMessage());
                             if (exceptionCnt++ >= 20) {
                                 resultCnt++;
                                 break;

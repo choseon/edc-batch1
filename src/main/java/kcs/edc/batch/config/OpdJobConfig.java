@@ -37,30 +37,14 @@ public class OpdJobConfig {
     @Value("${scheduler.jobs.opd.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.jobs.opd.baseline}")
-    private String baseline;
-
-    /**
-     * 금융감독원 OpenDart Job launcher
-     *
-     * @throws Exception
-     */
     @Scheduled(cron = "${scheduler.jobs.opd.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        String baseDt = DateUtil.getBaseLineDate(this.baseline);
-        log.info("baseline: {}, baseDt: {}", this.baseline, baseDt);
-
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("baseDt", baseDt)
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters();
-
         try {
-            jobLauncher.run(opdJob(), jobParameters);
+            this.jobLauncher.run(opdJob(), new JobParameters());
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {

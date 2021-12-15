@@ -4,7 +4,7 @@
 spring:
   profiles:
     activate:
-      on-profile: test
+      on-profile: local
   batch:
     job:
       names: ${job.name:NONE}
@@ -38,51 +38,50 @@ file:
 scheduler:
   jobs:
     biz:
-      isActive: false
-      cron: "0 45 15 * * ?"
-      cycle: DAILY
+      isActive: true
+      cron: "0 04 11 * * ?"
+      cycle: daily
       baseline: D-1
       period: 1
     big:
       isActive: true
-      cron: "0 40 15 * * ?"
-      cycle: DAILY
+      cron: "0 14 17 * * ?"
+      cycle: daily
       baseline: D-1
-      period: 7
+      period: 2
     som:
       isActive: false
       cron: "30 2 14 * * ?"
-      cycle: DAILY
+      cycle: daily
       baseline: D-1
       period: 1
     saf:
       isActive: false
-      cron: "* 0 07 * * ?"
-      cycle: DAILY
+      cron: "0 0 07 * * ?"
+      cycle: daily
       baseline: D-1
       period: 1
     nav:
       isActive: false
       cron: "0 10 12 * * ?"
-      cycle: DAILY
+      cycle: daily
       baseline: D-4
       period: 1
     kot:
       isActive: false
       cron: "0 10 12 * * ?"
-      cycle: DAILY
+      cycle: daily
       baseline: D-1
       period: 7
     opd:
       isActive: false
       cron: "0 10 12 * * ?"
-      cycle: DAILY
+      cycle: daily
       baseline: D-1
       period: 1
     uct:
       isActive: true
-      #    cron: "0 0 07-23 1-14 * ?"
-      cron: "0-30 54 17 * * ?"
-      cycle: MONTHLY
+      cron: "0 0 05 1 * ?"
+      cycle: monthly
       baseline: Y-1
       period: 2

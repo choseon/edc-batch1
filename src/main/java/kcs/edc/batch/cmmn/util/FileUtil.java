@@ -133,6 +133,12 @@ public class FileUtil {
         }
     }
 
+    /**
+     * 파일 갯수를 리턴한다.
+     *
+     * @param filePath 파일경로
+     * @return
+     */
     public static int getFileCnt(String filePath) {
         int resultCnt = 0;
         File dir = new File(filePath);

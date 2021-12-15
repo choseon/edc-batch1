@@ -36,30 +36,14 @@ public class SafJobConfig {
     @Value("${scheduler.jobs.saf.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.jobs.saf.baseline}")
-    private String baseline;
-
-    /**
-     * 국가기술표준원 제품안전정보센터 데이터수집 Batch Launcher 설정
-     *
-     * @throws Exception
-     */
     @Scheduled(cron = "${scheduler.jobs.saf.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        String baseDt = DateUtil.getBaseLineDate(this.baseline);
-        log.info("baseline: {}, baseDt: {}", this.baseline, baseDt);
-
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("baseDt", baseDt)
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters();
-
         try {
-            jobLauncher.run(safJob(), jobParameters);
+            this.jobLauncher.run(safJob(), new JobParameters());
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {

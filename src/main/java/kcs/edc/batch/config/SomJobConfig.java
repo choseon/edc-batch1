@@ -52,28 +52,14 @@ public class SomJobConfig {
     @Value("${scheduler.jobs.som.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.jobs.som.baseline}")
-    private String baseline;
-
-    /**
-     * 바이브컴퍼티 썸트랜드 데이터수집 Batch Launcher 설정
-     */
-    @Scheduled(cron = "${scheduler.jobs.som.cron}")
+    //    @Scheduled(cron = "${scheduler.jobs.som.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        String baseDt = DateUtil.getBaseLineDate(this.baseline);
-        log.info("baseline: {}, baseDt: {}", this.baseline, baseDt);
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("baseDt", baseDt)
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters();
-
         try {
-            jobLauncher.run(somJob(), jobParameters);
-
+            this.jobLauncher.run(somJob(), new JobParameters());
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {
@@ -92,6 +78,9 @@ public class SomJobConfig {
      */
     @Bean
     public Job somJob() {
+
+        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
+        if (!this.isActive) return null;
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_SOM + CmmnConst.POST_FIX_JOB)
                 .start(som001mFlow())

@@ -76,8 +76,8 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
                     item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                     item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                     this.resultList.add(item);
-                    log.info("[{}/{}] {} >> newsCluster.size: {}",
-                            this.itemCnt++, topics.size(), this.jobId, newsCluster.size());
+                    log.info("[{}/{}] {} >> date: {}, newsCluster.size: {}",
+                            this.itemCnt++, topics.size() * this.period, date, this.jobId, newsCluster.size());
                 }
             }
 

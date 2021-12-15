@@ -1,14 +1,14 @@
 package kcs.edc.batch.config;
 
-import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
 import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.cmmn.util.DateUtil;
-import kcs.edc.batch.jobs.uct.uct001m.Uct001mMergeTasklet;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mPartitioner;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -24,9 +24,6 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,9 +50,6 @@ public class UctJobConfig {
     @Value("${scheduler.jobs.uct.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.jobs.uct.baseline}")
-    private String baseline;
-
     /**
      * UN Comtrade Batch launcher (월배치)
      * 매월 1일 전년도, 전전년도 2년치 데이터 수집하여
@@ -67,54 +61,8 @@ public class UctJobConfig {
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        String baseDt = DateUtil.getCurrentDate("yyyyMM");
-
-//        String baseYear = null;
-        int day = Integer.parseInt(DateUtil.getCurrentDate("dd"));
-//        if (day < 7) {
-//            baseYear = DateUtil.getBaseLineDate("Y-1");
-//
-//        } else {
-//            baseYear = DateUtil.getBaseLineDate("Y-2");
-//        }
-//        if(day > 7) {
-//            this.baseline = "Y-2";
-//        }
-        this.baseline = (day < 7) ? "Y-1" : "Y-2";
-        String baseYear = DateUtil.getBaseLineDate(this.baseline);
-
-        log.info(">>>>> baseline: {}, baseDt: {}, baseYear: {}", this.baseline, baseDt, baseYear);
-
-
-
-
-
-        // 수집기준일 : 월배치 이므로 수집기준일은 금월로 설정한다
-//        String baseDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
-
-        // 수집기준년도 : 전년도, 전전년도 2년치
-//        String baseYear = null;
-//        String day = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd"));
-//        if(day.equals("1")) {
-//            baseYear = LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy"));
-//        } else {
-//            baseYear = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
-//        }
-//        int day = Integer.getInteger(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd")));
-//        if (day > 0 || day < 7) {
-//            baseYear = LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy"));
-//        } else {
-//            baseYear = LocalDateTime.now().minusYears(2).format(DateTimeFormatter.ofPattern("yyyy"));
-//        }
-
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("baseDt", baseDt)
-                .addString("baseYear", baseYear)
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters();
-
         try {
-            jobLauncher.run(uctJob(), jobParameters);
+            this.jobLauncher.run(uctJob(), new JobParameters());
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {
@@ -138,20 +86,7 @@ public class UctJobConfig {
     public Job uctJob() {
 
         return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_JOB)
-//                .start(uctFileCleanStep(null)) // temp 파일 삭제
                 .start(uct001mStep())
-//                .start(uct001mPartitionStep(null))
-//                .next(uctFileMergeStep(null, null))
-//                .start(uct001mStep())
-//                .on("COMPLETED")
-//                .to(uctFileMergeStep(null, null))
-                .on("*")
-                .end()
-//                .from(uct001mPartitionStep(null))
-//                .on("*")
-//                .to(uctFileMergeStep(null))
-//                .next(uctFileMergeStep(null, null)) // temp 파일 병합
-                .end()
                 .build();
     }
 
@@ -207,77 +142,11 @@ public class UctJobConfig {
     @StepScope
     public Uct001mTasklet uct001mTasklet(
             @Value("#{jobParameters[baseDt]}") String baseDt,
-            @Value("#{jobParameters[baseYear]}") String baseYear,
+            @Value("#{jobParameters[ps]}") String ps,
             @Value("#{stepExecutionContext[threadNum]}") String threadNum,
             @Value("#{stepExecutionContext[partitionList]}") List<String> partitionList) {
 
         return new Uct001mTasklet();
-    }
-
-    /**************************************************************************************************
-     * 공통 Step
-     **************************************************************************************************/
-
-    /**
-     * MultiThread로 생성된 파일을 병합하기 위한 FileMergeStep 설정
-     *
-     * @param jobId
-     * @return
-     */
-    @Bean
-    @JobScope
-    public Step uctFileMergeStep(
-            @Value("#{jobExecutionContext[jobId]}") String jobId,
-            @Value("#{jobExecutionContext[baseYearList]}") List<String> baseYearList) {
-
-        return stepBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_FILE_MERGE_STEP)
-                .tasklet(uctFileMergeTasklet(null, null))
-                .build();
-    }
-
-    /**
-     * MultiThread로 생성된 파일을 병합하기 위한 FileMergeTasklet 설정
-     *
-     * @param jobId
-     * @return
-     */
-    @Bean
-    @StepScope
-    public Uct001mMergeTasklet uctFileMergeTasklet(
-            @Value("#{jobExecutionContext[jobId]}") String jobId,
-            @Value("#{jobExecutionContext[baseYearList]}") List<String> baseYearList) {
-//        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE);
-        return new Uct001mMergeTasklet();
-    }
-
-    /**
-     * Temp폴더 삭제를 위한 FileCleanStep 설정
-     *
-     * @param jobId
-     * @return
-     */
-    @Bean
-    @JobScope
-    public Step uctFileCleanStep(@Value("#{jobExecutionContext[jobId]}") String jobId) {
-
-        return stepBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_FILE_CLEAN_STEP)
-                .tasklet(uctFileCleanTasklet(null))
-                .build();
-    }
-
-    /**
-     * Temp폴더 삭제를 위한 FileCleanTasklet 설정
-     *
-     * @param jobId
-     * @return
-     */
-    @Bean
-    @StepScope
-    public CmmnFileTasklet uctFileCleanTasklet(@Value("#{jobExecutionContext[jobId]}") String jobId) {
-
-        ArrayList<String> list = new ArrayList<>();
-        list.add(CmmnConst.JOB_ID_UCT001M);
-        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN, list);
     }
 
     @Bean

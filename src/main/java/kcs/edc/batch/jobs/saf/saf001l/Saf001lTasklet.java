@@ -91,7 +91,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
         // HT_SAF002L 연관인증번호 목록 파일생성
         try {
             this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF002L);
-            this.fileService.setStartTime(DateUtil.getCurrentTime());
+//            this.fileService.setStartTime(DateUtil.getCurrentTime());
             List<Saf001lVO.SimilarCertItem> similarCertificationList = getSimilarCertificationList(resultList);
             this.fileService.makeFile(CmmnConst.JOB_ID_SAF002L, similarCertificationList);
         } catch (FileNotFoundException e) {
@@ -103,7 +103,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
         // HT_SAF003L 제조공장목록 파일생성
         try {
             this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF003L);
-            this.fileService.setStartTime(DateUtil.getCurrentTime());
+//            this.fileService.setStartTime(DateUtil.getCurrentTime());
             List<Saf001lVO.FatoryItem> factoryList = getFactoryList(resultList);
             this.fileService.makeFile(CmmnConst.JOB_ID_SAF003L, factoryList);
         } catch (FileNotFoundException e) {
@@ -115,7 +115,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
         // HT_SAF004L 이미지목록 파일생성
         try {
             this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF004L);
-            this.fileService.setStartTime(DateUtil.getCurrentTime());
+//            this.fileService.setStartTime(DateUtil.getCurrentTime());
             List<Saf001lVO.CertificationImageUrlItem> certificationImageUrlList = getCertificationImageUrlList(resultList);
             this.fileService.makeFile(CmmnConst.JOB_ID_SAF004L, certificationImageUrlList);
         } catch (FileNotFoundException e) {

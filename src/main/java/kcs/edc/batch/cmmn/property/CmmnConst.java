@@ -78,6 +78,7 @@ public class CmmnConst {
     public static final String RESOURCE_FILE_NAME_UCT_AREA = "uct_area.txt";
     public static final String RESOURCE_FILE_NAME_KCS_KEYWORD = "big_kcs_keyword.txt";
     public static final String RESOURCE_FILE_NAME_UCT_SCRIPT = "uct_file_merge_script.sh";
+    public static final String RESOURCE_FILE_NAME_KOT_SCRIPT = "kot_img_download.sh";
 
     /***********************************************************************************
      * FILE ACTION TYPE
@@ -85,4 +86,13 @@ public class CmmnConst {
     public static final String CMMN_FILE_ACTION_TYPE_MERGE = "FILE_MERGE";
     public static final String CMMN_FILE_ACTION_TYPE_CLEAN = "FILE_CLEAN";
 
+    /***********************************************************************************
+     * SCHEDULER CYCLE
+     ***********************************************************************************/
+    public static final String SCHEDULER_CYCLE_YEARLY = "yearly";
+    public static final String SCHEDULER_CYCLE_MONTHLY = "monthly";
+    public static final String SCHEDULER_CYCLE_WEEKLY = "weekly";
+    public static final String SCHEDULER_CYCLE_DAILY = "daily";
+
 }
+

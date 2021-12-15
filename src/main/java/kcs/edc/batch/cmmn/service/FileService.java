@@ -43,9 +43,24 @@ public class FileService {
      */
     public String startTime;
 
+    /**
+     * 데이터파일 VO
+     */
     private FileVO dataFileVO;
+
+    /**
+     * 임시파일 VO
+     */
     private FileVO tempFileVO;
+
+    /**
+     * 로그파일 VO
+     */
     private FileVO logFileVO;
+
+    /**
+     * 첨부파일 VO
+     */
     private FileVO attachFileVO;
 
     /**
@@ -84,12 +99,7 @@ public class FileService {
         // 데이터 디렉토리명
         String dataDirName = dataFilePrefixName + jobId;
         // 데이터 파일명
-        String dataFileName = null;
-        if(this.jobId.equals(CmmnConst.JOB_ID_UCT001M)) {
-            dataFileName = dataDirName;
-        } else {
-            dataFileName = dataDirName + "_" + this.baseDt;
-        }
+        String dataFileName = dataDirName + "_" + this.baseDt;
         this.dataFileVO = new FileVO(fileRootPath, dataDirName, dataFileName, fileExtension);
 
         // 로그 디렉토리명
@@ -113,7 +123,7 @@ public class FileService {
     }
 
     /**
-     * 리소스 경로
+     * 리소스 경로를 리턴
      *
      * @return
      */
@@ -122,7 +132,7 @@ public class FileService {
     }
 
     /**
-     * 첨부파일 경로
+     * 첨부파일 경로 리턴
      *
      * @return
      */
@@ -131,7 +141,7 @@ public class FileService {
     }
 
     /**
-     * 현재 jobId의 임시파일 경로
+     * 현재 jobId의 임시파일 경로 리턴
      *
      * @return
      */
@@ -140,7 +150,7 @@ public class FileService {
     }
 
     /**
-     * 파라미터로 넘어온 jobId의 임시파일 경로
+     * 파라미터로 넘어온 jobId의 임시파일 경로 리턴
      *
      * @param jobId
      * @return
@@ -151,8 +161,17 @@ public class FileService {
         return this.tempFileVO.getFilePath();
     }
 
+    /**
+     * tempFileVO 리턴
+     *
+     * @return
+     */
+    public FileVO getTempFileVO() {
+        return this.tempFileVO;
+    }
+
     /**************************************************************************************************
-     * 파일생성 관련
+     * 데이터 파일 관련
      **************************************************************************************************/
 
     /**
@@ -198,8 +217,10 @@ public class FileService {
     public <T> void makeFile(String jobId, List<T> list, Boolean append) throws FileNotFoundException, IllegalAccessException {
 
         initFileVO(jobId);
+        log.info("----------------------------------------------------------------------------");
         makeDataFile(list, this.dataFileVO, append);
         makeLogFile(list, this.logFileVO, this.dataFileVO);
+        log.info("----------------------------------------------------------------------------");
     }
 
     /**
@@ -213,13 +234,39 @@ public class FileService {
     private <T> void makeDataFile(List<T> list, FileVO fileVO, Boolean append) throws FileNotFoundException, IllegalAccessException {
 
         if (list.size() == 0) {
-            log.info("makeDataFile: listCnt is 0");
+            log.info("makeDataFile: {} listCnt is 0", this.jobId);
         } else {
             FileUtil.makeTsvFile(fileVO.getFilePath(), fileVO.getFileFullName(), list, append);
             log.info("makeDataFile: {}, listCnt: {}", fileVO.getFullFilePath(), list.size());
         }
     }
 
+    /**************************************************************************************************
+     * 로그 파일 관련
+     **************************************************************************************************/
+
+    /**
+     * 성공 로그파일 생성
+     *
+     * @param list
+     * @param logFileVO
+     * @param <T>
+     */
+    private <T> void makeLogFile(List<T> list, FileVO logFileVO, FileVO dataFileVO) throws FileNotFoundException, IllegalAccessException {
+        makeLogFile(list.size(), logFileVO, dataFileVO);
+
+    }
+
+    /**
+     * 성공 로그파일 생성
+     *
+     * @param listCnt
+     * @param logFileVO
+     * @param dataFileVO
+     * @param <T>
+     * @throws FileNotFoundException
+     * @throws IllegalAccessException
+     */
     private <T> void makeLogFile(int listCnt, FileVO logFileVO, FileVO dataFileVO) throws FileNotFoundException, IllegalAccessException {
         Log001mVO log001mVO = new Log001mVO();
         log001mVO.setParamYmd(DateUtil.getCurrentDate()); // 작업일자
@@ -246,23 +293,11 @@ public class FileService {
     }
 
     /**
-     * 성공 로그파일 생성
-     *
-     * @param list
-     * @param logFileVO
-     * @param <T>
-     */
-    private <T> void makeLogFile(List<T> list, FileVO logFileVO, FileVO dataFileVO) throws FileNotFoundException, IllegalAccessException {
-        makeLogFile(list.size(), logFileVO, dataFileVO);
-
-    }
-
-    /**
      * 실패 로그파일 생성
      *
      * @param msg
      */
-    public void makeLogFile(String msg) throws FileNotFoundException, IllegalAccessException {
+    public void makeFailLogFile(String msg) throws FileNotFoundException, IllegalAccessException {
 
         Log001mVO log001mVO = new Log001mVO();
         log001mVO.setParamYmd(DateUtil.getCurrentDate()); // 작업일자
@@ -280,30 +315,36 @@ public class FileService {
 
         // 로그 파일 생성
         FileUtil.makeTsvFile(this.logFileVO.getFilePath(), this.logFileVO.getFileFullName(), arrayList);
-        log.info("makeLogFile: {}", this.logFileVO.getFullFilePath());
+        log.info("makeFailLogFile: {}", this.logFileVO.getFullFilePath());
 
+    }
+
+    /**************************************************************************************************
+     * 임시파일 관련
+     **************************************************************************************************/
+
+    /**
+     * 임시파일 생성
+     *
+     * @param list              파일로 생성할 리스트 목록
+     * @param appendingFileName 기본파일명에 추가될 임시파일명
+     * @param <T>
+     */
+    public <T> void makeTempFile(List<T> list, String appendingFileName) throws FileNotFoundException, IllegalAccessException {
+        makeTempFile(list, appendingFileName, false);
     }
 
     /**
      * 임시파일 생성
      *
-     * @param list
-     * @param appendingFileName
+     * @param list              파일로 생성할 리스트 목록
+     * @param appendingFileName 기본파일명에 추가될 임시파일명
+     * @param isForce           리스트가 0건인 경우 파일 생성 여부 설정
      * @param <T>
+     * @throws FileNotFoundException
+     * @throws IllegalAccessException
      */
-    public <T> void makeTempFile(List<T> list, String appendingFileName) throws FileNotFoundException, IllegalAccessException {
-        makeTempFile(this.jobId, list, appendingFileName, false);
-    }
-
-    public <T> void makeTempFile(List<T> list, String appendingFileName, Boolean isForce) throws FileNotFoundException, IllegalAccessException {
-        makeTempFile(this.jobId, list, appendingFileName, isForce);
-    }
-
-    public <T> void makeTempFile(String jobId, List<T> list, String appendingFileName) throws FileNotFoundException, IllegalAccessException {
-        makeTempFile(jobId, list, appendingFileName, false);
-    }
-
-    public <T> void makeTempFile(String jobId, List<T> list, String appendingFileName, Boolean isForce)
+    public <T> void makeTempFile(List<T> list, String appendingFileName, Boolean isForce)
             throws FileNotFoundException, IllegalAccessException {
 
         if (!isForce && list.size() == 0) return;
@@ -317,7 +358,6 @@ public class FileService {
     }
 
 
-
     /**
      * 임시파일 병합
      */
@@ -325,25 +365,34 @@ public class FileService {
         mergeTempFile(null);
     }
 
+    /**
+     * 임시파일 병합
+     *
+     * @param appendingFileName 기본파일명에 추가되는 파일명
+     * @throws IOException
+     * @throws IllegalAccessException
+     */
     public void mergeTempFile(String appendingFileName) throws IOException, IllegalAccessException {
 
-//        initFileVO(jobId);
         if (!ObjectUtils.isEmpty(appendingFileName)) {
             this.dataFileVO.setAppendingFileName(appendingFileName);
         }
 
         // temp 폴더 존재여부 확인
         if (!new File(this.tempFileVO.getFilePath()).exists()) {
-            log.info("tempPath: {} is not exists", this.tempFileVO.getFilePath());
-        } else {
-            // 임시파일 병합하여 데이터파일 생성
-            int listCnt = FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileFullName());
-            log.info("makeDataFile: {}, listCnt: {} ", this.dataFileVO.getFullFilePath(), listCnt);
-            // 로그파일 생성
-            makeLogFile(listCnt, this.logFileVO, this.dataFileVO);
-            // 임시파일 삭제
-            cleanTempFile();
+            log.info("mergeTempPath: {} not exists", this.tempFileVO.getFilePath());
+            return;
         }
+
+        log.info("----------------------------------------------------------------------------");
+        // 임시파일 병합하여 데이터파일 생성
+        int listCnt = FileUtil.mergeFile(this.tempFileVO.getFilePath(), this.dataFileVO.getFilePath(), this.dataFileVO.getFileFullName());
+        log.info("makeDataFile: {}, listCnt: {} ", this.dataFileVO.getFullFilePath(), listCnt);
+        // 로그파일 생성
+        makeLogFile(listCnt, this.logFileVO, this.dataFileVO);
+        log.info("----------------------------------------------------------------------------");
+        // 임시파일 삭제
+        cleanTempFile();
     }
 
     /**
@@ -359,17 +408,10 @@ public class FileService {
         return fileCnt;
     }
 
-    public int getFleCnt(String filePath) {
-        int fileCnt = FileUtil.getFileCnt(filePath);
-        return fileCnt;
-    }
-
     /**
      * 임시파일 제거
-     *
      */
     public void cleanTempFile() {
-
         FileUtil.deleteFile(this.tempFileVO.getFilePath());
     }
 
@@ -387,21 +429,13 @@ public class FileService {
         return file.exists();
     }
 
+    /**
+     * 임시파일경로 존재여부 체크
+     *
+     * @return
+     */
     public boolean isTempPathExsists() {
         String filePath = this.tempFileVO.getFilePath();
         return new File(filePath).exists();
     }
-
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public FileVO getTempFileVO() {
-        return this.tempFileVO;
-    }
-
-    public FileVO getDataFileVO() {
-        return this.dataFileVO;
-    }
-
 }

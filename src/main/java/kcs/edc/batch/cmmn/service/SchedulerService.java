@@ -19,18 +19,6 @@ public class SchedulerService {
         log.info("SchedulerService init() >> jobGroupId: {}", jobGroupId);
     }
 
-    public String getBaseFormat() {
-        String cycle = getBaseLine().substring(0, 1);
-        if(cycle.equals("D")) {
-            return "yyyMMdd";
-        } else if(cycle.equals("W")) {
-            return "yyyyMM";
-        } else if(cycle.equals("Y")) {
-            return "yyyy";
-        }
-        return null;
-    }
-
     public String getBaseLine() {
         return this.schedulerProp.getBaseline();
     }

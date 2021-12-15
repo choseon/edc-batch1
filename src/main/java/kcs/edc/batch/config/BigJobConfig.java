@@ -3,7 +3,6 @@ package kcs.edc.batch.config;
 
 import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
 import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.issue.Big002mTasklet;
 import kcs.edc.batch.jobs.big.news.Big001mTasklet;
 import kcs.edc.batch.jobs.big.ranking.Big005mTasklet;
@@ -11,7 +10,10 @@ import kcs.edc.batch.jobs.big.timeline.Big004mTasklet;
 import kcs.edc.batch.jobs.big.wordcloud.Big003mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -45,36 +47,22 @@ public class BigJobConfig {
     @Value("${scheduler.jobs.big.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.jobs.big.baseline}")
-    private String baseline;
-
-    /**
-     * 한국언론진흥재단 빅카인드 데이터수집 Batch launcher 설정
-     */
     @Scheduled(cron = "${scheduler.jobs.big.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        String baseDt = DateUtil.getBaseLineDate(this.baseline);
-        log.info(">>>>> baseline: {}, baseDt: {}", this.baseline, baseDt);
-
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("baseDt", baseDt)
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters();
-
         try {
-            jobLauncher.run(bigJob(), jobParameters);
+            this.jobLauncher.run(bigJob(), new JobParameters());
         } catch (JobExecutionAlreadyRunningException e) {
-            log.error(e.getMessage());
+            log.info(e.getMessage());
         } catch (JobRestartException e) {
-            log.error(e.getMessage());
+            log.info(e.getMessage());
         } catch (JobInstanceAlreadyCompleteException e) {
-            log.error(e.getMessage());
+            log.info(e.getMessage());
         } catch (JobParametersInvalidException e) {
-            log.error(e.getMessage());
+            log.info(e.getMessage());
         }
     }
 
@@ -85,9 +73,6 @@ public class BigJobConfig {
      */
     @Bean
     public Job bigJob() {
-
-        log.info(">>>>> {} start..... isActive: {}", "bigJob", this.isActive);
-        if (!this.isActive) return null;
 
         // News TimeLine(뉴스타임라인) -> Word Cloud(워드클라우드) -> News Search(뉴스조회)
         Flow bigFlow1 = new FlowBuilder<Flow>("bigFlow1")

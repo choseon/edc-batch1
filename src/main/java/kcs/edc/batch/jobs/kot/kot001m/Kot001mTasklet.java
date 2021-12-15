@@ -16,6 +16,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -44,11 +45,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
     private String scriptPath; // script 경로
 
-    @Value("${kot.scriptFileName}")
-    private String scriptFileName; // script 파일명
-
-    @Value("${kot.period}")
-    private int period; // 수집기간
+    private String scriptFileName; // script file name
 
     @Value("${kot.allowUrls}")
     private List<String> allowUrls; // 이미지다운로드시 방화벽 허용된 url 목록
@@ -69,6 +66,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
         super.beforeStep(stepExecution);
 
         this.scriptPath = this.fileService.getResourcePath();
+        this.scriptFileName = CmmnConst.RESOURCE_FILE_NAME_KOT_SCRIPT;
         this.attachedFilePath = this.fileService.getAttachedFilePath();
     }
 
@@ -337,6 +335,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
 
         // 스크립트 소스 생성
         String source = makeScriptSource();
+        if(ObjectUtils.isEmpty(source)) return;
 
         // 스크립트 파일 생성
         String filePath = this.scriptPath + this.scriptFileName;

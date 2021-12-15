@@ -76,7 +76,8 @@ public class Big005mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
             // 파일생성
 //            this.fileService.makeFile(CmmnConst.JOB_ID_BIG004M, resultList, true);
-            this.fileService.makeTempFile(CmmnConst.JOB_ID_BIG004M, this.resultList, DateUtil.getCurrentTime2());
+            this.fileService.initFileVO(CmmnConst.JOB_ID_BIG004M);
+            this.fileService.makeTempFile(this.resultList, DateUtil.getCurrentTime2());
 
         } catch (JsonProcessingException e) {
             this.makeErrorLog(e.getMessage());

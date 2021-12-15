@@ -31,25 +31,14 @@ public class KotJobConfig {
     @Value("${scheduler.jobs.kot.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.jobs.kot.baseline}")
-    private String baseline;
-
     @Scheduled(cron = "${scheduler.jobs.kot.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        String baseDt = DateUtil.getBaseLineDate(this.baseline);
-        log.info("baseline: {}, baseDt: {}", this.baseline, baseDt);
-
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("baseDt", baseDt)
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters();
-
         try {
-            jobLauncher.run(kotJob(), jobParameters);
+            this.jobLauncher.run(kotJob(), new JobParameters());
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {

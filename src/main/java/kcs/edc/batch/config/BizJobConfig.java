@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 /**
  * 중소기업연구원 중소벤처기업부 기업마당 데이터수집 Batch Configuration
@@ -33,30 +34,14 @@ public class BizJobConfig {
     @Value("${scheduler.jobs.biz.isActive}")
     private Boolean isActive;
 
-    @Value("${scheduler.jobs.biz.baseline}")
-    private String baseline;
-
-    /**
-     * 중소기업연구원 중소벤처기업부 기업마당 데이터수집 Batch Launcher 설정
-     *
-     * @throws Exception
-     */
     @Scheduled(cron = "${scheduler.jobs.biz.cron}")
     public void launcher() {
 
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
-        String baseDt = DateUtil.getBaseLineDate(this.baseline);
-        log.info(">>>>> baseline: {}, baseDt: {}", this.baseline, baseDt);
-
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("baseDt", baseDt)
-                .addLong("time", System.currentTimeMillis())
-                .toJobParameters();
-
         try {
-            jobLauncher.run(bizJob(), jobParameters);
+            this.jobLauncher.run(bizJob(), new JobParameters());
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {

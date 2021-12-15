@@ -8,14 +8,10 @@ import kcs.edc.batch.cmmn.util.DateUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
@@ -43,8 +39,7 @@ public class CmmnJob implements StepExecutionListener {
     protected String startDt; // 시작일
     protected String endDt; // 종료일
 
-    //    @Value("#{jobParameters[period]}")
-    protected int period = 1;
+    protected int period; // 수집기간
 
     protected List<Object> resultList = new ArrayList<>(); // 최종결과리스트
     protected ExecutionContext jobExecutionContext;
@@ -63,33 +58,24 @@ public class CmmnJob implements StepExecutionListener {
         this.jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
 
         this.jobId = getCurrentJobId();
-        this.apiService.init(this.jobId);
-        this.fileService.init(this.jobId, this.baseDt);
-
         this.jobGroupId = getCurrentJobGroupId(this.jobId);
+
         this.schedulerService.init(this.jobGroupId);
         this.period = this.schedulerService.getPeriod();
 
-        if (ObjectUtils.isEmpty(this.baseDt)) {
-
-            String baseLine = this.schedulerService.getBaseLine();
-            this.baseDt = DateUtil.getBaseLineDate(baseLine);
-
-        } else {
-            if(this.jobId.equals(CmmnConst.JOB_ID_UCT001M)) {
-                this.period = 1;
+        // baseDt, startDt, endDt를 셋팅한다.
+        // comtrade는 월배치로 패턴이 달라 해당 Tasklet에서 분리하여 셋팅한다.
+        if(this.schedulerService.getCycle().equals(CmmnConst.SCHEDULER_CYCLE_DAILY)) {
+            if (ObjectUtils.isEmpty(this.baseDt)) {
+                String baseLine = this.schedulerService.getBaseLine();
+                this.baseDt = DateUtil.getBaseLineDate(baseLine);
             }
+            this.endDt = this.baseDt;
+            this.startDt = DateUtil.getOffsetDate(this.endDt, (this.period - 1) * -1);
         }
 
-        this.endDt = this.baseDt;
-
-        if (baseDt.length() == 4) {
-            this.startDt = DateUtil.getOffsetYear(this.baseDt, (this.period - 1) * -1);
-        } else {
-            this.startDt = DateUtil.getOffsetDate(this.baseDt, (this.period - 1) * -1);
-        }
-        log.debug(">> baseDt: {}, startDt: {}, endDt: {}, period: {}", this.baseDt, this.startDt, this.endDt, this.period);
-
+        this.apiService.init(this.jobId);
+        this.fileService.init(this.jobId, this.baseDt);
 
     }
 
@@ -149,13 +135,11 @@ public class CmmnJob implements StepExecutionListener {
      * 배치 종료로그 출력
      */
     public void writeCmmnLogEnd() {
-        writeCmmnLogEnd(getCurrentJobId());
+        writeCmmnLogEnd(this.jobId);
     }
 
     public void writeCmmnLogEnd(String jobId) {
-//        log.info("##########################################################################");
         log.info("END JOB :::: {}", jobId);
-//        log.info("##########################################################################");
     }
 
     /**
@@ -180,16 +164,29 @@ public class CmmnJob implements StepExecutionListener {
         log.info("##########################################################################");
     }
 
+    /**
+     * 에러로그 생성
+     *
+     * @param msg 에러메시지
+     */
     public void makeErrorLog(String msg) {
         makeErrorLog(this.jobId, msg);
     }
 
+    /**
+     * 에로로그 생성
+     *
+     * @param jobId
+     * @param msg   에러메시지
+     */
     public void makeErrorLog(String jobId, String msg) {
 
         try {
+            log.info("----------------------------------------------------------------------------");
             log.info(msg);
             this.fileService.initFileVO(jobId);
-            this.fileService.makeLogFile(msg);
+            this.fileService.makeFailLogFile(msg);
+            log.info("----------------------------------------------------------------------------");
         } catch (FileNotFoundException e) {
             log.info(e.getMessage());
         } catch (IllegalAccessException e) {

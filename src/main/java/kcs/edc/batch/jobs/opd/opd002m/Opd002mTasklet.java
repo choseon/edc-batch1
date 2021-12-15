@@ -38,9 +38,6 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
     @Value("${opd.callApiDelayTime}")
     private int callApiDelayTime;
 
-    @Value("${opd.callApiViewerDownDelayTime}")
-    private int callApiViewerDownDelayTime;
-
     @Value("${opd.documentUrl}")
     private String documentUrl;
 
