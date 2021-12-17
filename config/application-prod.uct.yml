@@ -39,43 +39,43 @@ scheduler:
   biz:
     isActive: false
     cron: "0 45 15 * * ?"
-    cycle: DAILY
+    cycle: daily
     baseline: D-1
     period: 1
   big:
     isActive: true
     cron: "0 40 15 * * ?"
-    cycle: DAILY
+    cycle: daily
     baseline: D-1
     period: 2
   som:
     isActive: false
     cron: "30 2 14 * * ?"
-    cycle: DAILY
+    cycle: daily
     baseline: D-1
     period: 1
   saf:
     isActive: false
     cron: "* 0 07 * * ?"
-    cycle: DAILY
+    cycle: daily
     baseline: D-1
     period: 1
   nav:
     isActive: false
     cron: "0 10 12 * * ?"
-    cycle: DAILY
+    cycle: daily
     baseline: D-4
     period: 1
   kot:
     isActive: false
     cron: "0 10 12 * * ?"
-    cycle: DAILY
+    cycle: daily
     baseline: D-1
     period: 7
   opd:
     isActive: false
     cron: "0 10 12 * * ?"
-    cycle: DAILY
+    cycle: daily
     baseline: D-1
     period: 1
   uct:

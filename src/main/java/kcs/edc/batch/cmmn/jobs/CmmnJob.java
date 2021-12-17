@@ -70,8 +70,15 @@ public class CmmnJob implements StepExecutionListener {
                 String baseLine = this.schedulerService.getBaseLine();
                 this.baseDt = DateUtil.getBaseLineDate(baseLine);
             }
-            this.endDt = this.baseDt;
-            this.startDt = DateUtil.getOffsetDate(this.endDt, (this.period - 1) * -1);
+
+            this.startDt = DateUtil.getOffsetDate(this.baseDt, (this.period - 1) * -1);
+
+            if(this.jobGroupId.equals(CmmnConst.JOB_GRP_ID_BIG)) {
+                // BigKinds의 경우 endDt가 baseDt + 1로 파라미터 넘겨줘야함.
+                this.endDt = DateUtil.getOffsetDate(this.baseDt, 1);
+            } else {
+                this.endDt = this.baseDt;
+            }
         }
 
         this.apiService.init(this.jobId);

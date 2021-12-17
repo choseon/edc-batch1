@@ -104,4 +104,7 @@ public class Opd001mVO {
      */
     private String cletFileCrtnDt;
 
+    @JsonProperty
+    private String corp_code; // 정식회사명칭
+
 }

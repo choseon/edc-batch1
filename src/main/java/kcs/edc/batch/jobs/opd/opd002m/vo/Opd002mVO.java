@@ -112,6 +112,9 @@ public class Opd002mVO {
          * CLET_FILE_CRTN_DT 수집파일생성일자
          */
         private String cletFileCrtnDt;
+
+        @JsonProperty
+        private String corp_code; // 정식회사명칭
     }
 
 }
