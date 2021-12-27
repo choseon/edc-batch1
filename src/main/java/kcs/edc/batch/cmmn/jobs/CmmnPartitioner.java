@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Common Partitioner
+ * 하나의 Step을 여러 개의 Thread 단위로 나누어 처리하는 Common Partitioner
  * list를 gridSize로 분할한다
  */
 @Slf4j

@@ -240,7 +240,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
             stockCd = eElement.getElementsByTagName("stock_code").item(0).getTextContent();
             stockCd = stockCd.trim();
 
-            if (ObjectUtils.isEmpty(stockCd)) continue;
+//            if (ObjectUtils.isEmpty(stockCd)) continue;
 
             //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
             if (getNewDataYN(lastModifyDt, modifyDt)) {
@@ -258,7 +258,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -1);
+        calendar.add(Calendar.DATE, -7);
         String strYesterDay = dateFormat.format(calendar.getTime());
 
         Date yesterDay = dateFormat.parse(strYesterDay); //어제날짜
@@ -266,7 +266,8 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         Date modifyDate = dateFormat.parse(modifyDt);
 
         //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
-        if ((modifyDate.equals(lastModifyDate) || modifyDate.after(lastModifyDate)) && (modifyDate.equals(yesterDay) || modifyDate.before(yesterDay))) {
+//        if ((modifyDate.equals(lastModifyDate) || modifyDate.after(lastModifyDate)) && (modifyDate.equals(yesterDay) || modifyDate.before(yesterDay))) {
+        if ((modifyDate.equals(lastModifyDate) || modifyDate.before(lastModifyDate)) && (modifyDate.equals(yesterDay) || modifyDate.after(yesterDay))) {
             returnValue = true;
         }
         return returnValue;

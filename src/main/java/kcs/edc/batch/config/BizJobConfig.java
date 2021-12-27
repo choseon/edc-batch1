@@ -40,8 +40,12 @@ public class BizJobConfig {
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addLong("time", System.currentTimeMillis())
+                .toJobParameters();
+
         try {
-            this.jobLauncher.run(bizJob(), new JobParameters());
+            this.jobLauncher.run(bizJob(), jobParameters);
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {

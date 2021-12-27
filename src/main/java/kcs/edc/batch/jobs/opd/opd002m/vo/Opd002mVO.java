@@ -108,13 +108,16 @@ public class Opd002mVO {
          */
         private String sorg_file_nm;
 
+        @JsonProperty
+        private String corp_code; // 정식회사명칭
+
         /**
          * CLET_FILE_CRTN_DT 수집파일생성일자
          */
         private String cletFileCrtnDt;
 
-        @JsonProperty
-        private String corp_code; // 정식회사명칭
+        /************************************************************************/
+
     }
 
 }

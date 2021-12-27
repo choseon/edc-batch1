@@ -71,7 +71,7 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
                     this.newsClusterList.add(newsCluster);
 
 //            item.setNews_cluster(convertNesClusterListToString(newsCluster));
-                    item.setArtcPblsDt(date); // 20211124
+                    item.setArtcPblsDt(DateUtil.getOffsetDate(this.startDt, i)); // 20211124
                     item.setKcsRgrsYn(this.kcsRgrsYn);
                     item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                     item.setLastChngDtlDttm(DateUtil.getCurrentTime());

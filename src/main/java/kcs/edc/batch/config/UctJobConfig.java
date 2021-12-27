@@ -5,10 +5,7 @@ import kcs.edc.batch.jobs.uct.uct001m.Uct001mPartitioner;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -61,8 +58,12 @@ public class UctJobConfig {
         log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
 
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addLong("time", System.currentTimeMillis())
+                .toJobParameters();
+
         try {
-            this.jobLauncher.run(uctJob(), new JobParameters());
+            this.jobLauncher.run(uctJob(), jobParameters);
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {

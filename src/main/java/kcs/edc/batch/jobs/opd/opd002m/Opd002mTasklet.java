@@ -77,10 +77,8 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
                     builder.replaceQueryParam("page_no", pageNo);
                     URI uri = builder.build().toUri();
 
-                    Opd002mVO resultVO = null;
-
                     Thread.sleep(this.callApiDelayTime);
-                    resultVO = this.apiService.sendApiForEntity(uri, Opd002mVO.class);
+                    Opd002mVO resultVO = this.apiService.sendApiForEntity(uri, Opd002mVO.class);
 
                     if (resultVO.getStatus().equals("000")) {
 
@@ -90,7 +88,7 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
 
                             item.setPblntf_ty(pblntfType);
                             item.setPblntf_detail_ty(pblnt);
-                            item.setFile_path_nm(this.fileService.getAttachedFilePath());
+                            item.setFile_path_nm(this.attachDBPath);
                             item.setRcpn_file_path_nm(this.baseDt + File.separator); // 년월일
                             item.setReport_nm(item.getReport_nm().replaceAll("\"", "")); // "(더블따옴표) 제거
                             item.setReport_nm(item.getReport_nm().replaceAll("\'", "")); // '(싱글따옴표) 제거
@@ -122,16 +120,12 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
             int cnt = 1;
             for (Object o : this.resultList) {
                 Opd002mVO.Item item = (Opd002mVO.Item) o;
-                if (!ObjectUtils.isEmpty(item.getStock_code().trim())) {
-                    // 공시 뷰어에 접속하여 보고서 첨부파일 번호 목록 갖고 오기
-                    ArrayList<String> dcmNoList = getDcmNoList(item.getRcept_no());
-                    //압축파일명 = 첨부파일 다운로드 및 압축하기
-                    String saveFileNm = saveRptFile(dcmNoList, item.getRcept_no(), item.getPblntf_ty(), item.getPblntf_detail_ty(), item.getReport_nm());
-                    log.info("[{}/{}] downloadFile: corpName: {}, saveFileNm: {}",
-                            cnt++, this.resultList.size(), item.getCorp_name(), saveFileNm);
-                } else {
-                    log.info("[{}/{}] no download File", cnt++, this.resultList.size());
-                }
+                // 공시 뷰어에 접속하여 보고서 첨부파일 번호 목록 갖고 오기
+                ArrayList<String> dcmNoList = getDcmNoList(item.getRcept_no());
+                //압축파일명 = 첨부파일 다운로드 및 압축하기
+                String saveFileNm = saveRptFile(dcmNoList, item.getRcept_no(), item.getPblntf_ty(), item.getPblntf_detail_ty(), item.getReport_nm());
+                log.info("[{}/{}] downloadFile: corpName: {}, saveFileNm: {}",
+                        cnt++, this.resultList.size(), item.getCorp_name(), saveFileNm);
             }
 
         } catch (FileNotFoundException e) {

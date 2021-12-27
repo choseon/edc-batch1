@@ -51,7 +51,7 @@ public class Big001mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
             NewsQueryVO queryVO = new NewsQueryVO();
             String accessKey = this.apiService.getJobPropHeader(getJobGroupId(), "accessKey");
             queryVO.setAccess_key(accessKey);
-            queryVO.getArgument().getPublished_at().setFrom(DateUtil.getFormatDate(this.startDt));
+//            queryVO.getArgument().getPublished_at().setFrom(DateUtil.getFormatDate(this.startDt));
             queryVO.getArgument().getPublished_at().setUntil(DateUtil.getFormatDate(this.endDt));
 
             NewNationWideComCode code = new NewNationWideComCode();

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 데이터수집을 하기 위한 Open API 정보를 담는 클래스
+ * 데이터수집을 하기 위한 Open API 정보를 매핑하는 클래스
  * application.yml의 "api" 그룹을 자동으로 매핑하여 Configuration Bean으로 등록한다.
  */
 @Getter

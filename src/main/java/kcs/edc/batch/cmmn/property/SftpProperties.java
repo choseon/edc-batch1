@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * application.yml 설정에서 Sftp 정보를 자동으로 매핑하는 클래스
+ */
 @Getter
 @Setter
 @Component

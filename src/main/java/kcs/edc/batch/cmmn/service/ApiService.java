@@ -24,13 +24,19 @@ import java.util.Objects;
 public class ApiService {
 
     @Autowired
-    private ApiProperties apiProperties; // OpenApi information (all)
+    private ApiProperties apiProperties; // ApiProperties를 자동주입
 
-    private ApiProperties.ApiProp apiProp; // OpenApi information (job)
+    private ApiProperties.ApiProp apiProp; // Job ApiProperty
 
     private RestTemplate restTemplate = new RestTemplate();
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * 초기화
+     * jobId를 넘겨받아 자동으로 주입받은 ApiProperties 전체목록에서 해당 jobID 정보를 조회한다.
+     *
+     * @param jobId 배치ID
+     */
     public void init(String jobId) {
 
         this.apiProp = this.apiProperties.getApiProp(jobId);
@@ -39,8 +45,9 @@ public class ApiService {
 
     /**
      * UriComponentsBuilder 생성
+     * apiProp에 담고있는 baseUrl과 parameter를 셋팅하여 builder를 리턴한다.
      *
-     * @return
+     * @return UriComponentsBuilder
      */
     public UriComponentsBuilder getUriComponetsBuilder() {
 
@@ -57,11 +64,15 @@ public class ApiService {
 
     /**
      * Send Open Api
+     * RestTemplate의 getForEntity()를 이용하여 호출한 uri의 결과를 String 타입으로 리턴받는다.
+     * 리턴받은 String 결과를 ObjectMapper를 이용하여 responseType으로 리턴한다.
      *
-     * @param uri
-     * @param resonseType
+     * @param uri         OpenApi URI
+     * @param resonseType 리턴받을 Class Type
      * @param <T>
      * @return
+     * @throws JsonProcessingException
+     * @throws RestClientException
      */
     public <T> T sendApiForEntity(URI uri, Class<T> resonseType) throws JsonProcessingException, RestClientException {
 
@@ -81,11 +92,16 @@ public class ApiService {
     }
 
     /**
-     * @param uri
-     * @param request
-     * @param targetClass
+     * RestTemplate의 postForObject()를 이용하여 호출한 uri의 결과를 String 타입으로 리턴받는다.
+     * 리턴받은 String 결과를 ObjectMapper를 이용하여 responseType으로 리턴한다.
+     *
+     * @param uri         OpenApi URI
+     * @param request     Send request Option
+     * @param targetClass 리턴받을 Class Type
      * @param <T>
      * @return
+     * @throws JsonProcessingException
+     * @throws RestClientException
      */
     public <T> T sendApiPostForObject(URI uri, Object request, Class<T> targetClass) throws JsonProcessingException, RestClientException {
 
@@ -103,6 +119,18 @@ public class ApiService {
 
     }
 
+    /**
+     * RestTemplate의 exchange()를 이용하여 호출한 uri의 결과를 String 타입으로 리턴받는다.
+     * 리턴받은 String 결과를 ObjectMapper를 이용하여 responseType으로 리턴한다.
+     *
+     * @param uri         OpenApi URI
+     * @param httpMethod  Send httpMethod Option
+     * @param entity      Send entity Option
+     * @param targetClass 리턴받을 Class Type
+     * @param <T>
+     * @return
+     * @throws JsonProcessingException
+     */
     public <T> T sendApiExchange(URI uri, HttpMethod httpMethod, HttpEntity<String> entity, Class<T> targetClass) throws JsonProcessingException {
 
         ResponseEntity<String> exchange = this.restTemplate.exchange(uri, httpMethod, entity, String.class);

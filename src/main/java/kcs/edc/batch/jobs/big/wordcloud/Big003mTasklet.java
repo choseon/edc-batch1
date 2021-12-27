@@ -65,19 +65,23 @@ public class Big003mTasklet extends CmmnJob implements Tasklet {
                 URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
                 Big003mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big003mVO.class);
 
-                if (resultVO.getResult() != 0) continue;
+                if (resultVO.getResult() != 0) {
+                    log.info("resultVO.getResult(): {}", resultVO.getResult());
+                    continue;
+                }
 
                 List<Big003mVO.NodeItem> nodes = resultVO.getReturn_object().getNodes();
                 for (Big003mVO.NodeItem item : nodes) {
-                    item.setArtcPblsDt(this.baseDt);
+                    item.setArtcPblsDt(this.endDt);
                     item.setSrchQuesWordNm(keyword);
                     item.setKcsRgrsYn(this.kcsRgrsYn);
                     item.setFrstRgsrDtlDttm(DateUtil.getCurrentTime());
                     item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                     this.resultList.add(item);
+
+                    log.info("[{}/{}] {} >> keyword: {}, date: {}, name: {}",
+                            this.itemCnt++, this.keywordList.size(), this.jobId, keyword, this.endDt, item.getName());
                 }
-                log.info("[{}/{}] {} >> keyword: {}, nodes.size: {}",
-                        this.itemCnt++, this.keywordList.size(), this.jobId, keyword, nodes.size());
             }
 
             // 파일생성

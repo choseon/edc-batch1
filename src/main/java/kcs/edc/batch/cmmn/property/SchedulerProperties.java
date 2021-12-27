@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * application.yml 설정에서 scheduler 정보를 자동으로 매핑하는 클래스
+ */
 @Getter
 @Setter
 @Configuration
