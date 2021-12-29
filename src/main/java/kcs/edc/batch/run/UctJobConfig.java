@@ -1,6 +1,6 @@
-package kcs.edc.batch.config;
+package kcs.edc.batch.run;
 
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mPartitioner;
 import kcs.edc.batch.jobs.uct.uct001m.Uct001mTasklet;
 import lombok.RequiredArgsConstructor;
@@ -35,28 +35,35 @@ public class UctJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    // multiThread 갯수를 application.yml에 설정
-    // API 호출시 1시간에 10,000번의 limit가 걸려 있기 때문에 적절하게 Thread 갯수 조정필요.
-    // 현재 3개로 설정했을때 limt 넘지 않으므로 limit 넘는 경우가 있다면 갯수를 줄여야함.
+    /**
+     * 시간단축을 위해 multiThread 적용하여 초기데이터 수집결과
+     * 1. api 호출이 충돌되어 엄청난 exception이 발생
+     * 2. 데이터가 존재함에도 0건으로 수집되는 경우가 빈번하게 발생
+     * 3. 1시간에 10,000번의 limit가 넘는 경우 발생
+     *
+     * multiThread를 적용하지 않은 경우 시간은 오래 걸려도 안정적으로 수집됨.
+     *
+     * 현재 multiThread 10 -> 5 -> 3 -> 1개로 설정 (application.yml)
+     * 월배치로 매월 1일 전년도, 전전년도 2년치 변경적재 배치
+     * 중단없이 수집하기 위해 [prod.monthly] 경로로 일배치와 분리함
+     */
     @Value("${uct.gridSize}")
     private int GRID_SIZE;
 
     @Value("${uct.gridSize}")
     private int POOL_SIZE; // gridSize와 동일하게 적용
 
-    @Value("${scheduler.jobs.uct.isActive}")
+    @Value("${job.info.uct.isActive}")
     private Boolean isActive;
 
     /**
-     * UN Comtrade Batch launcher (월배치)
-     * 매월 1일 전년도, 전전년도 2년치 데이터 수집하여
-     * 15일 이전에 내부 hlo1db에서 데이터 조회되도록 스케쥴링 필요.
+     * UN Comtrade Batch launcher 설정
      */
-    @Scheduled(cron = "${scheduler.jobs.uct.cron}")
+    @Scheduled(cron = "${job.info.uct.cron}")
     public void launcher() {
 
-        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
+        log.info(">>>>> {} launcher..... ", this.getClass().getSimpleName().substring(0, 6));
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())
@@ -86,7 +93,7 @@ public class UctJobConfig {
     @Bean
     public Job uctJob() {
 
-        return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_UCT + CmmnConst.POST_FIX_JOB)
+        return jobBuilderFactory.get(CmmnProperties.JOB_GRP_ID_UCT + CmmnProperties.POST_FIX_JOB)
                 .start(uct001mStep())
                 .build();
     }
@@ -102,7 +109,7 @@ public class UctJobConfig {
     @JobScope
     public Step uct001mPartitionStep(@Value("#{jobExecutionContext[list]}") List<Object> list) {
 
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_UCT001M + CmmnConst.POST_FIX_PARTITION_STEP)
+        return stepBuilderFactory.get(CmmnProperties.JOB_ID_UCT001M + CmmnProperties.POST_FIX_PARTITION_STEP)
                 .partitioner("uctPartitioner", uct001mPartitioner(null))
                 .gridSize(GRID_SIZE)
                 .taskExecutor(uctExecutor())
@@ -125,7 +132,7 @@ public class UctJobConfig {
     @Bean
     public Step uct001mStep() {
 
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_UCT001M + CmmnConst.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnProperties.JOB_ID_UCT001M + CmmnProperties.POST_FIX_STEP)
                 .tasklet(uct001mTasklet(null, null, null, null))
                 .build();
     }

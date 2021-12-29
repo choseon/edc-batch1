@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,14 +15,20 @@ import java.util.Map;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "scheduler")
-public class SchedulerProperties {
+@ConfigurationProperties(prefix = "job")
+public class JobProperties {
 
-    private Map<String, SchedulerProp> jobs = new HashMap<>();
+    private Map<String, JobProp> info = new HashMap<>();
 
     @Getter
     @Setter
-    public static class SchedulerProp {
+    public static class JobProp {
+
+        /**
+         * 배치 하위 노드 리스트
+         */
+        private List<String> nodes;
+
         /**
          * 배치 활성화여부
          */
@@ -49,9 +56,9 @@ public class SchedulerProperties {
     }
 
 
-    public SchedulerProp getScedulerProp(String jobGroupId) {
+    public JobProp getJobProp(String jobGroupId) {
 
-        return this.jobs.get(jobGroupId);
+        return this.info.get(jobGroupId);
     }
 
 }

@@ -1,7 +1,8 @@
 package kcs.edc.batch.cmmn.jobs;
 
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.cmmn.service.FileService;
+import kcs.edc.batch.cmmn.service.JobService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -14,7 +15,6 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 파일 병합, 삭제와 관련된 공통 Tasklet
@@ -25,6 +25,9 @@ public class CmmnFileTasklet implements Tasklet {
 
     @Value("#{jobParameters[baseDt]}")
     protected String baseDt; // 수집기준일
+
+    @Autowired
+    protected JobService jobService;
 
     @Autowired
     private FileService fileService = new FileService();
@@ -53,8 +56,10 @@ public class CmmnFileTasklet implements Tasklet {
         log.info("####################################################");
         log.info("actionType : {}", this.actionType);
 
-        if(ObjectUtils.isEmpty(this.jobId)) {
-            this.jobList.add(this.jobId);
+        if(ObjectUtils.isEmpty(this.jobList)) {
+            if(this.actionType.equals(CmmnProperties.CMMN_FILE_ACTION_TYPE_BACKUP_CLEAN)) {
+                this.jobList = this.jobService.getJobList();
+            }
         }
 
         for (String jobId : this.jobList) {
@@ -62,10 +67,14 @@ public class CmmnFileTasklet implements Tasklet {
             log.info(">> jobId: {}", jobId);
             this.fileService.initFileVO(jobId);
 
-            if(this.actionType.equals(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE)) {
+            if(this.actionType.equals(CmmnProperties.CMMN_FILE_ACTION_TYPE_MERGE)) { // 파일 병합
                 this.fileService.mergeTempFile();
-            } else if(this.actionType.equals(CmmnConst.CMMN_FILE_ACTION_TYPE_CLEAN)) {
+
+            } else if(this.actionType.equals(CmmnProperties.CMMN_FILE_ACTION_TYPE_CLEAN)) { // 파일 삭제
                 this.fileService.cleanTempFile();
+
+            } else if(this.actionType.equals(CmmnProperties.CMMN_FILE_ACTION_TYPE_BACKUP_CLEAN)) { // 백업파일 삭제
+                this.fileService.cleanBackupFile();
             }
         }
 
@@ -73,4 +82,5 @@ public class CmmnFileTasklet implements Tasklet {
 
         return RepeatStatus.FINISHED;
     }
+
 }

@@ -1,7 +1,6 @@
-package kcs.edc.batch.config;
+package kcs.edc.batch.run;
 
-import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.cmmn.util.DateUtil;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.jobs.kot.kot001m.Kot001mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
@@ -20,6 +18,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
+/**
+ * 대한무역투자진흥공사 데이터수집 Batch Configuration
+ */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
@@ -29,14 +30,17 @@ public class KotJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.jobs.kot.isActive}")
+    @Value("${job.info.kot.isActive}")
     private Boolean isActive;
 
-    @Scheduled(cron = "${scheduler.jobs.kot.cron}")
+    /**
+     * 대한무역투자진흥공사 데이터수집 launcher 설정
+     */
+    @Scheduled(cron = "${job.info.kot.cron}")
     public void launcher() {
 
-        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
+        log.info(">>>>> {} launcher..... ", this.getClass().getSimpleName().substring(0, 6));
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())
@@ -55,10 +59,15 @@ public class KotJobConfig {
         }
     }
 
+    /**
+     * 대한무역투자진흥공사 데이터수집 Job 설정
+     *
+     * @return
+     */
     @Bean
     public Job kotJob() {
 
-        return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_KOT + CmmnConst.POST_FIX_JOB)
+        return jobBuilderFactory.get(CmmnProperties.JOB_GRP_ID_KOT + CmmnProperties.POST_FIX_JOB)
                 .start(kot001mStep(null))
                 .build();
     }
@@ -69,7 +78,7 @@ public class KotJobConfig {
     @Bean
     @JobScope
     public Step kot001mStep(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_KOT001M + CmmnConst.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnProperties.JOB_ID_KOT001M + CmmnProperties.POST_FIX_STEP)
                 .tasklet(kot001mTasklet(baseDt))
                 .build();
     }

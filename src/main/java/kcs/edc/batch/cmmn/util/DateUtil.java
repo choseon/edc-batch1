@@ -73,6 +73,19 @@ public class DateUtil {
         return ret;
     }
 
+    public static String getOffsetMonth(String strDate, int offset, String pFormat) throws ParseException {
+
+        SimpleDateFormat fmt = new SimpleDateFormat(pFormat);
+        Calendar c = Calendar.getInstance();
+        Date pDate = fmt.parse(strDate);
+        c.setTime(pDate);
+        c.add(Calendar.MONTH, offset);
+        String ret = fmt.format(c.getTime());
+
+        return ret;
+    }
+
+
     /**
      * 현재시간 구하기
      *

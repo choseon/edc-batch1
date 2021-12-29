@@ -1,10 +1,8 @@
 package kcs.edc.batch.cmmn.jobs;
 
-import kcs.edc.batch.cmmn.property.CmmnConst;
 import kcs.edc.batch.cmmn.service.ApiService;
 import kcs.edc.batch.cmmn.service.FileService;
-import kcs.edc.batch.cmmn.service.SchedulerService;
-import kcs.edc.batch.cmmn.util.DateUtil;
+import kcs.edc.batch.cmmn.service.JobService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -14,7 +12,6 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.ObjectUtils;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -25,13 +22,13 @@ import java.util.List;
 public class CmmnJob implements StepExecutionListener {
 
     @Autowired
+    protected JobService jobService;
+
+    @Autowired
     protected ApiService apiService;
 
     @Autowired
     protected FileService fileService;
-
-    @Autowired
-    protected SchedulerService schedulerService;
 
     @Value("#{jobParameters[baseDt]}")
     protected String baseDt; // 수집기준일
@@ -53,35 +50,25 @@ public class CmmnJob implements StepExecutionListener {
     @Override
     public void beforeStep(StepExecution stepExecution) {
 
-        // step간 파라미터 넘겨주기 위해 jobExcutionContext 초기화
-        // afterStep에서 넘겨줄 값 셋팅해준다
+        // jobExecutionContext 초기화
+        // afterStep에서 파라미터를 셋팅하면 Step간 데이터가 공유된다.
         this.jobExecutionContext = stepExecution.getJobExecution().getExecutionContext();
 
+        // jobId, jobGroupId 셋팅
         this.jobId = getCurrentJobId();
         this.jobGroupId = getCurrentJobGroupId(this.jobId);
 
-        this.schedulerService.init(this.jobGroupId);
-        this.period = this.schedulerService.getPeriod();
-
-        // baseDt, startDt, endDt를 셋팅한다.
-        // comtrade는 월배치로 패턴이 달라 해당 Tasklet에서 분리하여 셋팅한다.
-        if(this.schedulerService.getCycle().equals(CmmnConst.SCHEDULER_CYCLE_DAILY)) {
-            if (ObjectUtils.isEmpty(this.baseDt)) {
-                String baseLine = this.schedulerService.getBaseLine();
-                this.baseDt = DateUtil.getBaseLineDate(baseLine);
-            }
-
-            this.startDt = DateUtil.getOffsetDate(this.baseDt, (this.period - 1) * -1);
-
-            if(this.jobGroupId.equals(CmmnConst.JOB_GRP_ID_BIG)) {
-                // BigKinds의 경우 endDt가 baseDt + 1로 파라미터 넘겨줘야함.
-                this.endDt = DateUtil.getOffsetDate(this.baseDt, 1);
-            } else {
-                this.endDt = this.baseDt;
-            }
-        }
-
+        // ApiService 초기화
         this.apiService.init(this.jobId);
+
+        // JobService 초기화하고 baseDt, startDt, endDt, period를 셋팅한다.
+        this.jobService.init(this.jobGroupId, this.baseDt);
+        this.baseDt = this.jobService.getBaseDt();
+        this.startDt = this.jobService.getStartDt();
+        this.endDt = this.jobService.getEndDt();
+        this.period = this.jobService.getPeriod();
+
+        // FileService 초기화
         this.fileService.init(this.jobId, this.baseDt);
 
     }
@@ -128,9 +115,13 @@ public class CmmnJob implements StepExecutionListener {
      * 배치 시작로그 출력
      */
     public void writeCmmnLogStart() {
-        writeCmmnLogStart(getCurrentJobId());
+        writeCmmnLogStart(this.jobId);
     }
 
+    /**
+     * 배치 시작로그 출력
+     * @param jobId
+     */
     public void writeCmmnLogStart(String jobId) {
         log.info("##########################################################################");
         log.info("START JOB :::: {} ", jobId);
@@ -145,6 +136,10 @@ public class CmmnJob implements StepExecutionListener {
         writeCmmnLogEnd(this.jobId);
     }
 
+    /**
+     * 배치 종료로그출력
+     * @param jobId
+     */
     public void writeCmmnLogEnd(String jobId) {
         log.info("END JOB :::: {}", jobId);
     }
@@ -187,13 +182,8 @@ public class CmmnJob implements StepExecutionListener {
      * @param msg   에러메시지
      */
     public void makeErrorLog(String jobId, String msg) {
-
         try {
-            log.info("----------------------------------------------------------------------------");
-            log.info(msg);
-            this.fileService.initFileVO(jobId);
-            this.fileService.makeFailLogFile(msg);
-            log.info("----------------------------------------------------------------------------");
+            this.fileService.makeErrorLog(jobId, msg);
         } catch (FileNotFoundException e) {
             log.info(e.getMessage());
         } catch (IllegalAccessException e) {

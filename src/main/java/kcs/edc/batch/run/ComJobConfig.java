@@ -1,9 +1,7 @@
-package kcs.edc.batch.config;
+package kcs.edc.batch.run;
 
-import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.cmmn.util.DateUtil;
-import kcs.edc.batch.jobs.nav.nav003m.Nav003mTasklet;
-import kcs.edc.batch.jobs.nav.nav004m.Nav004mTasklet;
+import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
@@ -20,30 +18,36 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
+/**
+ * 공통 Batch Configuration
+ */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class NavJobConfig {
+public class ComJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.jobs.nav.isActive}")
+    @Value("${job.info.com.isActive}")
     private Boolean isActive;
 
-    @Scheduled(cron = "${scheduler.jobs.nav.cron}")
+    /**
+     * 공통 Batch launcher 설정
+     */
+    @Scheduled(cron = "${job.info.com.cron}")
     public void launcher() {
 
-        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
+        log.info(">>>>> {} launcher..... ", this.getClass().getSimpleName().substring(0, 6));
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
         try {
-            this.jobLauncher.run(navJob(), jobParameters);
+            this.jobLauncher.run(comJob(), jobParameters);
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {
@@ -55,63 +59,44 @@ public class NavJobConfig {
         }
     }
 
-
+    /**
+     * 공통 Batch Job 설정
+     *
+     * @return
+     */
     @Bean
-    public Job navJob() {
+    public Job comJob() {
 
-        return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_NAV + CmmnConst.POST_FIX_JOB)
-                .start(nav003mStep())
-                .next(nav004mStep())
+        return jobBuilderFactory.get(CmmnProperties.JOB_GRP_ID_COM + CmmnProperties.POST_FIX_JOB)
+                .start(backupFileCleanStep())
                 .build();
     }
 
     /**
-     * 네이버카페 나이키매니아 판매데이터 수집 Step 설정
+     * 백업파일제거 Step 설정
      *
      * @return
      */
     @Bean
     @JobScope
-    public Step nav003mStep() {
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_NAV003M + CmmnConst.POST_FIX_STEP)
-                .tasklet(nav003mTasklet(null))
+    public Step backupFileCleanStep() {
+
+        return stepBuilderFactory.get(CmmnProperties.JOB_GRP_ID_COM + CmmnProperties.POST_FIX_FILE_CLEAN_STEP)
+                .tasklet(backupFileCleanTasklet(null))
                 .build();
     }
 
     /**
-     * 네이버카페 나이키매니아 판매데이터 수집 Tasklet 설정
+     * 백업파일제거 Tasklet 설정
      *
-     * @param baseDt
+     * @param jobId
      * @return
      */
     @Bean
     @StepScope
-    public Nav003mTasklet nav003mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return new Nav003mTasklet();
+    public CmmnFileTasklet backupFileCleanTasklet(@Value("#{jobExecutionContext[jobId]}") String jobId) {
+
+        return new CmmnFileTasklet(CmmnProperties.CMMN_FILE_ACTION_TYPE_BACKUP_CLEAN);
     }
 
-    /**
-     * 네이버카페 중고나라 판매데이터 수집 Step 설정
-     *
-     * @return
-     */
-    @Bean
-    @JobScope
-    public Step nav004mStep() {
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_NAV004M + CmmnConst.POST_FIX_STEP)
-                .tasklet(nav004mTasklet(null))
-                .build();
-    }
-
-    /**
-     * 네이버카페 중고나라 판매데이터 수집 Tasklet 설정
-     *
-     * @param baseDt
-     * @return
-     */
-    @Bean
-    @StepScope
-    public Nav004mTasklet nav004mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return new Nav004mTasklet();
-    }
 }

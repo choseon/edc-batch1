@@ -1,7 +1,6 @@
-package kcs.edc.batch.config;
+package kcs.edc.batch.run;
 
-import kcs.edc.batch.cmmn.property.CmmnConst;
-import kcs.edc.batch.cmmn.util.DateUtil;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.jobs.biz.biz001m.Biz001mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 /**
  * 중소기업연구원 중소벤처기업부 기업마당 데이터수집 Batch Configuration
@@ -31,14 +29,17 @@ public class BizJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.jobs.biz.isActive}")
+    @Value("${job.info.biz.isActive}")
     private Boolean isActive;
 
-    @Scheduled(cron = "${scheduler.jobs.biz.cron}")
+    /**
+     * 중소기업연구원 중소벤처기업부 기업마당 데이터수집 launcher 설정
+     */
+    @Scheduled(cron = "${job.info.biz.cron}")
     public void launcher() {
 
-        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
+        log.info(">>>>> {} launcher..... ", this.getClass().getSimpleName().substring(0, 6));
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())
@@ -65,7 +66,7 @@ public class BizJobConfig {
     @Bean
     public Job bizJob() {
 
-        return jobBuilderFactory.get(CmmnConst.JOB_GRP_ID_BIZ + CmmnConst.POST_FIX_JOB)
+        return jobBuilderFactory.get(CmmnProperties.JOB_GRP_ID_BIZ + CmmnProperties.POST_FIX_JOB)
                 .start(biz001mStep())
                 .build();
     }
@@ -75,7 +76,7 @@ public class BizJobConfig {
      */
     @Bean
     public Step biz001mStep() {
-        return stepBuilderFactory.get(CmmnConst.JOB_ID_BIZ001M + CmmnConst.POST_FIX_STEP)
+        return stepBuilderFactory.get(CmmnProperties.JOB_ID_BIZ001M + CmmnProperties.POST_FIX_STEP)
                 .tasklet(biz001mTasklet(null))
                 .build();
     }

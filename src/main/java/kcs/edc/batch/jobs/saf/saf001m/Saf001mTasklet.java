@@ -60,8 +60,7 @@ public class Saf001mTasklet extends CmmnJob implements Tasklet {
             // send API
             Saf001mVO resultVO = this.apiService.sendApiExchange(uri, HttpMethod.GET, entity, Saf001mVO.class);
 
-            if (Objects.isNull(resultVO)) return RepeatStatus.FINISHED;
-
+            if (Objects.isNull(resultVO)) return null;
 
             for (Saf001mVO.Item item : resultVO.getResultData()) {
 

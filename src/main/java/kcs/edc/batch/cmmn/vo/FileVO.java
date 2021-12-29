@@ -42,11 +42,15 @@ public class FileVO {
     private String fileExtension;
 
     public FileVO(String fileRootPath, String fileDirName, String fileName, String fileExtension) {
-        this.fileRootPath = fileRootPath;
-        this.fileDirName = fileDirName;
+        this(fileRootPath, fileDirName);
         this.baseFileName = fileName;
         this.fileName = fileName;
         this.fileExtension = fileExtension;
+    }
+
+    public FileVO(String fileRootPath, String fileDirName) {
+        this.fileRootPath = fileRootPath;
+        this.fileDirName = fileDirName;
         this.filePath = fileRootPath + fileDirName + "/";
     }
 

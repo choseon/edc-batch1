@@ -25,7 +25,6 @@ public class ApiService {
 
     @Autowired
     private ApiProperties apiProperties; // ApiProperties를 자동주입
-
     private ApiProperties.ApiProp apiProp; // Job ApiProperty
 
     private RestTemplate restTemplate = new RestTemplate();

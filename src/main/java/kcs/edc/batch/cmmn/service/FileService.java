@@ -1,6 +1,6 @@
 package kcs.edc.batch.cmmn.service;
 
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.cmmn.property.FileProperty;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
@@ -8,12 +8,14 @@ import kcs.edc.batch.cmmn.vo.FileVO;
 import kcs.edc.batch.cmmn.vo.Log001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +23,10 @@ import java.util.List;
 @Service
 public class FileService {
 
-    private String LOG_FILE_STEP = "EXT_FILE_CREATE";
-    private String LOG_JOB_STAT_SUCCEEDED = "Succeeded";
-    private String LOG_JOB_STAT_FAIL = "Fail";
-
     @Autowired
     private FileProperty fileProperty;
+
+    private int cleanBackupBaseDt;
 
     /**
      * 배치잡ID ex) nav003m
@@ -39,7 +39,7 @@ public class FileService {
     private String baseDt;
 
     /**
-     * 배치 시작일시 ex) 20211020 09:23:11
+     * 배치 시작일시 ex) 2021-10-20 09:23:11
      */
     public String startTime;
 
@@ -64,6 +64,11 @@ public class FileService {
     private FileVO attachFileVO;
 
     /**
+     * 백업파일 VO
+     */
+    private FileVO backupFileVO;
+
+    /**
      * FileService 초기화
      *
      * @param jobId
@@ -78,10 +83,6 @@ public class FileService {
         log.debug("FileService init() >> jobId: {}", this.jobId);
     }
 
-    public void initFileVO() {
-        initFileVO(this.jobId);
-    }
-
     /**
      * fileVO 초기화
      *
@@ -93,37 +94,45 @@ public class FileService {
 
         // 파일 확장자
         String fileExtension = this.fileProperty.getDataFileExtension();
+        // 데이터파일 루트경로
+        String dataRootPath = this.fileProperty.getDataRootPath();
 
-        String fileRootPath = this.fileProperty.getRootPath();
-        String dataFilePrefixName = this.fileProperty.getDataFilePrefixName();
-        // 데이터 디렉토리명
-        String dataDirName = dataFilePrefixName + jobId;
+        // 데이터 디렉토리명 (테이블명)
+        String dataDirName = this.fileProperty.getDataFilePrefixName() + jobId;
         // 데이터 파일명
         String dataFileName = dataDirName + "_" + this.baseDt;
-        this.dataFileVO = new FileVO(fileRootPath, dataDirName, dataFileName, fileExtension);
+        // 데이터파일VO 생성
+        this.dataFileVO = new FileVO(dataRootPath, dataDirName, dataFileName, fileExtension);
 
-        // 로그 디렉토리명
+        // 로그파일VO 생성
         String logDirName = this.fileProperty.getLogDirName();
-        // 로그파일명
         String logFileName = dataFileName + "_" + DateUtil.getCurrentTime2();
-        this.logFileVO = new FileVO(fileRootPath, logDirName, logFileName, fileExtension);
+        this.logFileVO = new FileVO(dataRootPath, logDirName, logFileName, fileExtension);
 
-        // 임시파일 디렉토리명
-        String tempRootPath = fileRootPath + dataDirName + "/";
+        // 임시파일VO 생성
+        String tempRootPath = this.dataFileVO.getFilePath();
         String tempDirName = this.fileProperty.getTempDirName();
         this.tempFileVO = new FileVO(tempRootPath, tempDirName, dataFileName, fileExtension);
 
-        // 첨부파일 경로
+        // 백업파일VO 생성
+        String backupRootPath = this.dataFileVO.getFilePath();
+        String backupDirName = this.fileProperty.getBackupDirName();
+        this.backupFileVO = new FileVO(backupRootPath, backupDirName);
+
+        // 백업파일 제거 기준일
+        this.cleanBackupBaseDt = this.fileProperty.getCleanBackupBaseDt();
+
+        // 첨부파일VO 생성
         String jobGroupId = jobId.substring(0, 3);
         if (this.fileProperty.getAttachDirName().containsKey(jobGroupId)) {
-            String attachPath = this.fileProperty.getAttachRootPath();
+            String attachRootPath = this.fileProperty.getAttachRootPath();
             String attachDirName = this.fileProperty.getAttachDirName().get(jobGroupId);
-            this.attachFileVO = new FileVO(attachPath, attachDirName, null, fileExtension);
+            this.attachFileVO = new FileVO(attachRootPath, attachDirName);
         }
     }
 
     /**
-     * 리소스 경로를 리턴
+     * 리소스 경로 리턴
      *
      * @return
      */
@@ -140,35 +149,6 @@ public class FileService {
         return this.attachFileVO.getFilePath();
     }
 
-    /**
-     * 현재 jobId의 임시파일 경로 리턴
-     *
-     * @return
-     */
-    public String getTempPath() {
-        return getTempPath(this.jobId);
-    }
-
-    /**
-     * 파라미터로 넘어온 jobId의 임시파일 경로 리턴
-     *
-     * @param jobId
-     * @return
-     */
-    public String getTempPath(String jobId) {
-
-        initFileVO(jobId);
-        return this.tempFileVO.getFilePath();
-    }
-
-    /**
-     * tempFileVO 리턴
-     *
-     * @return
-     */
-    public FileVO getTempFileVO() {
-        return this.tempFileVO;
-    }
 
     /**************************************************************************************************
      * 데이터 파일 관련
@@ -177,7 +157,7 @@ public class FileService {
     /**
      * 수집데이터파일 및 로그파일생성
      *
-     * @param list
+     * @param list 데이터리스트
      * @param <T>
      */
     public <T> void makeFile(List<T> list) throws FileNotFoundException, IllegalAccessException {
@@ -187,19 +167,8 @@ public class FileService {
     /**
      * 수집데이터파일 및 로그파일생성
      *
-     * @param list
-     * @param append
-     * @param <T>
-     */
-    public <T> void makeFile(List<T> list, Boolean append) throws FileNotFoundException, IllegalAccessException {
-        makeFile(this.jobId, list, append);
-    }
-
-    /**
-     * 수집데이터파일 및 로그파일생성
-     *
      * @param jobId
-     * @param list
+     * @param list  데이터리스트
      * @param <T>
      */
     public <T> void makeFile(String jobId, List<T> list) throws FileNotFoundException, IllegalAccessException {
@@ -210,8 +179,8 @@ public class FileService {
      * 수집데이터파일 및 로그파일생성
      *
      * @param jobId
-     * @param list
-     * @param append
+     * @param list   데이터리스트
+     * @param append 파일이어쓰기 여부
      * @param <T>
      */
     public <T> void makeFile(String jobId, List<T> list, Boolean append) throws FileNotFoundException, IllegalAccessException {
@@ -248,8 +217,8 @@ public class FileService {
     /**
      * 성공 로그파일 생성
      *
-     * @param list
-     * @param logFileVO
+     * @param list      데이터리스트
+     * @param logFileVO 로그파일 정보가 담긴 VO
      * @param <T>
      */
     private <T> void makeLogFile(List<T> list, FileVO logFileVO, FileVO dataFileVO) throws FileNotFoundException, IllegalAccessException {
@@ -260,9 +229,9 @@ public class FileService {
     /**
      * 성공 로그파일 생성
      *
-     * @param listCnt
-     * @param logFileVO
-     * @param dataFileVO
+     * @param listCnt    건수
+     * @param logFileVO  로그파일 정보가 담긴 VO
+     * @param dataFileVO 데이터파일 정보가 담긴 VO
      * @param <T>
      * @throws FileNotFoundException
      * @throws IllegalAccessException
@@ -270,11 +239,11 @@ public class FileService {
     private <T> void makeLogFile(int listCnt, FileVO logFileVO, FileVO dataFileVO) throws FileNotFoundException, IllegalAccessException {
         Log001mVO log001mVO = new Log001mVO();
         log001mVO.setParamYmd(DateUtil.getCurrentDate()); // 작업일자
-        log001mVO.setStep(this.LOG_FILE_STEP);
+        log001mVO.setStep(CmmnProperties.LOG_FILE_STEP);
         log001mVO.setTableName(dataFileVO.getFileDirName());
         log001mVO.setStartTime(this.startTime);
         log001mVO.setEndTime(DateUtil.getCurrentTime());
-        log001mVO.setJobStat(this.LOG_JOB_STAT_SUCCEEDED);
+        log001mVO.setJobStat(CmmnProperties.LOG_JOB_STAT_SUCCEEDED);
         log001mVO.setTargSuccessRows(listCnt);
         log001mVO.setBaseDt(this.baseDt);
 
@@ -295,17 +264,17 @@ public class FileService {
     /**
      * 실패 로그파일 생성
      *
-     * @param msg
+     * @param msg 에러메시지
      */
     public void makeFailLogFile(String msg) throws FileNotFoundException, IllegalAccessException {
 
         Log001mVO log001mVO = new Log001mVO();
         log001mVO.setParamYmd(DateUtil.getCurrentDate()); // 작업일자
-        log001mVO.setStep(this.LOG_FILE_STEP);
+        log001mVO.setStep(CmmnProperties.LOG_FILE_STEP);
         log001mVO.setTableName(this.dataFileVO.getFileDirName());
         log001mVO.setStartTime(this.startTime);
         log001mVO.setEndTime(DateUtil.getCurrentTime());
-        log001mVO.setJobStat(this.LOG_JOB_STAT_FAIL);
+        log001mVO.setJobStat(CmmnProperties.LOG_JOB_STAT_FAIL);
         log001mVO.setErrm(msg);
         log001mVO.setTargSuccessRows(0);
         log001mVO.setBaseDt(this.baseDt);
@@ -317,6 +286,30 @@ public class FileService {
         FileUtil.makeTsvFile(this.logFileVO.getFilePath(), this.logFileVO.getFileFullName(), arrayList);
         log.info("makeFailLogFile: {}", this.logFileVO.getFullFilePath());
 
+    }
+
+    /**
+     * 에러로그 생성
+     *
+     * @param msg 에러메시지
+     */
+    public void makeErrorLog(String msg) throws FileNotFoundException, IllegalAccessException {
+        makeErrorLog(this.jobId, msg);
+    }
+
+    /**
+     * 에로로그 생성
+     *
+     * @param jobId
+     * @param msg   에러메시지
+     */
+    public void makeErrorLog(String jobId, String msg) throws FileNotFoundException, IllegalAccessException {
+
+        log.info("----------------------------------------------------------------------------");
+        log.info(msg);
+        this.initFileVO(jobId);
+        this.makeFailLogFile(msg);
+        log.info("----------------------------------------------------------------------------");
     }
 
     /**************************************************************************************************
@@ -391,6 +384,7 @@ public class FileService {
         // 로그파일 생성
         makeLogFile(listCnt, this.logFileVO, this.dataFileVO);
         log.info("----------------------------------------------------------------------------");
+
         // 임시파일 삭제
         cleanTempFile();
     }
@@ -424,9 +418,7 @@ public class FileService {
     public boolean isTempFileExsists(String suffixFileName) {
 
         this.tempFileVO.setAppendingFileName(suffixFileName);
-        File file = new File(this.tempFileVO.getFullFilePath());
-
-        return file.exists();
+        return new File(this.tempFileVO.getFullFilePath()).exists();
     }
 
     /**
@@ -435,7 +427,47 @@ public class FileService {
      * @return
      */
     public boolean isTempPathExsists() {
+
         String filePath = this.tempFileVO.getFilePath();
         return new File(filePath).exists();
+    }
+
+    /**
+     * 임시파일 경로 리턴
+     *
+     * @return
+     */
+    public String getTempPath() {
+        return this.tempFileVO.getFilePath();
+    }
+
+    /**
+     * 임시파일VO 리턴
+     *
+     * @return
+     */
+    public FileVO getTempFileVO() {
+        return this.tempFileVO;
+    }
+
+
+    /**************************************************************************************************
+     * 백업파일 관련
+     **************************************************************************************************/
+
+    /**
+     * 백업파일 제거
+     *
+     * @throws ParseException
+     */
+    public void cleanBackupFile() throws ParseException {
+
+        String currentDate = DateUtil.getCurrentDate("yyyy/MM");
+        String baseDt = DateUtil.getOffsetMonth(currentDate, this.cleanBackupBaseDt, "yyyy/MM");
+
+        this.backupFileVO.setAppendingFilePath(baseDt);
+        FileUtil.deleteFile(this.backupFileVO.getFilePath());
+
+        log.info("cleanBackupFile: {}", this.backupFileVO.getFilePath());
     }
 }

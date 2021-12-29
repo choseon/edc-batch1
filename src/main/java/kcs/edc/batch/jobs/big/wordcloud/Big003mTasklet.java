@@ -5,7 +5,6 @@ import kcs.edc.batch.cmmn.jobs.CmmnJob;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.big.wordcloud.vo.Big003mVO;
 import kcs.edc.batch.jobs.big.wordcloud.vo.WCQueryVO;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
@@ -80,12 +79,11 @@ public class Big003mTasklet extends CmmnJob implements Tasklet {
                     this.resultList.add(item);
 
                     log.info("[{}/{}] {} >> keyword: {}, date: {}, name: {}",
-                            this.itemCnt++, this.keywordList.size(), this.jobId, keyword, this.endDt, item.getName());
+                            this.itemCnt++, this.keywordList.size() * nodes.size(), this.jobId, keyword, this.endDt, item.getName());
                 }
             }
 
             // 파일생성
-//            this.fileService.makeFile(this.resultList, true);
             this.fileService.makeTempFile(this.resultList, DateUtil.getCurrentTime2());
 
         } catch (JsonProcessingException e) {

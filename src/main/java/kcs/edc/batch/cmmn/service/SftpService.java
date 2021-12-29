@@ -24,7 +24,6 @@ public class SftpService {
 
     public ChannelSftp connectSFTP() throws JSchException {
         JSch jSch = new JSch();
-        Channel channel = null;
 
         Session session = jSch.getSession(this.sftpProp.getUser(), this.sftpProp.getHost(), this.sftpProp.getPort());
         session.setPassword(this.sftpProp.getPassword());
@@ -35,7 +34,7 @@ public class SftpService {
 
         session.connect();
 
-        channel = session.openChannel("sftp");
+        Channel channel = session.openChannel("sftp");
         channel.connect();
 
         log.info("Sftp Connection Successed");

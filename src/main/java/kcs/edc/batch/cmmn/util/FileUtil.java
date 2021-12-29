@@ -83,10 +83,26 @@ public class FileUtil {
         }
     }
 
+    /**
+     * 파일 생성
+     *
+     * @param filePath 파일경로
+     * @param content  내용
+     * @throws IOException
+     */
     public static void makeFile(String filePath, String content) throws IOException {
         makeFile(filePath, content, false, "UTF-8");
     }
 
+    /**
+     * 파일 생성
+     *
+     * @param filePath 파일경로
+     * @param content  내용
+     * @param isAppend 이어쓰기 여부
+     * @param encoding
+     * @throws IOException
+     */
     public static void makeFile(String filePath, String content, Boolean isAppend, String encoding) throws IOException {
 
         String parent = new File(filePath).getParent();
@@ -131,6 +147,20 @@ public class FileUtil {
                 }
             }
         }
+    }
+
+    /**
+     * 파일 권한 부여
+     *
+     * @param filePath 파일경로
+     */
+    public static void setFilePermission(String filePath) {
+        File file = new File(filePath);
+        if (!file.exists()) return;
+
+        file.setExecutable(true);
+        file.setReadable(true);
+        file.setWritable(true);
     }
 
     /**
@@ -235,9 +265,15 @@ public class FileUtil {
         if (files == null) return;
 
         for (File file : files) {
-            boolean delete = file.delete();
+            if(file.isDirectory()) {
+                deleteFile(file.getPath());
+                log.info("deleteFolder: {}", file.getPath());
+            } else {
+                file.delete();
+                log.info("deleteFile: {}", file.getPath());
+            }
         }
-        boolean delete = dir.delete();
+        boolean delete = dir.delete(); // 폴더삭제
         log.debug("deleteFolder : {}, isDelete : {}", dir, delete);
     }
 

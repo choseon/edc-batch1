@@ -4,9 +4,9 @@
 spring:
   profiles:
     activate:
-      on-profile: test
+      on-profile: prod.monthly
 server:
-  port: 8081 # Tomcat Port
+  port: 8083 # Tomcat Port
 #########################################################################################
 # Batch Job Information Settings
 #########################################################################################
@@ -32,7 +32,7 @@ job:
         - big003m # 빅카인즈 워드클라우드
         - big004m # 빅카인즈 뉴스 타임라인
     som: # Somtrend 서비스 종료
-      cron: "30 2 14 * * ?" # 서비스 종료
+      cron: "30 2 14 * * ?"
       isActive: false
       cycle: daily
       baseline: D-1
@@ -84,7 +84,7 @@ job:
         - opd002m # OpenDart 기업 공시내역 수집
     uct: # comtrade.un.org
       cron: "0 0 06 1 * ?" # 매월 1일 06:00
-      isActive: false
+      isActive: true
       cycle: monthly
       baseline: Y-1
       period: 2
@@ -92,22 +92,22 @@ job:
         - uct001m # UN Comtrade 수출데이터
     com: # 공통 배치 (파일관련)
       cron: "0 0 05 1 * ?" # 매월 1일 05:00
-      isActive: false
+      isActive: true
       cycle: monthly
       baseline: M-2
 #########################################################################################
 # File Path Information Settings
 #########################################################################################
 file:
-  resourcePath: /data/edc-batch/test/resources/ # 리소스파일 경로
-  dataRootPath: /data/edc-batch/test/hdata/ # 데이터파일 루트경로
+  resourcePath: /data/edc-batch/prod.monthly/resources/ # 리소스파일 경로
+  dataRootPath: /hdata/ # 데이터파일 루트경로
   dataFilePrefixName: ht_ # 테이블명 접두어
   dataFileExtension: txt # 파일 확장자
   logDirName: ht_log001m # 로그파일 디렉토리명
   tempDirName: temp # 임시파일 디렉토리명
   backupDirName: backup # 백업파일 디렉토리명
   cleanBackupBaseDt: -2 # 백업폴더 삭제 매월1일에 전전월달 폴더 삭제
-  attachRootPath: /data/edc-batch/test/app_nas/anl_data/ # 첨부파일 루트경로
+  attachRootPath: /app_nas/anl_data/ # 첨부파일 루트경로
   attachDirName:
     opd: BA204/opendart # OpenDart 첨부파일 디렉토리명
     kot: BA201/kotra # Kotra 첨부파일 디렉토리명

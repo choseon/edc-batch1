@@ -1,8 +1,8 @@
-package kcs.edc.batch.config;
+package kcs.edc.batch.run;
 
-import kcs.edc.batch.cmmn.util.DateUtil;
-import kcs.edc.batch.jobs.saf.saf001l.Saf001lTasklet;
-import kcs.edc.batch.jobs.saf.saf001m.Saf001mTasklet;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
+import kcs.edc.batch.jobs.opd.opd001m.Opd001mTasklet;
+import kcs.edc.batch.jobs.opd.opd002m.Opd002mTasklet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
@@ -22,32 +22,35 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.util.List;
 
 /**
- * 국가기술표준원 제품안전정보센터 데이터수집 Batch Configuration
+ * 금융감독원 OpenDart 데이터수집 Batch Configuration
  */
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class SafJobConfig {
+public class OpdJobConfig {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.jobs.saf.isActive}")
+    @Value("${job.info.opd.isActive}")
     private Boolean isActive;
 
-    @Scheduled(cron = "${scheduler.jobs.saf.cron}")
+    /**
+     * 금융감독원 OpenDart 데이터수집 launcher 설정
+     */
+    @Scheduled(cron = "${job.info.opd.cron}")
     public void launcher() {
 
-        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
+        log.info(">>>>> {} launcher..... ", this.getClass().getSimpleName().substring(0, 6));
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())
                 .toJobParameters();
 
         try {
-            this.jobLauncher.run(safJob(), jobParameters);
+            this.jobLauncher.run(opdJob(), jobParameters);
         } catch (JobExecutionAlreadyRunningException e) {
             log.info(e.getMessage());
         } catch (JobRestartException e) {
@@ -60,67 +63,70 @@ public class SafJobConfig {
     }
 
     /**
-     * 국가기술표준원 제품안전정보센터 데이터수집 Batch Job 설정
+     * 금융감독원 OpenDart 데이터수집 Job 설정
      *
      * @return
      */
     @Bean
-    public Job safJob() {
+    public Job opdJob() {
 
-        return jobBuilderFactory.get("safJob")
-                .start(saf001mStep(null))
-                .next(saf001lStep(null, null))
+        return jobBuilderFactory.get(CmmnProperties.JOB_GRP_ID_OPD + CmmnProperties.POST_FIX_JOB)
+                .start(opd001mStep())
+                .next(opd002mStep(null))
                 .build();
     }
 
     /**
-     * 국가기술표준원 제품안전정보센터 제품안전정보 수집 Step 설정
+     * 금융감독원 OpenDart 기업개황정보 데이터수집 Step 설정
+     *
+     * @return
      */
     @Bean
     @JobScope
-    public Step saf001mStep(
-            @Value("#{jobParameters[baseDt]}") String baseDt) {
-        return stepBuilderFactory.get("saf001mStep")
-                .tasklet(saf001mTasklet(baseDt))
+    public Step opd001mStep() {
+
+        return stepBuilderFactory.get(CmmnProperties.JOB_ID_OPD001M + CmmnProperties.POST_FIX_STEP)
+                .tasklet(opd001mTasklet(null))
                 .build();
     }
 
     /**
-     * 국가기술표준원 제품안전정보센터 제품안전정보 수집 Tasklet 설정
+     * 금융감독원 OpenDart 기업개황정보 데이터수집 Tasklet 설정
+     *
+     * @param baseDt
+     * @return
      */
     @Bean
     @StepScope
-    public Saf001mTasklet saf001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
-        return new Saf001mTasklet();
+    public Opd001mTasklet opd001mTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
+        return new Opd001mTasklet();
     }
 
     /**
-     * 국가기술표준원 제품안전정보센터
-     * 제품안전정보 파생모델목록 수집, 연관인증번호 목록 수집, 제조공장목록 수집, 이미지목록 수집
-     * Step 설정
+     * 금융감독원 OpenDart  기업공시정보 데이터수집 Step 설정
+     *
+     * @return
      */
     @Bean
     @JobScope
-    public Step saf001lStep(
-            @Value("#{jobParameters[baseDt]}") String baseDt,
-            @Value("#{jobExecutionContext[certNumList]}") List<String> certNumList) {
-
-        return stepBuilderFactory.get("saf001lStep")
-                .tasklet(saf001lTasklet(baseDt, certNumList))
+    public Step opd002mStep(
+            @Value("#{jobExecutionContext[companyCodeList]}") List<String> companyCodeList) {
+        return stepBuilderFactory.get(CmmnProperties.JOB_ID_OPD002M + CmmnProperties.POST_FIX_STEP)
+                .tasklet(opd002mTasklet(null, null))
                 .build();
     }
 
     /**
-     * 국가기술표준원 제품안전정보센터
-     * 제품안전정보 파생모델목록 수집, 연관인증번호 목록 수집, 제조공장목록 수집, 이미지목록 수집
-     * Tasklet 설정
+     * 금융감독원 OpenDart 기업공시정보 데이터수집 Tasklet 설정
+     *
+     * @param baseDt
+     * @return
      */
     @Bean
     @StepScope
-    public Saf001lTasklet saf001lTasklet(
+    public Opd002mTasklet opd002mTasklet(
             @Value("#{jobParameters[baseDt]}") String baseDt,
-            @Value("#{jobExecutionContext[certNumList]}") List<String> certNumList) {
-        return new Saf001lTasklet();
+            @Value("#{jobExecutionContext[companyCodeList]}") List<String> companyCodeList) {
+        return new Opd002mTasklet();
     }
-
 }

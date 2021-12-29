@@ -1,6 +1,6 @@
 package kcs.edc.batch.cmmn.property;
 
-public class CmmnConst {
+public class CmmnProperties {
 
     /***********************************************************************************
      * JOB GROUP ID
@@ -14,6 +14,7 @@ public class CmmnConst {
     public static final String JOB_GRP_ID_OPD = "opd";
     public static final String JOB_GRP_ID_KOT = "kot";
     public static final String JOB_GRP_ID_UCT = "uct";
+    public static final String JOB_GRP_ID_COM = "com";
 
 
     /***********************************************************************************
@@ -65,12 +66,6 @@ public class CmmnConst {
     public static final String POST_FIX_FILE_MERGE_STEP = "FileMergeStep";
     public static final String POST_FIX_FILE_CLEAN_STEP = "FileCleanStep";
 
-    public static final int JOB_GRID_SIZE = 10;
-    public static final int JOB_POOL_SIZE = 10;
-
-    public static final int MAKE_FILE_SUCCESS = 0;
-    public static final int MAKE_FILE_FAIL = 1;
-
     /***********************************************************************************
      * FILE RESOURCE INFO
      ***********************************************************************************/
@@ -85,11 +80,18 @@ public class CmmnConst {
      ***********************************************************************************/
     public static final String CMMN_FILE_ACTION_TYPE_MERGE = "FILE_MERGE";
     public static final String CMMN_FILE_ACTION_TYPE_CLEAN = "FILE_CLEAN";
+    public static final String CMMN_FILE_ACTION_TYPE_BACKUP_CLEAN = "FILE_BACKUP_CLEAN";
+
+    /***********************************************************************************
+     * LOG_FILE INFO
+     ***********************************************************************************/
+    public static final String LOG_FILE_STEP = "EXT_FILE_CREATE";
+    public static final String LOG_JOB_STAT_SUCCEEDED = "Succeeded";
+    public static final String LOG_JOB_STAT_FAIL = "Fail";
 
     /***********************************************************************************
      * SCHEDULER CYCLE
      ***********************************************************************************/
-    public static final String SCHEDULER_CYCLE_YEARLY = "yearly";
     public static final String SCHEDULER_CYCLE_MONTHLY = "monthly";
     public static final String SCHEDULER_CYCLE_WEEKLY = "weekly";
     public static final String SCHEDULER_CYCLE_DAILY = "daily";

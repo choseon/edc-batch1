@@ -2,7 +2,7 @@ package kcs.edc.batch.jobs.big.timeline;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.big.timeline.vo.Big004mVO;
@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -26,7 +25,7 @@ import java.util.List;
  * News TimeLine (뉴스 타임라인)
  */
 @Slf4j
-public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionListener {
+public class Big004mTasklet extends CmmnJob implements Tasklet {
 
     private List<String> kcsKeywordList;
     private String kcsRgrsYn = "Y";
@@ -49,7 +48,7 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
 
         try {
             String resourcePath = this.fileService.getResourcePath();
-            String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_KCS_KEYWORD;
+            String filePath = resourcePath + CmmnProperties.RESOURCE_FILE_NAME_KCS_KEYWORD;
             this.kcsKeywordList = FileUtil.readTextFile(filePath);
 
             TimelineQueryVO queryVO = new TimelineQueryVO();
@@ -86,7 +85,6 @@ public class Big004mTasklet extends CmmnJob implements Tasklet, StepExecutionLis
             }
 
             // 파일생성
-//            this.fileService.makeFile(this.resultList, true);
             this.fileService.makeTempFile(this.resultList, DateUtil.getCurrentTime2());
 
         } catch (JsonProcessingException e) {

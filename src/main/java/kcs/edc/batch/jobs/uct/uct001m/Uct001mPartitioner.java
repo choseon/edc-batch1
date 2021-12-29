@@ -4,11 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import kcs.edc.batch.cmmn.jobs.CmmnPartitioner;
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.cmmn.service.FileService;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,7 +46,7 @@ public class Uct001mPartitioner extends CmmnPartitioner {
         try {
 
             String resourcePath = this.fileService.getResourcePath();
-            String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_UCT_AREA;
+            String filePath = resourcePath + CmmnProperties.RESOURCE_FILE_NAME_UCT_AREA;
             jsonArray = FileUtil.readJsonFile(filePath, "results");
 
             for (JsonElement jsonElement : jsonArray) {

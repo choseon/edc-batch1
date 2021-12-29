@@ -5,83 +5,108 @@ spring:
   profiles:
     activate:
       on-profile: local
-  batch:
-    job:
-      names: ${job.name:NONE}
-  datasource:
-    hikari: jdbc-url= jdbc:h2:mem:edcb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-#########################################################################################
-# Tomcat Settings
-#########################################################################################
 server:
-  port: 8080
+  port: 8080 # Tomcat Port
+#########################################################################################
+# Batch Job Information Settings
+#########################################################################################
+job:
+  info:
+    biz: # bizinfo.go.kr
+      cron: "0 20 01 * * ?" # 매일 01:20
+      isActive: true
+      cycle: daily
+      baseline: D-1
+      period: 1
+      nodes:
+        - biz001m # 기업마당 최신공고
+    big: # tools.kinds.or.kr
+      cron: "0 0 02 * * ?" # 매일 02:00
+      isActive: true
+      cycle: daily
+      baseline: D-1
+      period: 1
+      nodes:
+        - big001m # 빅카인즈 뉴스검색
+        - big002m # 빅카인즈 이슈 랭킹
+        - big003m # 빅카인즈 워드클라우드
+        - big004m # 빅카인즈 뉴스 타임라인
+    som: # Somtrend 서비스 종료
+      cron: "30 2 14 * * ?"
+      isActive: false
+      cycle: daily
+      baseline: D-1
+      period: 1
+      nodes:
+        - som001m
+        - som002m
+        - som003m
+        - som004m
+        - som005m
+    saf: # saftykorea.kr
+      cron: "0 30 01 * * ?" # 매일 01:30
+      isActive: false
+      cycle: daily
+      baseline: D-1
+      period: 1
+      nodes:
+        - saf001m # 국가기술표준원 제품안전정보센터 제품안전정보
+        - saf001l # 국가기술표준원 제품안전정보센터 제품안전정보 파생모델
+        - saf002l # 국가기술표준원 제품안전정보센터 제품안전정보 연관인증번호 목록
+        - saf003l # 국가기술표준원 제품안전정보센터 제품안전정보 제조공장 목록
+        - saf004l # 국가기술표준원 제품안전정보센터 제품안전정보 인증 이미지 목록
+    nav: # cafe.naver.com
+      cron: "0 10 01 * * ?" # 매일 01:10
+      isActive: false
+      cycle: daily
+      baseline: D-4
+      period: 1
+      nodes:
+        - nav003m # 네이버카페 나이키매니아 판맴데이터
+        - nav004m # 네이버카페 중고나라 판매데이터
+    kot: # apis.data.go.kr
+      cron: "0 40 02 * * ?" # 매일 02:40
+      isActive: false
+      cycle: daily
+      baseline: D-1
+      period: 7
+      nodes:
+        - kot001m # KOTRA 대한무역투자진흥공사 해외시장 뉴스 수집
+        - kot002m # KOTRA 대한무역투자진흥공사 해외시장 뉴스 키워드 수집
+    opd: # opendart.fss.or.kr
+      cron: "0 0 03 * * ?" # 매일 03:00
+      isActive: false
+      cycle: daily
+      baseline: D-1
+      period: 1
+      nodes:
+        - opd001m # OpenDart 기업 개황 정보 수집
+        - opd002m # OpenDart 기업 공시내역 수집
+    uct: # comtrade.un.org
+      cron: "0 0 06 1 * ?" # 매월 1일 06:00
+      isActive: true
+      cycle: monthly
+      baseline: Y-1
+      period: 2
+      nodes:
+        - uct001m # UN Comtrade 수출데이터
+    com: # 공통 배치 (파일관련)
+      cron: "0 0 05 1 * ?" # 매월 1일 05:00
+      isActive: true
+      cycle: monthly
 #########################################################################################
 # File Path Information Settings
 #########################################################################################
 file:
-  resourcePath: C:/dev/edc-batch/resources/
-  rootPath: C:/dev/hdata/
-  attachRootPath: C:/dev/app_nas/anl_data/
-  logDirName: ht_log001m
-  tempDirName: temp
-  dataFilePrefixName: ht_
-  dataFileExtension: txt
+  resourcePath: C:/dev/edc-batch/resources/ # 리소스파일 경로
+  dataRootPath: C:/dev/hdata/ # 데이터파일 루트경로
+  dataFilePrefixName: ht_ # 데이터파일 디렉토리명 접두어
+  dataFileExtension: txt # 파일 확장자
+  logDirName: ht_log001m # 로그파일 디렉토리명
+  tempDirName: temp # 임시파일 디렉토리명
+  backupDirName: backup # 백업파일 디렉토리명
+  cleanBackupBaseDt: -2 # 백업폴더 삭제 매월1일에 전전월달 폴더 삭제
+  attachRootPath: C:/dev/app_nas/anl_data/ # 첨부파일 루트경로
   attachDirName:
-    opd: BA204/opendart
-    kot: BA201/kotra
-#########################################################################################
-# Batch Scheduler(Cron) Information Settings
-#########################################################################################
-scheduler:
-  jobs:
-    biz:
-      isActive: true
-      cron: "0 04 11 * * ?"
-      cycle: daily
-      baseline: D-1
-      period: 1
-    big:
-      isActive: true
-      cron: "0 14 17 * * ?"
-      cycle: daily
-      baseline: D-1
-      period: 1
-    som:
-      isActive: false
-      cron: "30 2 14 * * ?"
-      cycle: daily
-      baseline: D-1
-      period: 1
-    saf:
-      isActive: false
-      cron: "0 0 07 * * ?"
-      cycle: daily
-      baseline: D-1
-      period: 1
-    nav:
-      isActive: false
-      cron: "0 10 12 * * ?"
-      cycle: daily
-      baseline: D-4
-      period: 1
-    kot:
-      isActive: false
-      cron: "0 10 12 * * ?"
-      cycle: daily
-      baseline: D-1
-      period: 7
-    opd:
-      isActive: false
-      cron: "0 10 12 * * ?"
-      cycle: daily
-      baseline: D-1
-      period: 1
-    uct:
-      isActive: true
-      cron: "0 0 05 1 * ?"
-      cycle: monthly
-      baseline: Y-1
-      period: 2
+    opd: BA204/opendart # OpenDart 첨부파일 디렉토리명
+    kot: BA201/kotra # Kotra 첨부파일 디렉토리명

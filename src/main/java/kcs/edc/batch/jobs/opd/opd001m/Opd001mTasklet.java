@@ -83,6 +83,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
 
         try {
             this.companyCodeList = getCompanyCodeList();
+            if(ObjectUtils.isEmpty(this.companyCodeList)) return null;
 
             for (String companyCode : this.companyCodeList) {
 
@@ -97,7 +98,7 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
                 this.resultList.add(resultVO);
 
                 log.info("[{}/{}] corpCode: {}, corpName: {}",
-                        this.itemCnt++, this.companyCodeList.size(), resultVO.getStock_code(), resultVO.getCorp_name());
+                        this.itemCnt++, this.companyCodeList.size(), resultVO.getCorp_code(), resultVO.getCorp_name());
             }
 
             // 파일생성
@@ -210,10 +211,8 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
     private List<String> xmlParsing(String xmlFilePath) throws ParserConfigurationException, IOException, SAXException, ParseException {
         log.info("dwnlFileNm >> {}", xmlFilePath);
 
-//        String lastModifyDt = getLastModifyDt(); //이전 배치를 실행한 날짜
-        String lastModifyDt = this.baseDt;
+        String lastModifyDt = this.baseDt; //이전 배치를 실행한 날짜
         String modifyDt = ""; //개황정보 수정일자
-        String stockCd = ""; //거래소코드
 
         List<String> resultList = new ArrayList<>();
 
@@ -237,10 +236,6 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
             Element eElement = (Element) nNode;
             //고유번호 가져오기
             modifyDt = eElement.getElementsByTagName("modify_date").item(0).getTextContent();
-            stockCd = eElement.getElementsByTagName("stock_code").item(0).getTextContent();
-            stockCd = stockCd.trim();
-
-//            if (ObjectUtils.isEmpty(stockCd)) continue;
 
             //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
             if (getNewDataYN(lastModifyDt, modifyDt)) {
@@ -266,7 +261,6 @@ public class Opd001mTasklet extends CmmnJob implements Tasklet {
         Date modifyDate = dateFormat.parse(modifyDt);
 
         //개황정보 수정일이 최종 배치 수행일자와 어제날짜 사이에 있으면 True
-//        if ((modifyDate.equals(lastModifyDate) || modifyDate.after(lastModifyDate)) && (modifyDate.equals(yesterDay) || modifyDate.before(yesterDay))) {
         if ((modifyDate.equals(lastModifyDate) || modifyDate.before(lastModifyDate)) && (modifyDate.equals(yesterDay) || modifyDate.after(yesterDay))) {
             returnValue = true;
         }

@@ -1,8 +1,8 @@
-package kcs.edc.batch.config;
+package kcs.edc.batch.run;
 
 
 import kcs.edc.batch.cmmn.jobs.CmmnFileTasklet;
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.jobs.big.issue.Big002mTasklet;
 import kcs.edc.batch.jobs.big.news.Big001mTasklet;
 import kcs.edc.batch.jobs.big.ranking.Big005mTasklet;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 한국언론진흥재단 빅카인드 데이터수집 Batch Configuration
+ * 한국언론진흥재단 빅카인즈 데이터수집 Batch Configuration
  */
 @Slf4j
 @Configuration
@@ -41,14 +41,17 @@ public class BigJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
     private final JobLauncher jobLauncher;
 
-    @Value("${scheduler.jobs.big.isActive}")
+    @Value("${job.info.big.isActive}")
     private Boolean isActive;
 
-    @Scheduled(cron = "${scheduler.jobs.big.cron}")
+    /**
+     * 한국언론진흥재단 빅카인즈 데이터수집 launcher 설정
+     */
+    @Scheduled(cron = "${job.info.big.cron}")
     public void launcher() {
 
-        log.info(">>>>> {} launcher..... isActive: {}", this.getClass().getSimpleName().substring(0, 6), this.isActive);
         if (!this.isActive) return;
+        log.info(">>>>> {} launcher..... ", this.getClass().getSimpleName().substring(0, 6));
 
         JobParameters jobParameters = new JobParametersBuilder()
                 .addLong("time", System.currentTimeMillis())
@@ -68,7 +71,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 데이터수집 Batch Job 설정
+     * 한국언론진흥재단 빅카인즈 데이터수집 Batch Job 설정
      *
      * @return
      */
@@ -105,7 +108,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 뉴스검색 수집 Step 설정
+     * 한국언론진흥재단 빅카인즈 뉴스검색 수집 Step 설정
      *
      * @param baseDt
      * @param keywordList
@@ -129,7 +132,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 뉴스검색 수집 Tasklet 설정
+     * 한국언론진흥재단 빅카인즈 뉴스검색 수집 Tasklet 설정
      *
      * @param baseDt
      * @param keywordList
@@ -149,7 +152,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 이슈랭킹 수집 Step 설정
+     * 한국언론진흥재단 빅카인즈 이슈랭킹 수집 Step 설정
      *
      * @param baseDt
      * @return
@@ -165,7 +168,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 이슈랭킹 수집 Tasklet 설정
+     * 한국언론진흥재단 빅카인즈 이슈랭킹 수집 Tasklet 설정
      *
      * @param baseDt
      * @return
@@ -178,7 +181,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 워드클라우드 수집 Step 설정
+     * 한국언론진흥재단 빅카인즈 워드클라우드 수집 Step 설정
      *
      * @param baseDt
      * @param keywordList
@@ -199,7 +202,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 워드클라우드 수집 Tasklet 설정
+     * 한국언론진흥재단 빅카인즈 워드클라우드 수집 Tasklet 설정
      */
     @Bean
     @StepScope
@@ -212,7 +215,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 뉴스타임라인 수집 Step 설정
+     * 한국언론진흥재단 빅카인즈 뉴스타임라인 수집 Step 설정
      */
     @Bean
     @JobScope
@@ -223,7 +226,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 뉴스타임라인 수집 Tasklet 설정
+     * 한국언론진흥재단 빅카인즈 뉴스타임라인 수집 Tasklet 설정
      */
     @Bean
     @StepScope
@@ -232,7 +235,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 뉴스타임라인 수집 Step 설정
+     * 한국언론진흥재단 빅카인즈 뉴스타임라인 수집 Step 설정
      */
     @Bean
     @JobScope
@@ -243,7 +246,7 @@ public class BigJobConfig {
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 뉴스타임라인 수집  Tasklet 설정
+     * 한국언론진흥재단 빅카인즈 뉴스타임라인 수집  Tasklet 설정
      */
     @Bean
     @StepScope
@@ -253,29 +256,31 @@ public class BigJobConfig {
 
 
     /**
-     * 한국언론진흥재단 빅카인드 파일 병합 Step 설정
+     * 한국언론진흥재단 빅카인즈 파일 병합 Step 설정
+     *
      * @return
      */
     @Bean
     @JobScope
     public Step bigFileMergeStep() {
 
-        return stepBuilderFactory.get(CmmnConst.JOB_GRP_ID_BIG + CmmnConst.POST_FIX_FILE_MERGE_STEP)
+        return stepBuilderFactory.get(CmmnProperties.JOB_GRP_ID_BIG + CmmnProperties.POST_FIX_FILE_MERGE_STEP)
                 .tasklet(bigFileMergeTasklet(null))
                 .build();
     }
 
     /**
-     * 한국언론진흥재단 빅카인드 파일병합 Tasklet 설정
+     * 한국언론진흥재단 빅카인즈 파일병합 Tasklet 설정
+     *
      * @return
      */
     @Bean
     @StepScope
     public CmmnFileTasklet bigFileMergeTasklet(@Value("#{jobParameters[baseDt]}") String baseDt) {
         List<String> jobList = new ArrayList<>();
-        jobList.add(CmmnConst.JOB_ID_BIG001M);
-        jobList.add(CmmnConst.JOB_ID_BIG003M);
-        jobList.add(CmmnConst.JOB_ID_BIG004M);
-        return new CmmnFileTasklet(CmmnConst.CMMN_FILE_ACTION_TYPE_MERGE, jobList);
+        jobList.add(CmmnProperties.JOB_ID_BIG001M);
+        jobList.add(CmmnProperties.JOB_ID_BIG003M);
+        jobList.add(CmmnProperties.JOB_ID_BIG004M);
+        return new CmmnFileTasklet(CmmnProperties.CMMN_FILE_ACTION_TYPE_MERGE, jobList);
     }
 }

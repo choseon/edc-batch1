@@ -100,7 +100,7 @@ public class Opd001mVO {
     private String acc_mt; // 결산월
 
     @JsonProperty
-    private String corp_code; // 정식회사명칭
+    private String corp_code; // 고유번호
 
     /**
      * CLET_FILE_CRTN_DT 수집파일생성일자

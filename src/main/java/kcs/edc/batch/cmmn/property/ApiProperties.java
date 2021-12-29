@@ -49,10 +49,10 @@ public class ApiProperties {
     /**
      * 전체 OPEN API중 특정잡의 정보를 조회한다.
      *
-     * @param jobName 특정 jobName
+     * @param jobId
      * @return
      */
-    public ApiProp getApiProp(String jobName) {
-        return this.jobs.get(jobName);
+    public ApiProp getApiProp(String jobId) {
+        return this.jobs.get(jobId);
     }
 }

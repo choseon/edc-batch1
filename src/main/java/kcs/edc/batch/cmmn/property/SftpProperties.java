@@ -31,7 +31,6 @@ public class SftpProperties {
         private String password;
         private String remoteFilePath;
         private String remoteFileName;
-        private String downloadFilePath;
     }
 
     public SftpProp getCurrentJobProp(String jobName) {

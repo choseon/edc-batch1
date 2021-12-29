@@ -4,6 +4,14 @@
 spring:
   profiles:
     active: local
+  batch:
+    job:
+      names: ${job.name:NONE}
+  datasource:
+    hikari: jdbc-url= jdbc:h2:mem:edcb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
 #########################################################################################
 # OpenApi Information Settings
 #########################################################################################
@@ -115,14 +123,6 @@ api:
       baseUrl: http://www.safetykorea.kr/openapi/api/cert/certificationDetail.json
       param:
         certNum:
-    eba:
-      baseUrl: https://svcs.ebay.com/services/search/FindingService/v1
-    eba001m:
-      baseUrl:
-    nav001m:
-      baseUrl: https://dev.apis.naver.com/customs-service/shopping-product-api/getOverseasProducts
-    nav002m:
-      baseUrl: https://dev.apis.naver.com/customs-service/shopping-product-api/getOverseasProducts
     nav003m:
       baseUrl: https://tmr21th210.cafe24.com
     nav004m:
@@ -142,8 +142,6 @@ api:
     opd:
       header:
         crtfcKey: 1d469738d973a289b44a4e923fe1466dcf18e5a4 #운영
-#        crtfcKey: 8c45ec2be39327de0815ab43c7a766b1d47bbcd6 #로컬
-#        crtfcKey: f1f19f844829a7a7154088ee926b6a9085f7eaad #로컬
     opd001m:
       baseUrl: https://opendart.fss.or.kr/api/company.json
       param:
@@ -181,7 +179,6 @@ sftp:
       password: grunet2013!
       remoteFilePath: /opt/merge/HT_NAV003M/
       remoteFileName: HT_NAV003M
-      downloadFilePath: ../hdata/ht_nav003m/temp/
     nav004m:
       host: 210.114.22.185
       port: 16001
@@ -189,20 +186,6 @@ sftp:
       password: grunet2013!
       remoteFilePath: /opt/merge/HT_NAV004M/
       remoteFileName: HT_NAV004M
-      downloadFilePath: ../hdata/ht_nav004m/temp/
-#sftp:
-#    host: 210.114.22.185
-#    port: 16001
-#    user: root
-#    password: grunet2013!
-#    remoteFilePath: /opt/merge/HT_NAV003M/HT_NAV003M_%s
-#    nav003m:
-#      remoteDirName: HT_NAV003M
-#      remoteFileName: HT_NAV003M_%s
-#    nav004m:
-#      remoteDirName: HT_NAV003M
-#      remoteFileName: HT_NAV003M_%s
-
 #########################################################################################
 # Batch Job Specific Information Settings
 #########################################################################################
@@ -218,7 +201,6 @@ opd:
   viewerUrl: https://dart.fss.or.kr/dsaf001/main.do # 공시 보고서 뷰어 URL
   attachDBPath: BA204/opendart/ # DB에 저장될 첨부파일 root 경로
 uct:
-  areaListFileName: uct_area.txt
   gridSize: 1 # multiThread 갯수
 
 

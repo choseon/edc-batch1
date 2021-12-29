@@ -8,7 +8,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.uct.uct001m.vo.Uct001mVO;
@@ -58,9 +58,10 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
     public void beforeStep(StepExecution stepExecution) {
         super.beforeStep(stepExecution);
 
+        // UN Comtrade는 일배치와 패턴이 달라 baseDt, startDt, endDt를 다시 셋팅해준다
         this.baseDt = DateUtil.getCurrentDate("yyyyMM");
         if(ObjectUtils.isEmpty(this.ps)) {
-            String baseLine = this.schedulerService.getBaseLine();
+            String baseLine = this.jobService.getBaseLine();
             this.endDt = DateUtil.getBaseLineDate(baseLine).substring(0,4);
             this.startDt = DateUtil.getOffsetYear(this.endDt, (this.period - 1) * -1);
         } else {
@@ -69,7 +70,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
             this.endDt = this.ps;
         }
 
-        // baseDt를 초기화하므로 fileService도 초기화 해줘야한다.
+        // baseDt를 초기화하므로 fileService도 초기화한다
         this.fileService.init(this.jobId, this.baseDt);
     }
 
@@ -106,7 +107,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 log.info(">>> START CAll API >>> ps: {}", ps);
 
                 psList.add(ps);
-                this.fileService.initFileVO();
+                this.fileService.initFileVO(this.jobId);
                 this.fileService.getTempFileVO().setAppendingFilePath(ps); // temp파일 path 추가
 
                 if (this.fileService.isTempPathExsists() && this.fileService.getTempFileCnt() == this.totalFileCnt) {
@@ -124,7 +125,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
             if (!success) return null;
             for (String ps : psList) {
 
-                this.fileService.initFileVO();
+                this.fileService.initFileVO(this.jobId);
                 this.fileService.getTempFileVO().setAppendingFilePath(ps); // temp파일 path 추가
 
                 // 최종검증
@@ -137,7 +138,6 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                 runMergeScriptFile(ps);
 
                 // 리눅스에서 병합된 파일을 2차 파일병합
-//                this.fileService.mergeTempFile(ps + "_" + DateUtil.getCurrentDate("yyyyMM"));
                 this.fileService.mergeTempFile(ps);
             }
 
@@ -289,7 +289,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
         JsonArray jsonArray = null;
 
         String resourcePath = this.fileService.getResourcePath();
-        String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_UCT_AREA;
+        String filePath = resourcePath + CmmnProperties.RESOURCE_FILE_NAME_UCT_AREA;
         jsonArray = FileUtil.readJsonFile(filePath, "results");
 
         for (JsonElement jsonElement : jsonArray) {
@@ -338,10 +338,13 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
         }
 
         // 스크립트 파일 생성
-        String scriptPath = this.fileService.getResourcePath() + CmmnConst.RESOURCE_FILE_NAME_UCT_SCRIPT;
+        String scriptPath = this.fileService.getResourcePath() + CmmnProperties.RESOURCE_FILE_NAME_UCT_SCRIPT;
         FileUtil.makeFile(scriptPath, stringBuffer.toString());
         log.info("makeScriptFile: {}", scriptPath);
         log.info("script: {}", stringBuffer.toString());
+
+        // 파일 권한 설정
+        FileUtil.setFilePermission(scriptPath);
 
         // 스크립트 파일 실행
         Process process = Runtime.getRuntime().exec(scriptPath);

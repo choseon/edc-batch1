@@ -2,7 +2,7 @@ package kcs.edc.batch.jobs.saf.saf001l;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.cmmn.util.Base64;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.jobs.saf.saf001l.vo.Saf001lVO;
@@ -56,9 +56,7 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
                 URI uri = builder.build().toUri();
 
                 // send API
-                Saf001lVO resultVO = null;
-
-                resultVO = this.apiService.sendApiExchange(uri, HttpMethod.GET, entity, Saf001lVO.class);
+                Saf001lVO resultVO = this.apiService.sendApiExchange(uri, HttpMethod.GET, entity, Saf001lVO.class);
 
                 if (Objects.isNull(resultVO)) continue;
 
@@ -71,57 +69,54 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
             }
 
         } catch (JsonProcessingException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF001L, e.getMessage());
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF002L, e.getMessage());
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF003L, e.getMessage());
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF004L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF001L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF002L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF003L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF004L, e.getMessage());
         }
 
         // HT_SAF001L 파생모델목록 파일생성
         try {
-            this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF001L);
+            this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF001L);
             List<Saf001lVO.DerivationModelItem> derivationModelList = getDerivationModelList(resultList);
-            this.fileService.makeFile(CmmnConst.JOB_ID_SAF001L, derivationModelList);
+            this.fileService.makeFile(CmmnProperties.JOB_ID_SAF001L, derivationModelList);
         } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF001L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF001L, e.getMessage());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF001L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF001L, e.getMessage());
         }
 
         // HT_SAF002L 연관인증번호 목록 파일생성
         try {
-            this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF002L);
-//            this.fileService.setStartTime(DateUtil.getCurrentTime());
+            this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF002L);
             List<Saf001lVO.SimilarCertItem> similarCertificationList = getSimilarCertificationList(resultList);
-            this.fileService.makeFile(CmmnConst.JOB_ID_SAF002L, similarCertificationList);
+            this.fileService.makeFile(CmmnProperties.JOB_ID_SAF002L, similarCertificationList);
         } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF002L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF002L, e.getMessage());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF002L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF002L, e.getMessage());
         }
 
         // HT_SAF003L 제조공장목록 파일생성
         try {
-            this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF003L);
-//            this.fileService.setStartTime(DateUtil.getCurrentTime());
+            this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF003L);
             List<Saf001lVO.FatoryItem> factoryList = getFactoryList(resultList);
-            this.fileService.makeFile(CmmnConst.JOB_ID_SAF003L, factoryList);
+            this.fileService.makeFile(CmmnProperties.JOB_ID_SAF003L, factoryList);
         } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF003L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF003L, e.getMessage());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF003L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF003L, e.getMessage());
         }
 
         // HT_SAF004L 이미지목록 파일생성
         try {
-            this.writeCmmnLogStart(CmmnConst.JOB_ID_SAF004L);
-//            this.fileService.setStartTime(DateUtil.getCurrentTime());
+            this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF004L);
             List<Saf001lVO.CertificationImageUrlItem> certificationImageUrlList = getCertificationImageUrlList(resultList);
-            this.fileService.makeFile(CmmnConst.JOB_ID_SAF004L, certificationImageUrlList);
+            this.fileService.makeFile(CmmnProperties.JOB_ID_SAF004L, certificationImageUrlList);
         } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF004L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF004L, e.getMessage());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_SAF004L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF004L, e.getMessage());
         }
 
 

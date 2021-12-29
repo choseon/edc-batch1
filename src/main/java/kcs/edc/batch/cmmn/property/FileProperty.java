@@ -24,7 +24,7 @@ public class FileProperty {
     /**
      * 파일 루트경로
      */
-    private String rootPath;
+    private String dataRootPath;
 
     /**
      * 첨부파일 루트경로
@@ -40,6 +40,13 @@ public class FileProperty {
      * 임시파일 디렉토리명
      */
     private String tempDirName;
+
+    /**
+     * 백업파일 디렉토리명
+     */
+    private String backupDirName;
+
+    private int cleanBackupBaseDt;
 
     /**
      * 데이터파일 테이블명 접두어(ht_)

@@ -2,7 +2,7 @@ package kcs.edc.batch.jobs.kot.kot001m;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.kot.kot001m.vo.Kot001mVO;
@@ -66,7 +66,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
         super.beforeStep(stepExecution);
 
         this.scriptPath = this.fileService.getResourcePath();
-        this.scriptFileName = CmmnConst.RESOURCE_FILE_NAME_KOT_SCRIPT;
+        this.scriptFileName = CmmnProperties.RESOURCE_FILE_NAME_KOT_SCRIPT;
         this.attachedFilePath = this.fileService.getAttachedFilePath();
     }
 
@@ -138,35 +138,35 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
             }
 
         } catch (JsonProcessingException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
         } catch (IOException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
         } catch (RestClientException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
         } catch (ParseException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
         }
 
         // kot001m 파일생성
         try {
-            this.fileService.makeFile(CmmnConst.JOB_ID_KOT001M, this.resultList);
+            this.fileService.makeFile(CmmnProperties.JOB_ID_KOT001M, this.resultList);
         } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT001M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
         }
 
         // kot002m 파일생성
         try {
-            this.fileService.makeFile(CmmnConst.JOB_ID_KOT002M, this.newsKeywordList);
+            this.fileService.makeFile(CmmnProperties.JOB_ID_KOT002M, this.newsKeywordList);
         } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnConst.JOB_ID_KOT002M, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
         }
 
         // 이미지파일 다운로드 실행
@@ -221,7 +221,7 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
     }
 
     /**
-     * 소스에서 url 변환
+     * 소스에서 src url 변환
      *
      * @param source html소스
      * @return
@@ -340,6 +340,9 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
         // 스크립트 파일 생성
         String filePath = this.scriptPath + this.scriptFileName;
         FileUtil.makeFile(filePath, source);
+
+        // 스크립트 파일 권한 설정
+        FileUtil.setFilePermission(filePath);
 
         // 스크립트 파일 실행
         log.info("runScriptFile: {}", filePath);

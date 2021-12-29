@@ -2,7 +2,7 @@ package kcs.edc.batch.jobs.som.som001m;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import kcs.edc.batch.cmmn.jobs.CmmnJob;
-import kcs.edc.batch.cmmn.property.CmmnConst;
+import kcs.edc.batch.cmmn.property.CmmnProperties;
 import kcs.edc.batch.cmmn.util.DateUtil;
 import kcs.edc.batch.cmmn.util.FileUtil;
 import kcs.edc.batch.jobs.som.som001m.vo.KCSFrequencyVO;
@@ -127,7 +127,7 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
             // kcs_keyword_for_somtrend.txt list
 //            String resourcePath = fileProperty.getResourcePath();
             String resourcePath = this.fileService.getResourcePath();
-            String filePath = resourcePath + CmmnConst.RESOURCE_FILE_NAME_SOM_KCS_KEWORD;
+            String filePath = resourcePath + CmmnProperties.RESOURCE_FILE_NAME_SOM_KCS_KEWORD;
             keywordList = FileUtil.readTextFile(filePath);
             if (keywordList.size() == 0) {
                 log.info("filePath {} is null ", filePath);

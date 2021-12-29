@@ -13,6 +13,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,19 +35,20 @@ public class Nav004mTasklet extends CmmnJob implements Tasklet {
 
         try {
 
-            List<Object[]> csvToList = new ArrayList<>();
-
             // set JobId
-            this.sftpService.init(jobId);
+            this.sftpService.init(this.jobId);
             // SFTP Connection
             ChannelSftp channelSftp = this.sftpService.connectSFTP();
 
-            String fileName = String.format(this.fileNamePattern, jobId.toUpperCase(), this.baseDt);
-            String downloadPath = this.fileService.getTempPath(jobId);
+            String fileName = String.format(this.fileNamePattern, this.jobId.toUpperCase(), this.baseDt);
+            String downloadPath = this.fileService.getTempPath();
             // File SFTP Download
             File downloadFile = this.sftpService.download(channelSftp, fileName, downloadPath);
+
             // CSV -> List Conversion
-            csvToList = FileUtil.readCsvFile(downloadFile.getPath());
+            List<Object[]> csvToList = FileUtil.readCsvFile(downloadFile.getPath());
+            if(ObjectUtils.isEmpty(csvToList)) return null;
+
             // header 삭제
             csvToList.remove(0);
             // 수집파일생성일자 현재날짜로 셋팅
@@ -55,7 +57,7 @@ public class Nav004mTasklet extends CmmnJob implements Tasklet {
             }
 
             // Make TSV File
-            this.fileService.makeFile(jobId, csvToList);
+            this.fileService.makeFile(csvToList);
             // Download TempFile 삭제
             this.fileService.cleanTempFile();
 
