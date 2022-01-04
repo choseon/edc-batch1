@@ -129,15 +129,15 @@ public class Opd002mTasklet extends CmmnJob implements Tasklet {
             }
 
         } catch (FileNotFoundException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (IOException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (InterruptedException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (RestClientException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } finally {
             this.writeCmmnLogEnd();
         }

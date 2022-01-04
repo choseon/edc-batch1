@@ -68,59 +68,58 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
                         resultData.getFactories().size(), resultData.getCertificationImageUrls().size());
             }
 
+            // HT_SAF001L 파생모델목록 파일생성
+            try {
+                this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF001L);
+                List<Saf001lVO.DerivationModelItem> derivationModelList = getDerivationModelList(resultList);
+                this.fileService.makeFile(CmmnProperties.JOB_ID_SAF001L, derivationModelList);
+            } catch (FileNotFoundException e) {
+                this.makeErrorLog(CmmnProperties.JOB_ID_SAF001L, e.toString());
+            } catch (IllegalAccessException e) {
+                this.makeErrorLog(CmmnProperties.JOB_ID_SAF001L, e.toString());
+            }
+
+            // HT_SAF002L 연관인증번호 목록 파일생성
+            try {
+                this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF002L);
+                List<Saf001lVO.SimilarCertItem> similarCertificationList = getSimilarCertificationList(resultList);
+                this.fileService.makeFile(CmmnProperties.JOB_ID_SAF002L, similarCertificationList);
+            } catch (FileNotFoundException e) {
+                this.makeErrorLog(CmmnProperties.JOB_ID_SAF002L, e.toString());
+            } catch (IllegalAccessException e) {
+                this.makeErrorLog(CmmnProperties.JOB_ID_SAF002L, e.toString());
+            }
+
+            // HT_SAF003L 제조공장목록 파일생성
+            try {
+                this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF003L);
+                List<Saf001lVO.FatoryItem> factoryList = getFactoryList(resultList);
+                this.fileService.makeFile(CmmnProperties.JOB_ID_SAF003L, factoryList);
+            } catch (FileNotFoundException e) {
+                this.makeErrorLog(CmmnProperties.JOB_ID_SAF003L, e.toString());
+            } catch (IllegalAccessException e) {
+                this.makeErrorLog(CmmnProperties.JOB_ID_SAF003L, e.toString());
+            }
+
+            // HT_SAF004L 이미지목록 파일생성
+            try {
+                this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF004L);
+                List<Saf001lVO.CertificationImageUrlItem> certificationImageUrlList = getCertificationImageUrlList(resultList);
+                this.fileService.makeFile(CmmnProperties.JOB_ID_SAF004L, certificationImageUrlList);
+            } catch (FileNotFoundException e) {
+                this.makeErrorLog(CmmnProperties.JOB_ID_SAF004L, e.toString());
+            } catch (IllegalAccessException e) {
+                this.makeErrorLog(CmmnProperties.JOB_ID_SAF004L, e.toString());
+            }
+
         } catch (JsonProcessingException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF001L, e.getMessage());
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF002L, e.getMessage());
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF003L, e.getMessage());
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF004L, e.getMessage());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF001L, e.toString());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF002L, e.toString());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF003L, e.toString());
+            this.makeErrorLog(CmmnProperties.JOB_ID_SAF004L, e.toString());
+        } finally {
+            this.writeCmmnLogEnd();
         }
-
-        // HT_SAF001L 파생모델목록 파일생성
-        try {
-            this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF001L);
-            List<Saf001lVO.DerivationModelItem> derivationModelList = getDerivationModelList(resultList);
-            this.fileService.makeFile(CmmnProperties.JOB_ID_SAF001L, derivationModelList);
-        } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF001L, e.getMessage());
-        } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF001L, e.getMessage());
-        }
-
-        // HT_SAF002L 연관인증번호 목록 파일생성
-        try {
-            this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF002L);
-            List<Saf001lVO.SimilarCertItem> similarCertificationList = getSimilarCertificationList(resultList);
-            this.fileService.makeFile(CmmnProperties.JOB_ID_SAF002L, similarCertificationList);
-        } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF002L, e.getMessage());
-        } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF002L, e.getMessage());
-        }
-
-        // HT_SAF003L 제조공장목록 파일생성
-        try {
-            this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF003L);
-            List<Saf001lVO.FatoryItem> factoryList = getFactoryList(resultList);
-            this.fileService.makeFile(CmmnProperties.JOB_ID_SAF003L, factoryList);
-        } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF003L, e.getMessage());
-        } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF003L, e.getMessage());
-        }
-
-        // HT_SAF004L 이미지목록 파일생성
-        try {
-            this.writeCmmnLogStart(CmmnProperties.JOB_ID_SAF004L);
-            List<Saf001lVO.CertificationImageUrlItem> certificationImageUrlList = getCertificationImageUrlList(resultList);
-            this.fileService.makeFile(CmmnProperties.JOB_ID_SAF004L, certificationImageUrlList);
-        } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF004L, e.getMessage());
-        } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_SAF004L, e.getMessage());
-        }
-
-
-        this.writeCmmnLogEnd();
 
         return RepeatStatus.FINISHED;
     }
@@ -256,29 +255,29 @@ public class Saf001lTasklet extends CmmnJob implements Tasklet {
                     if (!((read = is.read(buffer, 0, buffer.length)) != -1)) break;
                     baos.write(buffer, 0, read);
                 } catch (IOException e) {
-                    log.info(e.getMessage());
+                    log.info(e.toString());
                 }
             }
             baos.flush();
             result = baos.toByteArray();
 
         } catch (MalformedURLException e) {
-            log.info(e.getMessage());
+            log.info(e.toString());
         } catch (IOException e) {
-            log.info(e.getMessage());
+            log.info(e.toString());
         } finally {
             if (baos != null) {
                 try {
                     baos.close();
                 } catch (IOException e) {
-                    log.info(e.getMessage());
+                    log.info(e.toString());
                 }
             }
             if (is != null) {
                 try {
                     is.close();
                 } catch (IOException e) {
-                    log.info(e.getMessage());
+                    log.info(e.toString());
                 }
             }
         }

@@ -6,7 +6,9 @@ spring:
     activate:
       on-profile: test
 server:
-  port: 8081 # Tomcat Port
+  port: 8083 # Tomcat Port
+logging:
+  config: classpath:log4j2-test.xml
 #########################################################################################
 # Batch Job Information Settings
 #########################################################################################

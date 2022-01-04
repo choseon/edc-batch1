@@ -62,13 +62,13 @@ public class Nav004mTasklet extends CmmnJob implements Tasklet {
             this.fileService.cleanTempFile();
 
         } catch (JSchException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (SftpException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (IOException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } finally {
             this.writeCmmnLogEnd();
         }

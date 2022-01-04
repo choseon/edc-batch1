@@ -16,6 +16,9 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -23,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.text.ParseException;
@@ -137,48 +141,36 @@ public class Kot001mTasklet extends CmmnJob implements Tasklet {
                 }
             }
 
-        } catch (JsonProcessingException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
-        } catch (IOException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
-        } catch (RestClientException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
-        } catch (ParseException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
-        }
-
-        // kot001m 파일생성
-        try {
+            // kot001m 파일생성
             this.fileService.makeFile(CmmnProperties.JOB_ID_KOT001M, this.resultList);
-        } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
-        } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.getMessage());
-        }
 
-        // kot002m 파일생성
-        try {
+            // kot002m 파일생성
             this.fileService.makeFile(CmmnProperties.JOB_ID_KOT002M, this.newsKeywordList);
-        } catch (FileNotFoundException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
-        } catch (IllegalAccessException e) {
-            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.getMessage());
-        }
 
-        // 이미지파일 다운로드 실행
-        try {
+            // 이미지파일 다운로드 실행
             execImageDownload();
-        } catch (IOException e) {
-            log.info(e.getMessage());
-        } catch (InterruptedException e) {
-            log.info(e.getMessage());
-        }
 
-        this.writeCmmnLogEnd();
+        } catch (JsonProcessingException e) {
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.toString());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.toString());
+        } catch (IOException e) {
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.toString());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.toString());
+        } catch (RestClientException e) {
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.toString());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.toString());
+        } catch (ParseException e) {
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.toString());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.toString());
+        } catch (IllegalAccessException e) {
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.toString());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.toString());
+        } catch (InterruptedException e) {
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT001M, e.toString());
+            this.makeErrorLog(CmmnProperties.JOB_ID_KOT002M, e.toString());
+        } finally {
+            this.writeCmmnLogEnd();
+        }
 
         return RepeatStatus.FINISHED;
     }

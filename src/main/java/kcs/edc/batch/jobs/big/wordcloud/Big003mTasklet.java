@@ -13,6 +13,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestClientException;
 
 import java.io.FileNotFoundException;
@@ -58,6 +59,10 @@ public class Big003mTasklet extends CmmnJob implements Tasklet {
             queryVO.getArgument().getPublished_at().setFrom(DateUtil.getFormatDate(this.startDt));
             queryVO.getArgument().getPublished_at().setUntil(DateUtil.getFormatDate(this.endDt));
 
+            if(ObjectUtils.isEmpty(this.keywordList)) {
+                throw new NullPointerException("keywordList is null");
+            }
+
             for (String keyword : this.keywordList) {
                 queryVO.getArgument().setQuery(keyword);
 
@@ -78,8 +83,8 @@ public class Big003mTasklet extends CmmnJob implements Tasklet {
                     item.setLastChngDtlDttm(DateUtil.getCurrentTime());
                     this.resultList.add(item);
 
-                    log.info("[{}/{}] {} >> keyword: {}, date: {}, name: {}",
-                            this.itemCnt++, this.keywordList.size() * nodes.size(), this.jobId, keyword, this.endDt, item.getName());
+                    log.info("[{}] {} >> keyword: {}, date: {}, name: {}",
+                            this.itemCnt++, this.jobId, keyword, this.endDt, item.getName());
                 }
             }
 
@@ -87,15 +92,17 @@ public class Big003mTasklet extends CmmnJob implements Tasklet {
             this.fileService.makeTempFile(this.resultList, DateUtil.getCurrentTime2());
 
         } catch (JsonProcessingException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (RestClientException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (FileNotFoundException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (ParseException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
+        } catch (NullPointerException e) {
+            this.makeErrorLog(e.toString());
         } finally {
             this.writeCmmnLogEnd();
         }

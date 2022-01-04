@@ -84,15 +84,15 @@ public class Big002mTasklet extends CmmnJob implements Tasklet {
             this.fileService.makeFile(this.resultList);
 
         } catch (JsonProcessingException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (FileNotFoundException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (RestClientException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (ParseException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } finally {
             this.writeCmmnLogEnd();
         }

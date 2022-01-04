@@ -142,17 +142,17 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
             }
 
         } catch (FileNotFoundException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (JsonProcessingException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (IllegalAccessException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (IOException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (ParseException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } catch (InterruptedException e) {
-            this.makeErrorLog(e.getMessage());
+            this.makeErrorLog(e.toString());
         } finally {
             if (ObjectUtils.isEmpty(this.threadNum)) {
                 this.writeCmmnLogEnd();
@@ -233,7 +233,7 @@ public class Uct001mTasklet extends CmmnJob implements Tasklet {
                     } catch (RestClientException e) {
 
                         if (e.getMessage().contains("UnknownHostException")) {
-                            this.makeErrorLog(e.getMessage());
+                            this.makeErrorLog(e.toString());
                             return -1;
                         }
                         if (e.getMessage().contains("500")) {

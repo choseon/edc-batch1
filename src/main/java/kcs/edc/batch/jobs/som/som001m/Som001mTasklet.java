@@ -157,11 +157,11 @@ public class Som001mTasklet extends CmmnJob implements Tasklet {
                 resultVO = this.apiService.sendApiForEntity(uri, KCSFrequencyVO.class);
             } catch (JsonProcessingException e) {
                 log.info(e.getMessage());
-                this.makeErrorLog(e.getMessage());
+                this.makeErrorLog(e.toString());
                 return null;
             } catch (RestClientException e) {
                 log.info(e.getMessage());
-                this.makeErrorLog(e.getMessage());
+                this.makeErrorLog(e.toString());
                 return null;
             }
             if (Objects.isNull(resultVO)) continue;

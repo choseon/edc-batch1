@@ -6,7 +6,9 @@ spring:
     activate:
       on-profile: prod.daily
 server:
-  port: 8082 # Tomcat Port
+  port: 8080 # Tomcat Port
+logging:
+  config: classpath:log4j2-prod.daily.xml
 #########################################################################################
 # Batch Job Information Settings
 #########################################################################################
@@ -99,7 +101,7 @@ job:
 # File Path Information Settings
 #########################################################################################
 file:
-  resourcePath: /data/edc-batch/prod.daily/resources/ # 리소스파일 경로
+  resourcePath: /data/edc-batch/prod/resources/ # 리소스파일 경로
   dataRootPath: /hdata/ # 데이터파일 루트경로
   dataFilePrefixName: ht_ # 테이블명 접두어
   dataFileExtension: txt # 파일 확장자
