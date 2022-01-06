@@ -468,6 +468,6 @@ public class FileService {
         this.backupFileVO.setAppendingFilePath(baseDt);
         FileUtil.deleteFile(this.backupFileVO.getFilePath());
 
-        log.info("cleanBackupFile: {}", this.backupFileVO.getFilePath());
+//        log.info("cleanBackupFile: {}", this.backupFileVO.getFilePath());
     }
 }

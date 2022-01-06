@@ -87,7 +87,7 @@ public class JobService {
         for (String key : keySet) {
 
             if (key.equals(CmmnProperties.JOB_GRP_ID_COM)) continue; // com은 제외
-            if (!jobs.get(key).getIsActive()) continue; // 비활성화 제외
+//            if (!jobs.get(key).getIsActive()) continue; // 비활성화 제외
 
             List<String> nodes = jobs.get(key).getNodes();
             if (ObjectUtils.isEmpty(nodes)) continue;
