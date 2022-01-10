@@ -66,6 +66,9 @@ job:
       nodes:
         - nav003m # 네이버카페 나이키매니아 판맴데이터
         - nav004m # 네이버카페 중고나라 판매데이터
+        - nav001m
+        - nav002m
+        - eba001m
     kot: # apis.data.go.kr
       cron: "0 40 02 * * ?" # 매일 02:40
       isActive: true
