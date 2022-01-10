@@ -1,0 +1,117 @@
+2022-01-10 10:00:31 ERROR Application run failed
+java.lang.IllegalStateException: java.lang.IllegalStateException: Could not initialize Log4J2 logging from log4j2-local.xml
+	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:328) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.context.logging.LoggingApplicationListener.initialize(LoggingApplicationListener.java:282) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.context.logging.LoggingApplicationListener.onApplicationEnvironmentPreparedEvent(LoggingApplicationListener.java:240) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.context.logging.LoggingApplicationListener.onApplicationEvent(LoggingApplicationListener.java:216) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176) ~[spring-context-5.3.9.jar:5.3.9]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169) ~[spring-context-5.3.9.jar:5.3.9]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143) ~[spring-context-5.3.9.jar:5.3.9]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:131) ~[spring-context-5.3.9.jar:5.3.9]
+	at org.springframework.boot.context.event.EventPublishingRunListener.environmentPrepared(EventPublishingRunListener.java:82) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplicationRunListeners.lambda$environmentPrepared$2(SpringApplicationRunListeners.java:63) ~[spring-boot-2.5.3.jar:2.5.3]
+	at java.util.ArrayList.forEach(ArrayList.java:1257) ~[?:1.8.0_251]
+	at org.springframework.boot.SpringApplicationRunListeners.doWithListeners(SpringApplicationRunListeners.java:117) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplicationRunListeners.doWithListeners(SpringApplicationRunListeners.java:111) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplicationRunListeners.environmentPrepared(SpringApplicationRunListeners.java:62) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.prepareEnvironment(SpringApplication.java:374) [spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:332) [spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343) [spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1332) [spring-boot-2.5.3.jar:2.5.3]
+	at kcs.edc.batch.EdcBatchApplication.main(EdcBatchApplication.java:14) [classes/:?]
+Caused by: java.lang.IllegalStateException: Could not initialize Log4J2 logging from log4j2-local.xml
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:193) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:181) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.AbstractLoggingSystem.initializeWithSpecificConfig(AbstractLoggingSystem.java:66) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.AbstractLoggingSystem.initialize(AbstractLoggingSystem.java:57) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.initialize(Log4J2LoggingSystem.java:163) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:316) ~[spring-boot-2.5.3.jar:2.5.3]
+	... 18 more
+Caused by: java.io.FileNotFoundException: C:\dev\edc-batch\log4j2-local.xml (지정된 파일을 찾을 수 없습니다)
+	at java.io.FileInputStream.open0(Native Method) ~[?:1.8.0_251]
+	at java.io.FileInputStream.open(FileInputStream.java:195) ~[?:1.8.0_251]
+	at java.io.FileInputStream.<init>(FileInputStream.java:138) ~[?:1.8.0_251]
+	at java.io.FileInputStream.<init>(FileInputStream.java:93) ~[?:1.8.0_251]
+	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90) ~[?:1.8.0_251]
+	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188) ~[?:1.8.0_251]
+	at java.net.URL.openStream(URL.java:1067) ~[?:1.8.0_251]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.getConfigurationSource(Log4J2LoggingSystem.java:198) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:189) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:181) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.AbstractLoggingSystem.initializeWithSpecificConfig(AbstractLoggingSystem.java:66) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.AbstractLoggingSystem.initialize(AbstractLoggingSystem.java:57) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.initialize(Log4J2LoggingSystem.java:163) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:316) ~[spring-boot-2.5.3.jar:2.5.3]
+	... 18 more
+2022-01-10 10:00:50 ERROR Application run failed
+java.lang.IllegalStateException: java.lang.IllegalStateException: Could not initialize Log4J2 logging from /log4j2-local.xml
+	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:328) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.context.logging.LoggingApplicationListener.initialize(LoggingApplicationListener.java:282) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.context.logging.LoggingApplicationListener.onApplicationEnvironmentPreparedEvent(LoggingApplicationListener.java:240) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.context.logging.LoggingApplicationListener.onApplicationEvent(LoggingApplicationListener.java:216) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176) ~[spring-context-5.3.9.jar:5.3.9]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169) ~[spring-context-5.3.9.jar:5.3.9]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143) ~[spring-context-5.3.9.jar:5.3.9]
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:131) ~[spring-context-5.3.9.jar:5.3.9]
+	at org.springframework.boot.context.event.EventPublishingRunListener.environmentPrepared(EventPublishingRunListener.java:82) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplicationRunListeners.lambda$environmentPrepared$2(SpringApplicationRunListeners.java:63) ~[spring-boot-2.5.3.jar:2.5.3]
+	at java.util.ArrayList.forEach(ArrayList.java:1257) ~[?:1.8.0_251]
+	at org.springframework.boot.SpringApplicationRunListeners.doWithListeners(SpringApplicationRunListeners.java:117) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplicationRunListeners.doWithListeners(SpringApplicationRunListeners.java:111) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplicationRunListeners.environmentPrepared(SpringApplicationRunListeners.java:62) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.prepareEnvironment(SpringApplication.java:374) [spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:332) [spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343) [spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1332) [spring-boot-2.5.3.jar:2.5.3]
+	at kcs.edc.batch.EdcBatchApplication.main(EdcBatchApplication.java:14) [classes/:?]
+Caused by: java.lang.IllegalStateException: Could not initialize Log4J2 logging from /log4j2-local.xml
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:193) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:181) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.AbstractLoggingSystem.initializeWithSpecificConfig(AbstractLoggingSystem.java:66) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.AbstractLoggingSystem.initialize(AbstractLoggingSystem.java:57) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.initialize(Log4J2LoggingSystem.java:163) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:316) ~[spring-boot-2.5.3.jar:2.5.3]
+	... 18 more
+Caused by: java.io.FileNotFoundException: C:\log4j2-local.xml (지정된 파일을 찾을 수 없습니다)
+	at java.io.FileInputStream.open0(Native Method) ~[?:1.8.0_251]
+	at java.io.FileInputStream.open(FileInputStream.java:195) ~[?:1.8.0_251]
+	at java.io.FileInputStream.<init>(FileInputStream.java:138) ~[?:1.8.0_251]
+	at java.io.FileInputStream.<init>(FileInputStream.java:93) ~[?:1.8.0_251]
+	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90) ~[?:1.8.0_251]
+	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188) ~[?:1.8.0_251]
+	at java.net.URL.openStream(URL.java:1067) ~[?:1.8.0_251]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.getConfigurationSource(Log4J2LoggingSystem.java:198) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:189) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:181) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.AbstractLoggingSystem.initializeWithSpecificConfig(AbstractLoggingSystem.java:66) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.AbstractLoggingSystem.initialize(AbstractLoggingSystem.java:57) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.initialize(Log4J2LoggingSystem.java:163) ~[spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:316) ~[spring-boot-2.5.3.jar:2.5.3]
+	... 18 more
+2022-01-10 10:01:42 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 23604 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-10 10:01:42 INFO The following profiles are active: local
+2022-01-10 10:01:44 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-10 10:01:44 INFO Root WebApplicationContext: initialization completed in 1416 ms
+2022-01-10 10:01:44 INFO HikariPool-1 - Starting...
+2022-01-10 10:01:44 INFO HikariPool-1 - Start completed.
+2022-01-10 10:01:45 INFO No database type set, using meta data indicating: H2
+2022-01-10 10:01:45 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-10 10:01:45 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-10 10:01:45 INFO Started EdcBatchApplication in 2.951 seconds (JVM running for 3.696)
+2022-01-10 10:01:45 INFO Running default command line with: []
+2022-01-10 10:01:45 INFO Job: [SimpleJob: [name=bizJob]] launched with the following parameters: [{}]
+2022-01-10 10:01:45 INFO Executing step: [biz001mStep]
+2022-01-10 10:01:45 INFO JobService init() >> jobGroupId: biz
+2022-01-10 10:01:45 INFO ##########################################################################
+2022-01-10 10:01:45 INFO START JOB :::: biz001m 
+2022-01-10 10:01:45 INFO ##########################################################################
+2022-01-10 10:01:45 INFO baseDt: 20220109, startDt: 20220109, endDt: 20220109, period: 1
+2022-01-10 10:02:02 INFO ----------------------------------------------------------------------------
+2022-01-10 10:02:02 INFO makeDataFile: C:/dev/hdata/ht_biz001m/ht_biz001m_20220109.txt, listCnt: 595
+2022-01-10 10:02:02 INFO makeLogFile: C:/dev/hdata/ht_log001m/ht_biz001m_20220109_20220110100202.txt
+2022-01-10 10:02:02 INFO ----------------------------------------------------------------------------
+2022-01-10 10:02:02 INFO END JOB :::: biz001m
+2022-01-10 10:02:02 INFO Step: [biz001mStep] executed in 16s876ms
+2022-01-10 10:02:02 INFO Job: [SimpleJob: [name=bizJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 16s896ms
+2022-01-10 10:08:44 INFO HikariPool-1 - Shutdown initiated...
+2022-01-10 10:08:44 INFO HikariPool-1 - Shutdown completed.

@@ -1,0 +1,44 @@
+2022-01-10 10:08:47 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 11552 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-10 10:08:47 INFO The following profiles are active: local
+2022-01-10 10:08:48 INFO Tomcat initialized with port(s): 8010 (http)
+2022-01-10 10:08:49 INFO Root WebApplicationContext: initialization completed in 1441 ms
+2022-01-10 10:08:49 INFO HikariPool-1 - Starting...
+2022-01-10 10:08:49 INFO HikariPool-1 - Start completed.
+2022-01-10 10:08:49 INFO No database type set, using meta data indicating: H2
+2022-01-10 10:08:49 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-10 10:08:50 INFO Tomcat started on port(s): 8010 (http) with context path ''
+2022-01-10 10:08:50 INFO Started EdcBatchApplication in 2.899 seconds (JVM running for 3.623)
+2022-01-10 10:09:48 INFO HikariPool-1 - Shutdown initiated...
+2022-01-10 10:09:48 INFO HikariPool-1 - Shutdown completed.
+2022-01-10 10:09:51 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 33472 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-10 10:09:51 INFO The following profiles are active: local
+2022-01-10 10:09:52 INFO Tomcat initialized with port(s): 8010 (http)
+2022-01-10 10:09:52 INFO Root WebApplicationContext: initialization completed in 1328 ms
+2022-01-10 10:09:53 INFO HikariPool-1 - Starting...
+2022-01-10 10:09:53 INFO HikariPool-1 - Start completed.
+2022-01-10 10:09:53 INFO No database type set, using meta data indicating: H2
+2022-01-10 10:09:53 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-10 10:09:53 INFO Tomcat started on port(s): 8010 (http) with context path ''
+2022-01-10 10:09:53 INFO Started EdcBatchApplication in 2.867 seconds (JVM running for 3.577)
+2022-01-10 10:11:28 INFO HikariPool-1 - Shutdown initiated...
+2022-01-10 10:11:28 INFO HikariPool-1 - Shutdown completed.
+2022-01-10 10:11:31 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 33412 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-10 10:11:31 INFO The following profiles are active: prod
+2022-01-10 10:11:32 INFO Tomcat initialized with port(s): 8010 (http)
+2022-01-10 10:11:33 INFO Root WebApplicationContext: initialization completed in 1335 ms
+2022-01-10 10:11:33 INFO HikariPool-1 - Starting...
+2022-01-10 10:11:33 INFO HikariPool-1 - Start completed.
+2022-01-10 10:11:33 INFO No database type set, using meta data indicating: H2
+2022-01-10 10:11:33 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-10 10:11:34 INFO Tomcat started on port(s): 8010 (http) with context path ''
+2022-01-10 10:11:34 INFO Started EdcBatchApplication in 2.893 seconds (JVM running for 3.633)
+2022-01-10 10:12:00 INFO >>>>> BizJob launcher..... 
+2022-01-10 10:12:00 INFO Job: [SimpleJob: [name=bizJob]] launched with the following parameters: [{time=1641777120008}]
+2022-01-10 10:12:00 INFO Executing step: [biz001mStep]
+2022-01-10 10:12:00 INFO JobService init() >> jobGroupId: biz
+2022-01-10 10:12:00 INFO ##########################################################################
+2022-01-10 10:12:00 INFO START JOB :::: biz001m 
+2022-01-10 10:12:00 INFO ##########################################################################
+2022-01-10 10:12:00 INFO baseDt: 20220109, startDt: 20220109, endDt: 20220109, period: 1
+2022-01-10 10:12:03 INFO HikariPool-1 - Shutdown initiated...
+2022-01-10 10:12:03 INFO HikariPool-1 - Shutdown completed.
