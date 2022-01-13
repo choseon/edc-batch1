@@ -1,117 +1,2043 @@
-2022-01-10 10:00:31 ERROR Application run failed
-java.lang.IllegalStateException: java.lang.IllegalStateException: Could not initialize Log4J2 logging from log4j2-local.xml
-	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:328) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.context.logging.LoggingApplicationListener.initialize(LoggingApplicationListener.java:282) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.context.logging.LoggingApplicationListener.onApplicationEnvironmentPreparedEvent(LoggingApplicationListener.java:240) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.context.logging.LoggingApplicationListener.onApplicationEvent(LoggingApplicationListener.java:216) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176) ~[spring-context-5.3.9.jar:5.3.9]
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169) ~[spring-context-5.3.9.jar:5.3.9]
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143) ~[spring-context-5.3.9.jar:5.3.9]
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:131) ~[spring-context-5.3.9.jar:5.3.9]
-	at org.springframework.boot.context.event.EventPublishingRunListener.environmentPrepared(EventPublishingRunListener.java:82) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.SpringApplicationRunListeners.lambda$environmentPrepared$2(SpringApplicationRunListeners.java:63) ~[spring-boot-2.5.3.jar:2.5.3]
-	at java.util.ArrayList.forEach(ArrayList.java:1257) ~[?:1.8.0_251]
-	at org.springframework.boot.SpringApplicationRunListeners.doWithListeners(SpringApplicationRunListeners.java:117) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.SpringApplicationRunListeners.doWithListeners(SpringApplicationRunListeners.java:111) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.SpringApplicationRunListeners.environmentPrepared(SpringApplicationRunListeners.java:62) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.SpringApplication.prepareEnvironment(SpringApplication.java:374) [spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:332) [spring-boot-2.5.3.jar:2.5.3]
+2022-01-13 13:03:32 WARN HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=19h25m58s844ms667µs700ns).
+2022-01-13 13:19:52 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 13:19:52 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 13:19:57 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 37704 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 13:19:57 INFO The following profiles are active: local
+2022-01-13 13:19:58 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 13:19:58 INFO Root WebApplicationContext: initialization completed in 1347 ms
+2022-01-13 13:19:59 INFO HikariPool-1 - Starting...
+2022-01-13 13:19:59 INFO HikariPool-1 - Start completed.
+2022-01-13 13:20:00 INFO No database type set, using meta data indicating: H2
+2022-01-13 13:20:00 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 13:20:00 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 13:20:00 INFO Started EdcBatchApplication in 3.151 seconds (JVM running for 3.934)
+2022-01-13 13:20:00 INFO Running default command line with: []
+2022-01-13 13:20:00 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 13:20:00 INFO Executing step: [comFileCleanStep]
+2022-01-13 13:20:00 INFO ####################################################
+2022-01-13 13:20:00 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 13:20:00 INFO ####################################################
+2022-01-13 13:20:00 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 13:20:00 INFO >> jobId: som001m
+2022-01-13 13:20:00 INFO >> jobId: som002m
+2022-01-13 13:20:00 INFO >> jobId: som003m
+2022-01-13 13:20:00 INFO >> jobId: som004m
+2022-01-13 13:20:00 INFO >> jobId: som005m
+2022-01-13 13:20:00 INFO >> jobId: big001m
+2022-01-13 13:20:00 INFO >> jobId: big002m
+2022-01-13 13:20:00 INFO >> jobId: big003m
+2022-01-13 13:20:00 INFO >> jobId: big004m
+2022-01-13 13:20:00 INFO >> jobId: kot001m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA201/kotra, filePath=C:/dev/app_nas/anl_data/BA201/kotra/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: kot002m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA201/kotra, filePath=C:/dev/app_nas/anl_data/BA201/kotra/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: biz001m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA201/kotra, filePath=C:/dev/app_nas/anl_data/BA201/kotra/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: nav003m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA201/kotra, filePath=C:/dev/app_nas/anl_data/BA201/kotra/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: nav004m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA201/kotra, filePath=C:/dev/app_nas/anl_data/BA201/kotra/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: nav001m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA201/kotra, filePath=C:/dev/app_nas/anl_data/BA201/kotra/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: nav002m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA201/kotra, filePath=C:/dev/app_nas/anl_data/BA201/kotra/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: eba001m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA201/kotra, filePath=C:/dev/app_nas/anl_data/BA201/kotra/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: opd001m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA204/opendart, filePath=C:/dev/app_nas/anl_data/BA204/opendart/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: opd002m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA204/opendart, filePath=C:/dev/app_nas/anl_data/BA204/opendart/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: uct001m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA204/opendart, filePath=C:/dev/app_nas/anl_data/BA204/opendart/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: saf001m
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA204/opendart, filePath=C:/dev/app_nas/anl_data/BA204/opendart/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: saf001l
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA204/opendart, filePath=C:/dev/app_nas/anl_data/BA204/opendart/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: saf002l
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA204/opendart, filePath=C:/dev/app_nas/anl_data/BA204/opendart/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: saf003l
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA204/opendart, filePath=C:/dev/app_nas/anl_data/BA204/opendart/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO >> jobId: saf004l
+2022-01-13 13:20:00 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/, fileDirName=BA204/opendart, filePath=C:/dev/app_nas/anl_data/BA204/opendart/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:20:00 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 13:20:00 INFO Step: [comFileCleanStep] executed in 65ms
+2022-01-13 13:20:00 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 94ms
+2022-01-13 13:24:08 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 13:24:08 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 13:24:12 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 28724 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 13:24:12 INFO The following profiles are active: local
+2022-01-13 13:24:14 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 13:24:14 INFO Root WebApplicationContext: initialization completed in 1312 ms
+2022-01-13 13:24:14 INFO HikariPool-1 - Starting...
+2022-01-13 13:24:14 INFO HikariPool-1 - Start completed.
+2022-01-13 13:24:15 INFO No database type set, using meta data indicating: H2
+2022-01-13 13:24:15 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 13:24:15 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 13:24:15 INFO Started EdcBatchApplication in 2.8 seconds (JVM running for 3.504)
+2022-01-13 13:24:15 INFO Running default command line with: []
+2022-01-13 13:24:15 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 13:24:15 INFO Executing step: [comFileCleanStep]
+2022-01-13 13:24:15 INFO ####################################################
+2022-01-13 13:24:15 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 13:24:15 INFO ####################################################
+2022-01-13 13:24:15 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 13:24:15 INFO >> jobId: som001m
+2022-01-13 13:24:15 INFO >> jobId: som002m
+2022-01-13 13:24:15 INFO >> jobId: som003m
+2022-01-13 13:24:15 INFO >> jobId: som004m
+2022-01-13 13:24:15 INFO >> jobId: som005m
+2022-01-13 13:24:15 INFO >> jobId: big001m
+2022-01-13 13:24:15 INFO >> jobId: big002m
+2022-01-13 13:24:15 INFO >> jobId: big003m
+2022-01-13 13:24:15 INFO >> jobId: big004m
+2022-01-13 13:24:15 INFO >> jobId: kot001m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: kot002m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: biz001m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: nav003m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: nav004m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: nav001m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: nav002m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: eba001m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: opd001m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: opd002m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: uct001m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: saf001m
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: saf001l
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: saf002l
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: saf003l
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO >> jobId: saf004l
+2022-01-13 13:24:15 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:24:15 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 13:24:15 INFO Step: [comFileCleanStep] executed in 50ms
+2022-01-13 13:24:15 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 68ms
+2022-01-13 13:34:04 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 13:34:04 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 13:34:09 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 17864 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 13:34:09 INFO The following profiles are active: local
+2022-01-13 13:34:10 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 13:34:10 INFO Root WebApplicationContext: initialization completed in 1288 ms
+2022-01-13 13:34:11 INFO HikariPool-1 - Starting...
+2022-01-13 13:34:11 INFO HikariPool-1 - Start completed.
+2022-01-13 13:34:11 INFO No database type set, using meta data indicating: H2
+2022-01-13 13:34:11 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 13:34:11 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 13:34:11 INFO Started EdcBatchApplication in 2.741 seconds (JVM running for 3.621)
+2022-01-13 13:34:11 INFO Running default command line with: []
+2022-01-13 13:34:11 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 13:34:11 INFO Executing step: [comFileCleanStep]
+2022-01-13 13:34:11 INFO ####################################################
+2022-01-13 13:34:11 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 13:34:11 INFO ####################################################
+2022-01-13 13:34:11 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 13:34:11 INFO >> jobId: som001m
+2022-01-13 13:34:11 INFO >> jobId: som002m
+2022-01-13 13:34:11 INFO >> jobId: som003m
+2022-01-13 13:34:11 INFO >> jobId: som004m
+2022-01-13 13:34:11 INFO >> jobId: som005m
+2022-01-13 13:34:11 INFO >> jobId: big001m
+2022-01-13 13:34:11 INFO >> jobId: big002m
+2022-01-13 13:34:11 INFO >> jobId: big003m
+2022-01-13 13:34:11 INFO >> jobId: big004m
+2022-01-13 13:34:11 INFO >> jobId: kot001m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/html/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: kot002m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/html/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: biz001m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/html/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: nav003m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/html/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: nav004m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/html/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: nav001m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/html/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: nav002m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/html/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: eba001m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/html/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: opd001m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: opd002m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: uct001m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: saf001m
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: saf001l
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: saf002l
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: saf003l
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO >> jobId: saf004l
+2022-01-13 13:34:11 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA204/opendart/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA204/opendart/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:34:11 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 13:34:11 INFO Step: [comFileCleanStep] executed in 51ms
+2022-01-13 13:34:11 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 74ms
+2022-01-13 13:39:01 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 13:39:01 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 13:39:05 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 20296 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 13:39:05 INFO The following profiles are active: local
+2022-01-13 13:39:06 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 13:39:06 INFO Root WebApplicationContext: initialization completed in 1348 ms
+2022-01-13 13:39:07 INFO HikariPool-1 - Starting...
+2022-01-13 13:39:07 INFO HikariPool-1 - Start completed.
+2022-01-13 13:39:07 INFO No database type set, using meta data indicating: H2
+2022-01-13 13:39:07 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 13:39:07 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 13:39:07 INFO Started EdcBatchApplication in 2.851 seconds (JVM running for 3.582)
+2022-01-13 13:39:07 INFO Running default command line with: []
+2022-01-13 13:39:07 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 13:39:07 INFO Executing step: [comFileCleanStep]
+2022-01-13 13:39:08 INFO ####################################################
+2022-01-13 13:39:08 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 13:39:08 INFO ####################################################
+2022-01-13 13:39:08 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 13:39:08 INFO >> jobId: som001m
+2022-01-13 13:39:08 INFO >> jobId: som002m
+2022-01-13 13:39:08 INFO >> jobId: som003m
+2022-01-13 13:39:08 INFO >> jobId: som004m
+2022-01-13 13:39:08 INFO >> jobId: som005m
+2022-01-13 13:39:08 INFO >> jobId: big001m
+2022-01-13 13:39:08 INFO >> jobId: big002m
+2022-01-13 13:39:08 INFO >> jobId: big003m
+2022-01-13 13:39:08 INFO >> jobId: big004m
+2022-01-13 13:39:08 INFO >> jobId: kot001m
+2022-01-13 13:39:08 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:39:08 INFO >> jobId: kot002m
+2022-01-13 13:39:08 INFO FileVO(fileRootPath=C:/dev/app_nas/anl_data/BA201/kotra/, fileDirName=backup, filePath=C:/dev/app_nas/anl_data/BA201/kotra/backup/, fileName=null, baseFileName=null, fileExtension=null)
+2022-01-13 13:39:08 INFO >> jobId: biz001m
+2022-01-13 13:39:08 INFO >> jobId: nav003m
+2022-01-13 13:39:08 INFO >> jobId: nav004m
+2022-01-13 13:39:08 INFO >> jobId: nav001m
+2022-01-13 13:39:08 INFO >> jobId: nav002m
+2022-01-13 13:39:08 INFO >> jobId: eba001m
+2022-01-13 13:39:08 INFO >> jobId: opd001m
+2022-01-13 13:39:08 INFO >> jobId: opd002m
+2022-01-13 13:39:08 INFO >> jobId: uct001m
+2022-01-13 13:39:08 INFO >> jobId: saf001m
+2022-01-13 13:39:08 INFO >> jobId: saf001l
+2022-01-13 13:39:08 INFO >> jobId: saf002l
+2022-01-13 13:39:08 INFO >> jobId: saf003l
+2022-01-13 13:39:08 INFO >> jobId: saf004l
+2022-01-13 13:39:08 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 13:39:08 INFO Step: [comFileCleanStep] executed in 52ms
+2022-01-13 13:39:08 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 75ms
+2022-01-13 13:54:43 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 13:54:43 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 13:54:48 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 33612 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 13:54:48 INFO The following profiles are active: local
+2022-01-13 13:54:49 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 13:54:49 INFO Root WebApplicationContext: initialization completed in 1276 ms
+2022-01-13 13:54:50 INFO HikariPool-1 - Starting...
+2022-01-13 13:54:50 INFO HikariPool-1 - Start completed.
+2022-01-13 13:54:50 INFO No database type set, using meta data indicating: H2
+2022-01-13 13:54:50 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 13:54:50 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 13:54:50 INFO Started EdcBatchApplication in 2.735 seconds (JVM running for 3.434)
+2022-01-13 13:54:50 INFO Running default command line with: []
+2022-01-13 13:54:50 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 13:54:50 INFO Executing step: [comFileCleanStep]
+2022-01-13 13:54:50 INFO ####################################################
+2022-01-13 13:54:50 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 13:54:50 INFO ####################################################
+2022-01-13 13:54:50 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 13:54:50 INFO >> jobId: som001m
+2022-01-13 13:54:50 INFO >> jobId: som002m
+2022-01-13 13:54:50 INFO >> jobId: som003m
+2022-01-13 13:54:50 INFO >> jobId: som004m
+2022-01-13 13:54:50 INFO >> jobId: som005m
+2022-01-13 13:54:50 INFO >> jobId: big001m
+2022-01-13 13:54:50 INFO >> jobId: big002m
+2022-01-13 13:54:50 INFO >> jobId: big003m
+2022-01-13 13:54:50 INFO >> jobId: big004m
+2022-01-13 13:54:50 INFO >> jobId: kot001m
+2022-01-13 13:54:50 INFO >> jobId: kot002m
+2022-01-13 13:54:50 INFO >> jobId: biz001m
+2022-01-13 13:54:50 INFO >> jobId: nav003m
+2022-01-13 13:54:50 INFO >> jobId: nav004m
+2022-01-13 13:54:50 INFO >> jobId: nav001m
+2022-01-13 13:54:50 INFO >> jobId: nav002m
+2022-01-13 13:54:50 INFO >> jobId: eba001m
+2022-01-13 13:54:50 INFO >> jobId: opd001m
+2022-01-13 13:54:50 INFO >> jobId: opd002m
+2022-01-13 13:54:50 INFO >> jobId: uct001m
+2022-01-13 13:54:50 INFO >> jobId: saf001m
+2022-01-13 13:54:50 INFO >> jobId: saf001l
+2022-01-13 13:54:50 INFO >> jobId: saf002l
+2022-01-13 13:54:50 INFO >> jobId: saf003l
+2022-01-13 13:54:50 INFO >> jobId: saf004l
+2022-01-13 13:54:50 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 13:54:50 INFO Step: [comFileCleanStep] executed in 67ms
+2022-01-13 13:54:50 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 85ms
+2022-01-13 13:55:14 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 13:55:14 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 13:55:17 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 13744 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 13:55:17 INFO The following profiles are active: local
+2022-01-13 13:55:18 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 13:55:18 INFO Root WebApplicationContext: initialization completed in 1463 ms
+2022-01-13 13:55:19 INFO HikariPool-1 - Starting...
+2022-01-13 13:55:19 INFO HikariPool-1 - Start completed.
+2022-01-13 13:55:19 INFO No database type set, using meta data indicating: H2
+2022-01-13 13:55:19 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 13:55:19 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 13:55:19 INFO Started EdcBatchApplication in 3.05 seconds (JVM running for 3.805)
+2022-01-13 13:55:19 INFO Running default command line with: []
+2022-01-13 13:55:19 INFO Job: [SimpleJob: [name=kotJob]] launched with the following parameters: [{}]
+2022-01-13 13:55:19 INFO Executing step: [kot001mStep]
+2022-01-13 13:55:19 INFO JobService init() >> jobGroupId: kot
+2022-01-13 13:55:20 INFO ##########################################################################
+2022-01-13 13:55:20 INFO START JOB :::: kot001m 
+2022-01-13 13:55:20 INFO ##########################################################################
+2022-01-13 13:55:20 INFO baseDt: 20220112, startDt: 20220106, endDt: 20220112, period: 7
+2022-01-13 13:55:20 INFO >>> searchDate: 20220106
+2022-01-13 13:55:20 INFO ----------------------------------------------------------------------------
+2022-01-13 13:55:20 INFO org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://apis.data.go.kr/B410001/ovseaMrktNewsService/ovseaMrktNews": apis.data.go.kr; nested exception is java.net.UnknownHostException: apis.data.go.kr
+2022-01-13 13:55:20 INFO makeFailLogFile: C:/dev/hdata/ht_log001m/ht_kot001m_20220112_20220113135520.txt
+2022-01-13 13:55:20 INFO ----------------------------------------------------------------------------
+2022-01-13 13:55:20 INFO ----------------------------------------------------------------------------
+2022-01-13 13:55:20 INFO org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://apis.data.go.kr/B410001/ovseaMrktNewsService/ovseaMrktNews": apis.data.go.kr; nested exception is java.net.UnknownHostException: apis.data.go.kr
+2022-01-13 13:55:20 INFO makeFailLogFile: C:/dev/hdata/ht_log001m/ht_kot002m_20220112_20220113135520.txt
+2022-01-13 13:55:20 INFO ----------------------------------------------------------------------------
+2022-01-13 13:55:20 INFO END JOB :::: kot001m
+2022-01-13 13:55:20 INFO Step: [kot001mStep] executed in 76ms
+2022-01-13 13:55:20 INFO Job: [SimpleJob: [name=kotJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 128ms
+2022-01-13 13:56:25 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 13:56:25 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 13:56:27 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 22984 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 13:56:27 INFO The following profiles are active: local
+2022-01-13 13:56:28 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 13:56:28 INFO Root WebApplicationContext: initialization completed in 1506 ms
+2022-01-13 13:56:29 INFO HikariPool-1 - Starting...
+2022-01-13 13:56:29 INFO HikariPool-1 - Start completed.
+2022-01-13 13:56:30 INFO No database type set, using meta data indicating: H2
+2022-01-13 13:56:30 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 13:56:30 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 13:56:30 INFO Started EdcBatchApplication in 3.507 seconds (JVM running for 4.533)
+2022-01-13 13:56:30 INFO Running default command line with: []
+2022-01-13 13:56:30 INFO Job: [SimpleJob: [name=opdJob]] launched with the following parameters: [{}]
+2022-01-13 13:56:30 INFO Executing step: [opd001mStep]
+2022-01-13 13:56:30 INFO JobService init() >> jobGroupId: opd
+2022-01-13 13:56:30 INFO ##########################################################################
+2022-01-13 13:56:30 INFO START JOB :::: opd001m 
+2022-01-13 13:56:30 INFO ##########################################################################
+2022-01-13 13:56:30 INFO baseDt: 20220112, startDt: 20220112, endDt: 20220112, period: 1
+2022-01-13 13:56:35 INFO dwnlFileNm >> C:/dev/hdata/ht_opd001m/temp/CORPCODE.xml
+2022-01-13 13:56:37 INFO deleteFile: C:\dev\hdata\ht_opd001m\temp\CORPCODE.xml
+2022-01-13 13:56:37 INFO [1/300] corpCode: 00124197, corpName: (주)세아제강지주
+2022-01-13 13:56:37 INFO [2/300] corpCode: 00633835, corpName: (주)한진중공업
+2022-01-13 13:56:37 INFO [3/300] corpCode: 00115375, corpName: 동방석유주식회사
+2022-01-13 13:56:38 INFO [4/300] corpCode: 01398708, corpName: (주)삼화당피앤티
+2022-01-13 13:56:38 INFO [5/300] corpCode: 01608474, corpName: (주)삼화당피앤티
+2022-01-13 13:56:38 INFO [6/300] corpCode: 00634834, corpName: 제이티저축은행(주)
+2022-01-13 13:56:38 INFO [7/300] corpCode: 01203312, corpName: 주식회사 케이뱅크
+2022-01-13 13:56:38 INFO [8/300] corpCode: 00936440, corpName: 주식회사 하나저축은행
+2022-01-13 13:56:38 INFO [9/300] corpCode: 01449817, corpName: 주식회사 디오토몰모터스
+2022-01-13 13:56:39 INFO [10/300] corpCode: 00205508, corpName: 주식회사 동양식품
+2022-01-13 13:56:39 INFO [11/300] corpCode: 01051092, corpName: 피씨엘(주)
+2022-01-13 13:56:39 INFO [12/300] corpCode: 00145136, corpName: 유한킴벌리 주식회사
+2022-01-13 13:56:39 INFO [13/300] corpCode: 01597798, corpName: 케이앤디랩 주식회사
+2022-01-13 13:56:39 INFO [14/300] corpCode: 00496599, corpName: 장수철강피씨산업(주)
+2022-01-13 13:56:39 INFO [15/300] corpCode: 00109693, corpName: 디엘 주식회사
+2022-01-13 13:56:40 INFO [16/300] corpCode: 01549287, corpName: 주식회사 아라니아
+2022-01-13 13:56:40 INFO [17/300] corpCode: 01413326, corpName: (주)운트바이오
+2022-01-13 13:56:40 INFO [18/300] corpCode: 00154967, corpName: 주식회사 팬코
+2022-01-13 13:56:40 INFO [19/300] corpCode: 01609057, corpName: 케이비인프라제이차 주식회사
+2022-01-13 13:56:40 INFO [20/300] corpCode: 00161125, corpName: 한온시스템(주)
+2022-01-13 13:56:40 INFO [21/300] corpCode: 00209443, corpName: 우리금융캐피탈(주)
+2022-01-13 13:56:41 INFO [22/300] corpCode: 00622963, corpName: (주)코리아와이드
+2022-01-13 13:56:41 INFO [23/300] corpCode: 01409095, corpName: 주식회사 맥스트
+2022-01-13 13:56:41 INFO [24/300] corpCode: 00109019, corpName: (주)대구은행
+2022-01-13 13:56:41 INFO [25/300] corpCode: 01609109, corpName: 유한회사 트레이스문화산업전문회사
+2022-01-13 13:56:41 INFO [26/300] corpCode: 00222295, corpName: 롯데캐피탈주식회사
+2022-01-13 13:56:41 INFO [27/300] corpCode: 00122737, corpName: 팬오션(주)
+2022-01-13 13:56:42 INFO [28/300] corpCode: 00944643, corpName: 주식회사 BNK저축은행
+2022-01-13 13:56:42 INFO [29/300] corpCode: 01607730, corpName: 주식회사 랜드스퀘어
+2022-01-13 13:56:42 INFO [30/300] corpCode: 00238782, corpName: (주)다우데이타
+2022-01-13 13:56:42 INFO [31/300] corpCode: 01301623, corpName: 비씨엔씨(주)
+2022-01-13 13:56:42 INFO [32/300] corpCode: 00410809, corpName: (주)다원디자인
+2022-01-13 13:56:42 INFO [33/300] corpCode: 01286096, corpName: 우리펀드서비스 주식회사
+2022-01-13 13:56:42 INFO [34/300] corpCode: 00442321, corpName: 슈나이더일렉트릭코리아 주식회사
+2022-01-13 13:56:43 INFO [35/300] corpCode: 00908155, corpName: NH농협손해보험
+2022-01-13 13:56:43 INFO [36/300] corpCode: 00909349, corpName: 농협생명보험주식회사
+2022-01-13 13:56:43 INFO [37/300] corpCode: 00632410, corpName: (주)코리아와이드리조트
+2022-01-13 13:56:43 INFO [38/300] corpCode: 01126536, corpName: 주식회사 해동씨앤에이
+2022-01-13 13:56:43 INFO [39/300] corpCode: 00908021, corpName: 농협금융지주 주식회사
+2022-01-13 13:56:43 INFO [40/300] corpCode: 00105855, corpName: 엘에스일렉트릭 주식회사
+2022-01-13 13:56:44 INFO [41/300] corpCode: 01609260, corpName: 주식회사 더블유오에스
+2022-01-13 13:56:44 INFO [42/300] corpCode: 01608128, corpName: 가하유앤아이
+2022-01-13 13:56:44 INFO [43/300] corpCode: 00908429, corpName: 이지스주식회사
+2022-01-13 13:56:44 INFO [44/300] corpCode: 00161408, corpName: 케이비캐피탈(주)
+2022-01-13 13:56:44 INFO [45/300] corpCode: 00875741, corpName: 엘베스트지에이티(주)
+2022-01-13 13:56:44 INFO [46/300] corpCode: 01186255, corpName: 주식회사 전남사료
+2022-01-13 13:56:45 INFO [47/300] corpCode: 01473559, corpName: 주식회사 세원산업개발
+2022-01-13 13:56:45 INFO [48/300] corpCode: 00161444, corpName: (주)한국씨티은행
+2022-01-13 13:56:45 INFO [49/300] corpCode: 00138224, corpName: 쌍용씨앤이주식회사
+2022-01-13 13:56:45 INFO [50/300] corpCode: 00364795, corpName: (주)레드로버
+2022-01-13 13:56:45 INFO [51/300] corpCode: 00811327, corpName: 주식회사 사세
+2022-01-13 13:56:45 INFO [52/300] corpCode: 00670340, corpName: 씨에스윈드(주)
+2022-01-13 13:56:46 INFO [53/300] corpCode: 01609303, corpName: 수서대토금융(유)
+2022-01-13 13:56:46 INFO [54/300] corpCode: 01609312, corpName: 케이비아난티 주식회사
+2022-01-13 13:56:46 INFO [55/300] corpCode: 01214479, corpName: 한림에이치우드
+2022-01-13 13:56:46 INFO [56/300] corpCode: 01609367, corpName: 르네 유한회사
+2022-01-13 13:56:46 INFO [57/300] corpCode: 01457694, corpName: 엔에스스틸주식회사
+2022-01-13 13:56:46 INFO [58/300] corpCode: 01257021, corpName: 주식회사 싸이트비젼
+2022-01-13 13:56:47 INFO [59/300] corpCode: 00645955, corpName: 울산청천 주식회사
+2022-01-13 13:56:47 INFO [60/300] corpCode: 01412822, corpName: 솔루스첨단소재 주식회사
+2022-01-13 13:56:47 INFO [61/300] corpCode: 00524607, corpName: STX건설 (주)
+2022-01-13 13:56:47 INFO [62/300] corpCode: 01135987, corpName: (주)아이팩피앤디
+2022-01-13 13:56:47 INFO [63/300] corpCode: 00863922, corpName: 주식회사 제모피아인베스트
+2022-01-13 13:56:47 INFO [64/300] corpCode: 01609428, corpName: 주식회사 에이펀인터렉티브
+2022-01-13 13:56:48 INFO [65/300] corpCode: 00593032, corpName: (주)LF
+2022-01-13 13:56:48 INFO [66/300] corpCode: 00117382, corpName: (주)디와이홀딩스
+2022-01-13 13:56:48 INFO [67/300] corpCode: 00605577, corpName: 한신회계법인
+2022-01-13 13:56:48 INFO [68/300] corpCode: 01138364, corpName: 더핑크퐁컴퍼니(주)
+2022-01-13 13:56:48 INFO [69/300] corpCode: 00126566, corpName: 한화에어로스페이스(주)
+2022-01-13 13:56:48 INFO [70/300] corpCode: 00160010, corpName: (주)한국큐빅
+2022-01-13 13:56:49 INFO [71/300] corpCode: 00174518, corpName: (주)에스비아이저축은행
+2022-01-13 13:56:49 INFO [72/300] corpCode: 00569691, corpName: (주)디엔에프
+2022-01-13 13:56:49 INFO [73/300] corpCode: 01560749, corpName: 주식회사 피플펀드컴퍼니
+2022-01-13 13:56:49 INFO [74/300] corpCode: 00629036, corpName: 농업회사법인(주)오설록농장
+2022-01-13 13:56:49 INFO [75/300] corpCode: 00410261, corpName: 주식회사 대덕강업
+2022-01-13 13:56:50 INFO [76/300] corpCode: 01609491, corpName: 뉴스텔라제십육차주식회사
+2022-01-13 13:56:50 INFO [77/300] corpCode: 01609507, corpName: 하이스톰메이커제삼차주식회사
+2022-01-13 13:56:50 INFO [78/300] corpCode: 00570794, corpName: 주식회사 디케이씨
+2022-01-13 13:56:50 INFO [79/300] corpCode: 01609561, corpName: 주식회사 신한영암태양광제1차
+2022-01-13 13:56:50 INFO [80/300] corpCode: 00624165, corpName: (주)엠시에타개발
+2022-01-13 13:56:50 INFO [81/300] corpCode: 01156397, corpName: 금양도시개발(주)
+2022-01-13 13:56:51 INFO [82/300] corpCode: 00120182, corpName: 엔에이치투자증권(주)
+2022-01-13 13:56:51 INFO [83/300] corpCode: 00165149, corpName: (주)유진저축은행
+2022-01-13 13:56:51 INFO [84/300] corpCode: 00993001, corpName: 제이티친애저축은행 주식회사
+2022-01-13 13:56:51 INFO [85/300] corpCode: 01390344, corpName: 현대중공업주식회사
+2022-01-13 13:56:51 INFO [86/300] corpCode: 00113465, corpName: 하나금융투자 주식회사
+2022-01-13 13:56:51 INFO [87/300] corpCode: 00148391, corpName: 에이비엘생명보험주식회사
+2022-01-13 13:56:51 INFO [88/300] corpCode: 01609589, corpName: 글로벌골프이큅먼트앤어패럴1 주식회사
+2022-01-13 13:56:52 INFO [89/300] corpCode: 00595298, corpName: 케이티텔레캅 (주)
+2022-01-13 13:56:52 INFO [90/300] corpCode: 01154733, corpName: 의왕백운프로젝트금융투자(주)
+2022-01-13 13:56:52 INFO [91/300] corpCode: 01598797, corpName: 와이즈이엔씨(주)
+2022-01-13 13:56:52 INFO [92/300] corpCode: 01462739, corpName: (주)비아이매트릭스
+2022-01-13 13:56:52 INFO [93/300] corpCode: 00167280, corpName: (주)폴루스바이오팜
+2022-01-13 13:56:52 INFO [94/300] corpCode: 00106623, corpName: 현대위아(주)
+2022-01-13 13:56:53 INFO [95/300] corpCode: 01609613, corpName: 주식회사 더네스트앤파트너스
+2022-01-13 13:56:53 INFO [96/300] corpCode: 01397648, corpName: 한국코팅강관(주)
+2022-01-13 13:56:53 INFO [97/300] corpCode: 01609622, corpName: 티아이포항 주식회사
+2022-01-13 13:56:53 INFO [98/300] corpCode: 00102788, corpName: (주)한국투자저축은행
+2022-01-13 13:56:53 INFO [99/300] corpCode: 01064272, corpName: 한국투자캐피탈 주식회사
+2022-01-13 13:56:53 INFO [100/300] corpCode: 01609659, corpName: 주식회사 팩스
+2022-01-13 13:56:54 INFO [101/300] corpCode: 01291016, corpName: 넷마블에프앤씨 주식회사 
+2022-01-13 13:56:54 INFO [102/300] corpCode: 01609668, corpName: RUI XING INTERNATIONAL HOLDINGS LIMITED
+2022-01-13 13:56:54 INFO [103/300] corpCode: 01598858, corpName: 아이비아이앤씨
+2022-01-13 13:56:54 INFO [104/300] corpCode: 00833596, corpName: 원진회계법인
+2022-01-13 13:56:54 INFO [105/300] corpCode: 01132722, corpName: (주)지피씨알
+2022-01-13 13:56:54 INFO [106/300] corpCode: 00188380, corpName: 유진자산운용(주)
+2022-01-13 13:56:55 INFO [107/300] corpCode: 01609686, corpName: 뉴스타그린웰 주식회사
+2022-01-13 13:56:55 INFO [108/300] corpCode: 01609695, corpName: 뉴스타콜드 주식회사
+2022-01-13 13:56:55 INFO [109/300] corpCode: 01609701, corpName: 알파포트제일차 주식회사
+2022-01-13 13:56:55 INFO [110/300] corpCode: 00101956, corpName: (주)에스앤티저축은행
+2022-01-13 13:56:55 INFO [111/300] corpCode: 01180118, corpName: (주)코람코더원위탁관리부동산투자회사
+2022-01-13 13:56:55 INFO [112/300] corpCode: 01588657, corpName: (주)텐핑
+2022-01-13 13:56:56 INFO [113/300] corpCode: 01538768, corpName: 지투홀딩스주식회사
+2022-01-13 13:56:56 INFO [114/300] corpCode: 00123541, corpName: 보해양조(주)
+2022-01-13 13:56:56 INFO [115/300] corpCode: 00620974, corpName: 진영씨앤케이주식회사
+2022-01-13 13:56:56 INFO [116/300] corpCode: 01386916, corpName: 에스케이아이이테크놀로지 주식회사
+2022-01-13 13:56:56 INFO [117/300] corpCode: 01608447, corpName: 주식회사 더스윙
+2022-01-13 13:56:56 INFO [118/300] corpCode: 01609446, corpName: 유한회사 토러스투자목적회사
+2022-01-13 13:56:57 INFO [119/300] corpCode: 01609011, corpName: 주식회사 씬시어물류
+2022-01-13 13:56:57 INFO [120/300] corpCode: 01587861, corpName: (주)명성건설
+2022-01-13 13:56:57 INFO [121/300] corpCode: 01222973, corpName: 주식회사 테라크라우드대부
+2022-01-13 13:56:57 INFO [122/300] corpCode: 00937324, corpName: 한국타이어앤테크놀로지(주)
+2022-01-13 13:56:57 INFO [123/300] corpCode: 01028322, corpName: (주)아리바이오
+2022-01-13 13:56:57 INFO [124/300] corpCode: 00858364, corpName: (주)BNK금융지주
+2022-01-13 13:56:58 INFO [125/300] corpCode: 00124106, corpName: (주)부산은행
+2022-01-13 13:56:58 INFO [126/300] corpCode: 00330424, corpName: 이베스트투자증권(주)
+2022-01-13 13:56:58 INFO [127/300] corpCode: 00164973, corpName: 현대해상화재보험(주)
+2022-01-13 13:56:58 INFO [128/300] corpCode: 00896692, corpName: (주)메쎄이상
+2022-01-13 13:56:58 INFO [129/300] corpCode: 00861997, corpName: (주)인포마크
+2022-01-13 13:56:58 INFO [130/300] corpCode: 00143651, corpName: (주)웅진
+2022-01-13 13:56:59 INFO [131/300] corpCode: 00480367, corpName: 삼강엠앤티(주)
+2022-01-13 13:56:59 INFO [132/300] corpCode: 00275251, corpName: (주)아이비케이캐피탈
+2022-01-13 13:56:59 INFO [133/300] corpCode: 01010916, corpName: 유한회사 정현회계법인
+2022-01-13 13:56:59 INFO [134/300] corpCode: 00450418, corpName: 한솔이엠이주식회사
+2022-01-13 13:56:59 INFO [135/300] corpCode: 00296290, corpName: 키움증권(주)
+2022-01-13 13:56:59 INFO [136/300] corpCode: 01345098, corpName: 주식회사 메타센테라퓨틱스
+2022-01-13 13:57:00 INFO [137/300] corpCode: 00119344, corpName: (주)동희
+2022-01-13 13:57:00 INFO [138/300] corpCode: 00573135, corpName: 서수원개발 주식회사
+2022-01-13 13:57:00 INFO [139/300] corpCode: 00141282, corpName: 에이치디씨영창 주식회사
+2022-01-13 13:57:00 INFO [140/300] corpCode: 00128555, corpName: 삼천리(주)
+2022-01-13 13:57:00 INFO [141/300] corpCode: 00339391, corpName: 한화시스템(주)
+2022-01-13 13:57:00 INFO [142/300] corpCode: 01144000, corpName: 주식회사 카닥
+2022-01-13 13:57:01 INFO [143/300] corpCode: 00171104, corpName: 메트라이프생명보험(주)
+2022-01-13 13:57:01 INFO [144/300] corpCode: 00766267, corpName: (주)디에프텍
+2022-01-13 13:57:01 INFO [145/300] corpCode: 00441128, corpName: (주)아리온테크놀로지
+2022-01-13 13:57:01 INFO [146/300] corpCode: 00910257, corpName: (주)케이비저축은행
+2022-01-13 13:57:01 INFO [147/300] corpCode: 00222374, corpName: 현대카드주식회사
+2022-01-13 13:57:01 INFO [148/300] corpCode: 01043853, corpName: (주)베노홀딩스
+2022-01-13 13:57:02 INFO [149/300] corpCode: 00965275, corpName: 주식회사 탑인터큐브
+2022-01-13 13:57:02 INFO [150/300] corpCode: 00126186, corpName: 삼성에스디에스(주)
+2022-01-13 13:57:02 INFO [151/300] corpCode: 01475371, corpName: 테슬라코리아 유한회사
+2022-01-13 13:57:02 INFO [152/300] corpCode: 01064908, corpName: 키사이트테크놀로지스코리아 주식회사
+2022-01-13 13:57:02 INFO [153/300] corpCode: 00817224, corpName: (주)도리코
+2022-01-13 13:57:02 INFO [154/300] corpCode: 00106641, corpName: 기아(주)
+2022-01-13 13:57:02 INFO [155/300] corpCode: 00168979, corpName: 동아오츠카 주식회사
+2022-01-13 13:57:03 INFO [156/300] corpCode: 00259776, corpName: 미래에셋자산운용(주)
+2022-01-13 13:57:03 INFO [157/300] corpCode: 00542065, corpName: 케이비생명보험 주식회사
+2022-01-13 13:57:03 INFO [158/300] corpCode: 00844635, corpName: 아이비케이연금보험(주)
+2022-01-13 13:57:03 INFO [159/300] corpCode: 00459844, corpName: 푸본현대생명보험주식회사
+2022-01-13 13:57:03 INFO [160/300] corpCode: 00126292, corpName: 삼성카드(주)
+2022-01-13 13:57:03 INFO [161/300] corpCode: 00545716, corpName: 롯데렌탈(주)
+2022-01-13 13:57:04 INFO [162/300] corpCode: 00131780, corpName: SK네트웍스(주)
+2022-01-13 13:57:04 INFO [163/300] corpCode: 00347877, corpName: (주)세영디앤씨
+2022-01-13 13:57:04 INFO [164/300] corpCode: 01597859, corpName: (주)에스앤아이건설
+2022-01-13 13:57:04 INFO [165/300] corpCode: 01597840, corpName: 주식회사 에스앤아이엣스퍼트
+2022-01-13 13:57:04 INFO [166/300] corpCode: 01377361, corpName: 주식회사 씬시어로지텍
+2022-01-13 13:57:04 INFO [167/300] corpCode: 01609473, corpName: 타운마이닝리소스(주)
+2022-01-13 13:57:05 INFO [168/300] corpCode: 00645432, corpName: 아시아신탁 주식회사
+2022-01-13 13:57:05 INFO [169/300] corpCode: 00260569, corpName: 유니셈(주)
+2022-01-13 13:57:05 INFO [170/300] corpCode: 00872452, corpName: 에이치엔티일렉트로닉스(주)
+2022-01-13 13:57:05 INFO [171/300] corpCode: 01149351, corpName: 쏠레어코리아 주식회사
+2022-01-13 13:57:05 INFO [172/300] corpCode: 00198226, corpName: 조광요턴(주)
+2022-01-13 13:57:06 INFO [173/300] corpCode: 00330725, corpName: 흥국자산운용(주)
+2022-01-13 13:57:06 INFO [174/300] corpCode: 01355943, corpName: 주식회사 파주운정오피에프브이
+2022-01-13 13:57:06 INFO [175/300] corpCode: 01364543, corpName: 하버시티개발 주식회사
+2022-01-13 13:57:06 INFO [176/300] corpCode: 01451803, corpName: (주)삼부산업개발
+2022-01-13 13:57:06 INFO [177/300] corpCode: 01609516, corpName: 하이스톰메이커제이십차주식회사
+2022-01-13 13:57:06 INFO [178/300] corpCode: 01609525, corpName: 아이테르누스주식회사
+2022-01-13 13:57:06 INFO [179/300] corpCode: 01609534, corpName: 에이블원창제일차주식회사
+2022-01-13 13:57:07 INFO [180/300] corpCode: 01609543, corpName: 에스에프원세교주식회사
+2022-01-13 13:57:07 INFO [181/300] corpCode: 00566922, corpName: (주)케이씨이앤씨
+2022-01-13 13:57:07 INFO [182/300] corpCode: 01229189, corpName: 주식회사 애그리치글로벌
+2022-01-13 13:57:07 INFO [183/300] corpCode: 01609570, corpName: 주식회사 넥스트레벨스튜디오
+2022-01-13 13:57:07 INFO [184/300] corpCode: 01609598, corpName: 주식회사 사피온코리아
+2022-01-13 13:57:07 INFO [185/300] corpCode: 01609604, corpName: 에스엘제일차 주식회사
+2022-01-13 13:57:08 INFO [186/300] corpCode: 01609482, corpName: 포레스트효성시티
+2022-01-13 13:57:08 INFO [187/300] corpCode: 00366845, corpName: (주)탑엔지니어링
+2022-01-13 13:57:08 INFO [188/300] corpCode: 01075126, corpName: 경남제약헬스케어(주)
+2022-01-13 13:57:08 INFO [189/300] corpCode: 00108065, corpName: (주)쎌마테라퓨틱스
+2022-01-13 13:57:08 INFO [190/300] corpCode: 00303873, corpName: 씨제이씨지브이(주)
+2022-01-13 13:57:08 INFO [191/300] corpCode: 00893428, corpName: 신의페트라(주)
+2022-01-13 13:57:09 INFO [192/300] corpCode: 01609792, corpName: (주)현대에버다임건설
+2022-01-13 13:57:09 INFO [193/300] corpCode: 00904672, corpName: 넷마블(주)
+2022-01-13 13:57:09 INFO [194/300] corpCode: 01061558, corpName: 덕산네오룩스(주)
+2022-01-13 13:57:09 INFO [195/300] corpCode: 00444329, corpName: (주)위메이드
+2022-01-13 13:57:09 INFO [196/300] corpCode: 00962649, corpName: 주식회사 고려에이치씨
+2022-01-13 13:57:09 INFO [197/300] corpCode: 00447982, corpName: 주식회사 에스피엠씨
+2022-01-13 13:57:09 INFO [198/300] corpCode: 00642851, corpName: (주)에버리치홀딩스
+2022-01-13 13:57:10 INFO [199/300] corpCode: 01609826, corpName: 우리카드이천이십이의일유동화전문 유한회사
+2022-01-13 13:57:10 INFO [200/300] corpCode: 01609835, corpName: 유플러스파이브지제육십일차유동화전문 유한회사
+2022-01-13 13:57:10 INFO [201/300] corpCode: 01281189, corpName: (주)케이와이리더스
+2022-01-13 13:57:10 INFO [202/300] corpCode: 01591350, corpName: (주)위니언
+2022-01-13 13:57:10 INFO [203/300] corpCode: 01316245, corpName: 효성중공업(주)
+2022-01-13 13:57:10 INFO [204/300] corpCode: 00639343, corpName: (주)디에스피홀딩스
+2022-01-13 13:57:11 INFO [205/300] corpCode: 01213434, corpName: 지이파워시스템즈코리아 주식회사
+2022-01-13 13:57:11 INFO [206/300] corpCode: 00219051, corpName: 롯데카드주식회사
+2022-01-13 13:57:11 INFO [207/300] corpCode: 00164645, corpName: 에이치엠엠(주) 
+2022-01-13 13:57:11 INFO [208/300] corpCode: 00187123, corpName: 하나생명보험(주)
+2022-01-13 13:57:11 INFO [209/300] corpCode: 00219167, corpName: 에스엠상선 주식회사
+2022-01-13 13:57:12 INFO [210/300] corpCode: 01608739, corpName: 사단법인 에스케이미소금융재단
+2022-01-13 13:57:12 INFO [211/300] corpCode: 00105271, corpName: (주)케이씨씨
+2022-01-13 13:57:12 INFO [212/300] corpCode: 00759513, corpName: (주)엘엑스하우시스
+2022-01-13 13:57:12 INFO [213/300] corpCode: 00670085, corpName: (주)엘아이에스
+2022-01-13 13:57:12 INFO [214/300] corpCode: 01175499, corpName: 주식회사 위니아에이드
+2022-01-13 13:57:12 INFO [215/300] corpCode: 01378157, corpName: (주)카리스
+2022-01-13 13:57:13 INFO [216/300] corpCode: 01604399, corpName: 솔루스바이오텍 주식회사
+2022-01-13 13:57:13 INFO [217/300] corpCode: 01498576, corpName: 주식회사유디엠텍
+2022-01-13 13:57:13 INFO [218/300] corpCode: 00500254, corpName: (주)GS
+2022-01-13 13:57:13 INFO [219/300] corpCode: 00167387, corpName: 히로세코리아(주)
+2022-01-13 13:57:13 INFO [220/300] corpCode: 00267854, corpName: 메디앙스(주)
+2022-01-13 13:57:13 INFO [221/300] corpCode: 01609710, corpName: 힐스테이트중동 주식회사
+2022-01-13 13:57:14 INFO [222/300] corpCode: 00140715, corpName: 영동제약(주)
+2022-01-13 13:57:14 INFO [223/300] corpCode: 00194789, corpName: 주식회사 한국무역정보통신
+2022-01-13 13:57:14 INFO [224/300] corpCode: 01452325, corpName: 주식회사 보담피앤피
+2022-01-13 13:57:14 INFO [225/300] corpCode: 01609756, corpName: 미미데이제이차 주식회사
+2022-01-13 13:57:14 INFO [226/300] corpCode: 01609765, corpName: 더에스에프제오차 주식회사
+2022-01-13 13:57:14 INFO [227/300] corpCode: 01609774, corpName: 사단법인 한미동맹친선협회
+2022-01-13 13:57:15 INFO [228/300] corpCode: 00812894, corpName: 에이치그린파워주식회사
+2022-01-13 13:57:15 INFO [229/300] corpCode: 01353079, corpName: 주식회사 코크렙제47호위탁관리부동산투자회사
+2022-01-13 13:57:15 INFO [230/300] corpCode: 01055821, corpName: 서울투자파트너스 주식회사
+2022-01-13 13:57:15 INFO [231/300] corpCode: 01608748, corpName: 재단법인 에쓰-오일 과학문화재단
+2022-01-13 13:57:15 INFO [232/300] corpCode: 01490149, corpName: 라이프자산운용 주식회사
+2022-01-13 13:57:15 INFO [233/300] corpCode: 00410207, corpName: (주)엑스얼라이언스
+2022-01-13 13:57:16 INFO [234/300] corpCode: 01383487, corpName: 주식회사 윤성에프앤비
+2022-01-13 13:57:16 INFO [235/300] corpCode: 00164636, corpName: 에이치디씨(주)
+2022-01-13 13:57:16 INFO [236/300] corpCode: 01604645, corpName: 주식회사 한국전자투표
+2022-01-13 13:57:16 INFO [237/300] corpCode: 00265324, corpName: (주)씨제이이엔엠
+2022-01-13 13:57:16 INFO [238/300] corpCode: 00990396, corpName: 뿌리깊은나무들(주)
+2022-01-13 13:57:16 INFO [239/300] corpCode: 01263022, corpName: (주)비지에프리테일
+2022-01-13 13:57:16 INFO [240/300] corpCode: 01447147, corpName: (주)우신팜
+2022-01-13 13:57:17 INFO [241/300] corpCode: 01097997, corpName: 주식회사 시몬느액세서리컬렉션
+2022-01-13 13:57:17 INFO [242/300] corpCode: 01073067, corpName: 에네오스코리아 주식회사
+2022-01-13 13:57:17 INFO [243/300] corpCode: 00663401, corpName: 주식회사 우석건설
+2022-01-13 13:57:17 INFO [244/300] corpCode: 01552838, corpName: (주)동승전기
+2022-01-13 13:57:17 INFO [245/300] corpCode: 00965619, corpName: 주식회사 더리치
+2022-01-13 13:57:17 INFO [246/300] corpCode: 00174110, corpName: 주식회사 동원제일저축은행
+2022-01-13 13:57:18 INFO [247/300] corpCode: 00844325, corpName: 서비스탑(주)
+2022-01-13 13:57:18 INFO [248/300] corpCode: 01365205, corpName: (주)지앤에프
+2022-01-13 13:57:18 INFO [249/300] corpCode: 01608988, corpName: 재단법인 동원육영재단
+2022-01-13 13:57:18 INFO [250/300] corpCode: 01199107, corpName: 에이치엠홀딩스 주식회사
+2022-01-13 13:57:18 INFO [251/300] corpCode: 00120021, corpName: (주)LG
+2022-01-13 13:57:18 INFO [252/300] corpCode: 00223762, corpName: (주)지니뮤직
+2022-01-13 13:57:19 INFO [253/300] corpCode: 00401731, corpName: LG전자(주)
+2022-01-13 13:57:19 INFO [254/300] corpCode: 00923899, corpName: 참존글로벌(주)
+2022-01-13 13:57:19 INFO [255/300] corpCode: 00262372, corpName: 한국메티슨특수가스 주식회사
+2022-01-13 13:57:19 INFO [256/300] corpCode: 00675947, corpName: 주식회사 HB캐피탈
+2022-01-13 13:57:19 INFO [257/300] corpCode: 00113261, corpName: 대한광통신(주)
+2022-01-13 13:57:19 INFO [258/300] corpCode: 01370951, corpName: 주식회사 유원
+2022-01-13 13:57:20 INFO [259/300] corpCode: 01006959, corpName: 주식회사 웨이크원 (wakeone)
+2022-01-13 13:57:20 INFO [260/300] corpCode: 01609783, corpName: 마스턴제112호로지스포인트용인피에프브이 주식회사
+2022-01-13 13:57:20 INFO [261/300] corpCode: 00104856, corpName: 삼성증권(주)
+2022-01-13 13:57:20 INFO [262/300] corpCode: 01609808, corpName: 재단법인 생명다양성재단
+2022-01-13 13:57:20 INFO [263/300] corpCode: 01205709, corpName: 현대중공업지주주식회사
+2022-01-13 13:57:20 INFO [264/300] corpCode: 00589385, corpName: 금호리조트(주)
+2022-01-13 13:57:21 INFO [265/300] corpCode: 01609817, corpName: 얼라인파트너스자산운용 주식회사
+2022-01-13 13:57:21 INFO [266/300] corpCode: 00104500, corpName: KB자산운용
+2022-01-13 13:57:21 INFO [267/300] corpCode: 00922641, corpName: 주식회사 로코모티브
+2022-01-13 13:57:21 INFO [268/300] corpCode: 00663304, corpName: (주)메타즈
+2022-01-13 13:57:21 INFO [269/300] corpCode: 00805803, corpName: 주식회사 아스톤에셋
+2022-01-13 13:57:21 INFO [270/300] corpCode: 00301705, corpName: 장금상선(주)
+2022-01-13 13:57:22 INFO [271/300] corpCode: 01609552, corpName: 네버에버제일차주식회사
+2022-01-13 13:57:22 INFO [272/300] corpCode: 00245454, corpName: (주)한화저축은행
+2022-01-13 13:57:22 INFO [273/300] corpCode: 00205003, corpName: (주)좋은사람들
+2022-01-13 13:57:22 INFO [274/300] corpCode: 00367604, corpName: (주)에스엠라이프디자인그룹
+2022-01-13 13:57:22 INFO [275/300] corpCode: 00624998, corpName: (주)제닉
+2022-01-13 13:57:22 INFO [276/300] corpCode: 01071041, corpName: 씨제이바이오사이언스(주)
+2022-01-13 13:57:23 INFO [277/300] corpCode: 01335851, corpName: 주식회사 박셀바이오
+2022-01-13 13:57:23 INFO [278/300] corpCode: 01053911, corpName: 한국퀄컴유한회사
+2022-01-13 13:57:23 INFO [279/300] corpCode: 01510771, corpName: (주)에스에이치케이디엔씨
+2022-01-13 13:57:23 INFO [280/300] corpCode: 00673523, corpName: 엔에이치농협캐피탈(주)
+2022-01-13 13:57:23 INFO [281/300] corpCode: 00844936, corpName: BNK캐피탈 주식회사
+2022-01-13 13:57:23 INFO [282/300] corpCode: 00404792, corpName: 공항철도주식회사
+2022-01-13 13:57:23 INFO [283/300] corpCode: 00251738, corpName: 미래에셋캐피탈주식회사
+2022-01-13 13:57:24 INFO [284/300] corpCode: 00111971, corpName: 대원정밀공업(주)
+2022-01-13 13:57:24 INFO [285/300] corpCode: 00165680, corpName: (주)호텔신라
+2022-01-13 13:57:24 INFO [286/300] corpCode: 00269612, corpName: (주)파워로직스
+2022-01-13 13:57:24 INFO [287/300] corpCode: 01598812, corpName: 주식회사 푸른산업개발
+2022-01-13 13:57:24 INFO [288/300] corpCode: 01083727, corpName: 주식회사 두성코리아
+2022-01-13 13:57:24 INFO [289/300] corpCode: 00124805, corpName: (주)푸른상호저축은행
+2022-01-13 13:57:25 INFO [290/300] corpCode: 00134176, corpName: (주)세우글로벌
+2022-01-13 13:57:25 INFO [291/300] corpCode: 01465611, corpName: (주)포스패널시스템
+2022-01-13 13:57:25 INFO [292/300] corpCode: 00160302, corpName: 코스모화학(주)
+2022-01-13 13:57:25 INFO [293/300] corpCode: 00153861, corpName: (주)태영건설
+2022-01-13 13:57:25 INFO [294/300] corpCode: 00453804, corpName: 엔에이치아문디자산운용 주식회사
+2022-01-13 13:57:25 INFO [295/300] corpCode: 01246326, corpName: 재단법인 삼라희망재단
+2022-01-13 13:57:26 INFO [296/300] corpCode: 00868495, corpName: 주식회사 운선디앤씨
+2022-01-13 13:57:26 INFO [297/300] corpCode: 00137517, corpName: 신한라이프생명보험 주식회사
+2022-01-13 13:57:26 INFO [298/300] corpCode: 01319640, corpName: (주)스타필드안성
+2022-01-13 13:57:26 INFO [299/300] corpCode: 00155939, corpName: 주식회사 필립스코리아
+2022-01-13 13:57:26 INFO [300/300] corpCode: 00236313, corpName: 케이비부동산신탁주식회사
+2022-01-13 13:57:26 INFO ----------------------------------------------------------------------------
+2022-01-13 13:57:26 INFO makeDataFile: C:/dev/hdata/ht_opd001m/ht_opd001m_20220112.txt, listCnt: 300
+2022-01-13 13:57:26 INFO makeLogFile: C:/dev/hdata/ht_log001m/ht_opd001m_20220112_20220113135726.txt
+2022-01-13 13:57:26 INFO ----------------------------------------------------------------------------
+2022-01-13 13:57:26 INFO END JOB :::: opd001m
+2022-01-13 13:57:26 INFO Step: [opd001mStep] executed in 56s307ms
+2022-01-13 13:57:26 INFO Executing step: [opd002mStep]
+2022-01-13 13:57:26 INFO JobService init() >> jobGroupId: opd
+2022-01-13 13:57:26 INFO ##########################################################################
+2022-01-13 13:57:26 INFO START JOB :::: opd002m 
+2022-01-13 13:57:26 INFO ##########################################################################
+2022-01-13 13:57:26 INFO baseDt: 20220112, startDt: 20220112, endDt: 20220112, period: 1
+2022-01-13 13:57:27 INFO corpName: 금강철강, reportNm: [기재정정]분기보고서 (2021.09), pblnt: A001
+2022-01-13 13:57:27 INFO corpName: 휴센텍, reportNm: 주주총회소집공고, pblnt: E001
+2022-01-13 13:57:27 INFO corpName: 에코캡, reportNm: 사외이사의선임ㆍ해임또는중도퇴임에관한신고, pblnt: E001
+2022-01-13 13:57:27 INFO corpName: SK증권, reportNm: 자기주식취득결과보고서, pblnt: E001
+2022-01-13 13:57:27 INFO corpName: 티사이언티픽, reportNm: 주주총회소집공고, pblnt: E001
+2022-01-13 13:57:27 INFO corpName: SK디스커버리, reportNm: 신탁계약에의한취득상황보고서, pblnt: E001
+2022-01-13 13:57:27 INFO corpName: RFHIC, reportNm: 자기주식취득결과보고서, pblnt: E001
+2022-01-13 13:57:27 INFO corpName: 바른전자, reportNm: 주주총회소집공고, pblnt: E001
+2022-01-13 13:57:27 INFO corpName: 애플코리아, reportNm: 감사보고서 (2021.09), pblnt: F001
+2022-01-13 13:57:27 INFO corpName: 대원식품, reportNm: 감사보고서 (2021.09), pblnt: F001
+2022-01-13 13:57:27 INFO corpName: 성창에프앤지, reportNm: 감사보고서 (2021.09), pblnt: F001
+2022-01-13 13:57:27 INFO corpName: 영덕전자, reportNm: 감사보고서 (2021.09), pblnt: F001
+2022-01-13 13:57:27 INFO corpName: 고려수산, reportNm: 감사보고서 (2021.09), pblnt: F001
+2022-01-13 13:57:27 INFO corpName: 보은파트너스, reportNm: 감사보고서 (2020.12), pblnt: F001
+2022-01-13 13:57:27 INFO corpName: 한국브렌슨, reportNm: 감사보고서 (2021.09), pblnt: F001
+2022-01-13 13:57:27 INFO corpName: HDC, reportNm: 투자판단관련주요경영사항(자회사의 주요경영사항), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: HDC현대산업개발, reportNm: 투자판단관련주요경영사항, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 신영스팩5호, reportNm: 기타시장안내(상장폐지 우려 예고), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 케이비제18호스팩, reportNm: 기타시장안내(상장폐지 우려 예고), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 이오플로우, reportNm: 금전대여결정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 아센디오, reportNm: 기타안내사항(안내공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 아래스, reportNm: 주주총회소집결의, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 이브이첨단소재, reportNm: 기타경영사항(자율공시)(제4,5회차 전환사채 재매각), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: GS, reportNm: [기재정정]기타경영사항(자율공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: ESR켄달스퀘어리츠, reportNm: 부동산투자회사금전배당결정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 오리엔트정공, reportNm: 유상증자또는주식관련사채등의청약결과(자율공시)(주주우선공모 유상증자), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: HDC, reportNm: 타인에대한채무보증결정(자회사의 주요경영사항), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: HDC, reportNm: 타인에대한채무보증결정(자회사의 주요경영사항), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: ESR켄달스퀘어리츠, reportNm: 매출액또는손익구조30%(대규모법인은15%)이상변경, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 버킷스튜디오, reportNm: [기재정정]타법인주식및출자증권취득결정(자율공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 우리들휴브레인, reportNm: [기재정정]타법인주식및출자증권취득결정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 계룡건설산업, reportNm: [기재정정]단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: HDC현대산업개발, reportNm: 타인에대한채무보증결정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: HDC현대산업개발, reportNm: 타인에대한채무보증결정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 모트렉스, reportNm: 전환청구권행사, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: DL, reportNm: 계열회사변경(자율공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 미래산업, reportNm: 최대주주변경, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 엔에이치엔, reportNm: 기업설명회(IR)개최(안내공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 바이오솔루션, reportNm: 배당락, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 미래산업, reportNm: 최대주주등소유주식변동신고서(최대주주변경시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 제이엔케이히터, reportNm: [기재정정]단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 일성신약, reportNm: 최대주주등소유주식변동신고서, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 휴먼엔, reportNm: 소송등의판결ㆍ결정(주주명부 열람 및 등사 가처분), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 에스엠코어, reportNm: [기재정정]단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 휴센텍, reportNm: [기재정정]주주총회소집결의, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 대한유화, reportNm: 최대주주등소유주식변동신고서, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: KH 일렉트론, reportNm: 전환가액의조정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 금호석유화학, reportNm: 최대주주등소유주식변동신고서, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 삼성전자, reportNm: 최대주주등소유주식변동신고서, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 아이에이치큐, reportNm: 전환가액ㆍ신주인수권행사가액ㆍ교환가액의조정(안내공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 코오롱글로벌, reportNm: [기재정정]단일판매ㆍ공급계약체결(자율공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 좋은사람들, reportNm: 소송등의판결ㆍ결정(주주총회개최금지가처분), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 파마리서치바이오, reportNm: 주권매매거래정지해제(상장적격성 실질심사 대상 제외 결정), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 파마리서치바이오, reportNm: 기타시장안내(상장공시위원회 심의대상 제외 결정), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 에스디바이오센서, reportNm: 기타안내사항(안내공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 티사이언티픽, reportNm: 신주인수권행사(제14회차 BW), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 지스마트글로벌, reportNm: [기재정정]타인에대한담보제공결정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 이수화학, reportNm: 최대주주등소유주식변동신고서, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 디지캡, reportNm: [기재정정]전환청구권행사(제2회차), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 신세계건설, reportNm: [기재정정]단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 더블유게임즈, reportNm: 소송등의판결ㆍ결정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: GS건설, reportNm: 투자판단관련주요경영사항, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 세원이앤씨, reportNm: 단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 대양금속, reportNm: 전환가액ㆍ신주인수권행사가액ㆍ교환가액의조정(안내공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 피씨엘, reportNm: [기재정정]단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 피씨엘, reportNm: [기재정정]단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: NAVER, reportNm: 결산실적공시예고(안내공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: NAVER, reportNm: 기업설명회(IR)개최(안내공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 오뚜기, reportNm: 최대주주등소유주식변동신고서, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 에코캡, reportNm: 임시주주총회결과, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 포스코, reportNm: 연결재무제표기준영업(잠정)실적(공정공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 포스코, reportNm: 영업(잠정)실적(공정공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 씨에스윈드, reportNm: 단일판매ㆍ공급계약체결(자율공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 비츠로시스, reportNm: [기재정정]단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 티와이홀딩스, reportNm: 단일판매ㆍ공급계약체결(자회사의 주요경영사항), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 에이스침대, reportNm: 유동성공급계약의체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 씨아이테크, reportNm: [기재정정]단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 성도이엔지, reportNm: 단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 씨아이테크, reportNm: [기재정정]단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 태영건설, reportNm: 단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 코스나인, reportNm: 전환가액의조정(제17회차), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 나노씨엠에스, reportNm: 단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 한화솔루션, reportNm: 풍문또는보도에대한해명(미확정), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 엑시콘, reportNm: 단일판매ㆍ공급계약체결(자율공시), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: LIG넥스원, reportNm: 선급금지급결정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 세종메디칼, reportNm: 증권발행결과(자율공시)(제3회차 CB), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 디케이락, reportNm: 현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 미래에셋맵스리츠, reportNm: 매출액또는손익구조30%(대규모법인은15%)이상변경, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 미래에셋맵스리츠, reportNm: 부동산투자회사금전배당결정, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 코스맥스비티아이, reportNm: 투자판단관련주요경영사항(자회사의 주요경영사항)(특허권 취득), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: SK바이오사이언스, reportNm: 투자판단관련주요경영사항(노바백스 코로나19 백신 국내 품목허가 획득), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 코스맥스, reportNm: 투자판단관련주요경영사항(특허권 취득), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: TPC, reportNm: 전환사채(해외전환사채포함)발행후만기전사채취득, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 디지캡, reportNm: 기타경영사항(자율공시)(전자등록주식 처분금지 가처분 신청 취하), pblnt: I001
+2022-01-13 13:57:27 INFO corpName: TPC, reportNm: [기재정정]전환청구권행사, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: TPC, reportNm: [기재정정]전환청구권행사, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 에스디바이오센서, reportNm: [기재정정]단일판매ㆍ공급계약체결, pblnt: I001
+2022-01-13 13:57:27 INFO corpName: 에이비엘바이오, reportNm: 투자판단관련주요경영사항(ABL301 기술이전 및 공동개발 계약 체결), pblnt: I001
+2022-01-13 13:57:27 INFO ----------------------------------------------------------------------------
+2022-01-13 13:57:27 INFO makeDataFile: C:/dev/hdata/ht_opd002m/ht_opd002m_20220112.txt, listCnt: 98
+2022-01-13 13:57:27 INFO makeLogFile: C:/dev/hdata/ht_log001m/ht_opd002m_20220112_20220113135727.txt
+2022-01-13 13:57:27 INFO ----------------------------------------------------------------------------
+2022-01-13 13:57:35 INFO [1/98] downloadFile: corpName: 금강철강, saveFileNm: 20220112000332_A_A001.zip
+2022-01-13 13:57:44 INFO [2/98] downloadFile: corpName: 휴센텍, saveFileNm: 20220112000371_E_E001.zip
+2022-01-13 13:57:45 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 13:57:45 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 13:58:02 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 10228 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 13:58:02 INFO The following profiles are active: local
+2022-01-13 13:58:03 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 13:58:03 INFO Root WebApplicationContext: initialization completed in 1384 ms
+2022-01-13 13:58:03 INFO HikariPool-1 - Starting...
+2022-01-13 13:58:04 INFO HikariPool-1 - Start completed.
+2022-01-13 13:58:04 INFO No database type set, using meta data indicating: H2
+2022-01-13 13:58:04 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 13:58:04 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 13:58:04 INFO Started EdcBatchApplication in 2.938 seconds (JVM running for 3.643)
+2022-01-13 13:58:04 INFO Running default command line with: [baseDt=20210101]
+2022-01-13 13:58:04 INFO Job: [SimpleJob: [name=kotJob]] launched with the following parameters: [{baseDt=20210101}]
+2022-01-13 13:58:04 INFO Executing step: [kot001mStep]
+2022-01-13 13:58:04 INFO JobService init() >> jobGroupId: kot
+2022-01-13 13:58:04 INFO ##########################################################################
+2022-01-13 13:58:04 INFO START JOB :::: kot001m 
+2022-01-13 13:58:04 INFO ##########################################################################
+2022-01-13 13:58:04 INFO baseDt: 20210101, startDt: 20201226, endDt: 20210101, period: 7
+2022-01-13 13:58:04 INFO >>> searchDate: 20201226
+2022-01-13 13:58:09 INFO htmlFile: C:/dev/app_nas/anl_data/BA201/kotra/html/bbstxSn_186636.html
+2022-01-13 13:58:10 INFO ----------------------------------------------------------------------------
+2022-01-13 13:58:10 INFO javax.imageio.IIOException: Can't get input stream from URL!
+2022-01-13 13:58:10 INFO makeFailLogFile: C:/dev/hdata/ht_log001m/ht_kot001m_20210101_20220113135810.txt
+2022-01-13 13:58:10 INFO ----------------------------------------------------------------------------
+2022-01-13 13:58:10 INFO ----------------------------------------------------------------------------
+2022-01-13 13:58:10 INFO javax.imageio.IIOException: Can't get input stream from URL!
+2022-01-13 13:58:10 INFO makeFailLogFile: C:/dev/hdata/ht_log001m/ht_kot002m_20210101_20220113135810.txt
+2022-01-13 13:58:10 INFO ----------------------------------------------------------------------------
+2022-01-13 13:58:10 INFO END JOB :::: kot001m
+2022-01-13 13:58:10 INFO Step: [kot001mStep] executed in 5s601ms
+2022-01-13 13:58:10 INFO Job: [SimpleJob: [name=kotJob]] completed with the following parameters: [{baseDt=20210101}] and the following status: [COMPLETED] in 5s667ms
+2022-01-13 14:02:03 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:02:03 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:02:05 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 31776 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:02:05 INFO The following profiles are active: local
+2022-01-13 14:02:06 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:02:06 INFO Root WebApplicationContext: initialization completed in 1351 ms
+2022-01-13 14:02:07 INFO HikariPool-1 - Starting...
+2022-01-13 14:02:07 INFO HikariPool-1 - Start completed.
+2022-01-13 14:02:07 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:02:07 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:02:07 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:02:07 INFO Started EdcBatchApplication in 2.826 seconds (JVM running for 3.848)
+2022-01-13 14:02:07 INFO Running default command line with: []
+2022-01-13 14:02:07 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:02:07 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:02:07 INFO ####################################################
+2022-01-13 14:02:07 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:02:07 INFO ####################################################
+2022-01-13 14:02:07 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:02:07 INFO >> jobId: som001m
+2022-01-13 14:02:07 INFO >> jobId: som002m
+2022-01-13 14:02:07 INFO >> jobId: som003m
+2022-01-13 14:02:07 INFO >> jobId: som004m
+2022-01-13 14:02:07 INFO >> jobId: som005m
+2022-01-13 14:02:07 INFO >> jobId: big001m
+2022-01-13 14:02:07 INFO >> jobId: big002m
+2022-01-13 14:02:07 INFO >> jobId: big003m
+2022-01-13 14:02:07 INFO >> jobId: big004m
+2022-01-13 14:02:07 INFO >> jobId: kot001m
+2022-01-13 14:02:07 INFO >> jobId: kot002m
+2022-01-13 14:02:07 INFO >> jobId: biz001m
+2022-01-13 14:02:07 INFO >> jobId: nav003m
+2022-01-13 14:02:07 INFO >> jobId: nav004m
+2022-01-13 14:02:07 INFO >> jobId: nav001m
+2022-01-13 14:02:07 INFO >> jobId: nav002m
+2022-01-13 14:02:07 INFO >> jobId: eba001m
+2022-01-13 14:02:07 INFO >> jobId: opd001m
+2022-01-13 14:02:07 INFO >> jobId: opd002m
+2022-01-13 14:02:07 INFO >> jobId: uct001m
+2022-01-13 14:02:07 INFO >> jobId: saf001m
+2022-01-13 14:02:07 INFO >> jobId: saf001l
+2022-01-13 14:02:07 INFO >> jobId: saf002l
+2022-01-13 14:02:07 INFO >> jobId: saf003l
+2022-01-13 14:02:07 INFO >> jobId: saf004l
+2022-01-13 14:02:07 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:02:07 INFO Step: [comFileCleanStep] executed in 52ms
+2022-01-13 14:02:07 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 76ms
+2022-01-13 14:04:28 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:04:28 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:04:33 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 21980 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:04:33 INFO The following profiles are active: local
+2022-01-13 14:04:34 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:04:34 INFO Root WebApplicationContext: initialization completed in 1487 ms
+2022-01-13 14:04:35 INFO HikariPool-1 - Starting...
+2022-01-13 14:04:35 INFO HikariPool-1 - Start completed.
+2022-01-13 14:04:35 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:04:35 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:04:35 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:04:35 INFO Started EdcBatchApplication in 3.139 seconds (JVM running for 3.973)
+2022-01-13 14:04:35 INFO Running default command line with: []
+2022-01-13 14:04:35 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:04:36 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:04:36 INFO ####################################################
+2022-01-13 14:04:36 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:04:36 INFO ####################################################
+2022-01-13 14:04:36 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:04:36 INFO >> jobId: som001m
+2022-01-13 14:04:36 INFO >> jobId: som002m
+2022-01-13 14:04:36 INFO >> jobId: som003m
+2022-01-13 14:04:36 INFO >> jobId: som004m
+2022-01-13 14:04:36 INFO >> jobId: som005m
+2022-01-13 14:04:36 INFO >> jobId: big001m
+2022-01-13 14:04:36 INFO >> jobId: big002m
+2022-01-13 14:04:36 INFO >> jobId: big003m
+2022-01-13 14:04:36 INFO >> jobId: big004m
+2022-01-13 14:04:36 INFO >> jobId: kot001m
+2022-01-13 14:04:36 INFO htmlBackupPath: C:/dev/app_nas/anl_data/BA201/kotra/html/backup/2021/11
+2022-01-13 14:04:36 INFO imageBackupPath: C:/dev/app_nas/anl_data/BA201/kotra/image/backup/2021/11
+2022-01-13 14:04:36 INFO >> jobId: kot002m
+2022-01-13 14:04:36 INFO htmlBackupPath: C:/dev/app_nas/anl_data/BA201/kotra/html/backup/2021/11
+2022-01-13 14:04:36 INFO imageBackupPath: C:/dev/app_nas/anl_data/BA201/kotra/image/backup/2021/11
+2022-01-13 14:04:36 INFO >> jobId: biz001m
+2022-01-13 14:04:36 INFO >> jobId: nav003m
+2022-01-13 14:04:36 INFO >> jobId: nav004m
+2022-01-13 14:04:36 INFO >> jobId: nav001m
+2022-01-13 14:04:36 INFO >> jobId: nav002m
+2022-01-13 14:04:36 INFO >> jobId: eba001m
+2022-01-13 14:04:36 INFO >> jobId: opd001m
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/01/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/02/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/03/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/04/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/05/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/06/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/07/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/08/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/09/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/10/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/11/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/12/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/13/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/14/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/15/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/16/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/17/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/18/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/19/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/20/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/21/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/22/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/23/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/24/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/25/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/26/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/27/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/28/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/29/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/30/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/31/backup/2021/11
+2022-01-13 14:04:36 INFO >> jobId: opd002m
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/01/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/02/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/03/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/04/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/05/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/06/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/07/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/08/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/09/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/10/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/11/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/12/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/13/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/14/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/15/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/16/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/17/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/18/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/19/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/20/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/21/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/22/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/23/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/24/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/25/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/26/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/27/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/28/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/29/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/30/backup/2021/11
+2022-01-13 14:04:36 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/11/31/backup/2021/11
+2022-01-13 14:04:36 INFO >> jobId: uct001m
+2022-01-13 14:04:36 INFO >> jobId: saf001m
+2022-01-13 14:04:36 INFO >> jobId: saf001l
+2022-01-13 14:04:36 INFO >> jobId: saf002l
+2022-01-13 14:04:36 INFO >> jobId: saf003l
+2022-01-13 14:04:36 INFO >> jobId: saf004l
+2022-01-13 14:04:36 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:04:36 INFO Step: [comFileCleanStep] executed in 61ms
+2022-01-13 14:04:36 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 80ms
+2022-01-13 14:06:29 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:06:29 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:06:33 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 13596 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:06:33 INFO The following profiles are active: local
+2022-01-13 14:06:34 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:06:34 INFO Root WebApplicationContext: initialization completed in 1368 ms
+2022-01-13 14:06:35 INFO HikariPool-1 - Starting...
+2022-01-13 14:06:35 INFO HikariPool-1 - Start completed.
+2022-01-13 14:06:35 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:06:35 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:06:35 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:06:35 INFO Started EdcBatchApplication in 2.902 seconds (JVM running for 3.599)
+2022-01-13 14:06:35 INFO Running default command line with: []
+2022-01-13 14:06:35 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:06:36 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:06:36 INFO ####################################################
+2022-01-13 14:06:36 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:06:36 INFO ####################################################
+2022-01-13 14:06:36 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:06:36 INFO >> jobId: som001m
+2022-01-13 14:06:36 INFO >> jobId: som002m
+2022-01-13 14:06:36 INFO >> jobId: som003m
+2022-01-13 14:06:36 INFO >> jobId: som004m
+2022-01-13 14:06:36 INFO >> jobId: som005m
+2022-01-13 14:06:36 INFO >> jobId: big001m
+2022-01-13 14:06:36 INFO >> jobId: big002m
+2022-01-13 14:06:36 INFO >> jobId: big003m
+2022-01-13 14:06:36 INFO >> jobId: big004m
+2022-01-13 14:06:36 INFO >> jobId: kot001m
+2022-01-13 14:06:36 INFO deleteFile: C:\dev\app_nas\anl_data\BA201\kotra\html\backup\2021\11\01\log4j2.xml
+2022-01-13 14:06:36 INFO deleteFolder: C:\dev\app_nas\anl_data\BA201\kotra\html\backup\2021\11\01
+2022-01-13 14:06:36 INFO htmlBackupPath: C:/dev/app_nas/anl_data/BA201/kotra/html/backup/2021/11
+2022-01-13 14:06:36 INFO imageBackupPath: C:/dev/app_nas/anl_data/BA201/kotra/image/backup/2021/11
+2022-01-13 14:06:36 INFO >> jobId: kot002m
+2022-01-13 14:06:36 INFO htmlBackupPath: C:/dev/app_nas/anl_data/BA201/kotra/html/backup/2021/11
+2022-01-13 14:06:36 INFO imageBackupPath: C:/dev/app_nas/anl_data/BA201/kotra/image/backup/2021/11
+2022-01-13 14:06:36 INFO >> jobId: biz001m
+2022-01-13 14:06:36 INFO >> jobId: nav003m
+2022-01-13 14:06:36 INFO >> jobId: nav004m
+2022-01-13 14:06:36 INFO >> jobId: nav001m
+2022-01-13 14:06:36 INFO >> jobId: nav002m
+2022-01-13 14:06:36 INFO >> jobId: eba001m
+2022-01-13 14:06:36 INFO >> jobId: opd001m
+2022-01-13 14:06:36 INFO backupPath: 2021/11/01/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/02/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/03/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/04/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/05/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/06/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/07/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/08/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/09/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/10/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/11/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/12/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/13/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/14/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/15/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/16/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/17/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/18/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/19/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/20/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/21/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/22/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/23/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/24/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/25/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/26/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/27/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/28/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/29/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/30/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/31/
+2022-01-13 14:06:36 INFO >> jobId: opd002m
+2022-01-13 14:06:36 INFO backupPath: 2021/11/01/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/02/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/03/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/04/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/05/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/06/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/07/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/08/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/09/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/10/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/11/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/12/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/13/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/14/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/15/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/16/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/17/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/18/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/19/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/20/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/21/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/22/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/23/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/24/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/25/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/26/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/27/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/28/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/29/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/30/
+2022-01-13 14:06:36 INFO backupPath: 2021/11/31/
+2022-01-13 14:06:36 INFO >> jobId: uct001m
+2022-01-13 14:06:36 INFO >> jobId: saf001m
+2022-01-13 14:06:36 INFO >> jobId: saf001l
+2022-01-13 14:06:36 INFO >> jobId: saf002l
+2022-01-13 14:06:36 INFO >> jobId: saf003l
+2022-01-13 14:06:36 INFO >> jobId: saf004l
+2022-01-13 14:06:36 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:06:36 INFO Step: [comFileCleanStep] executed in 76ms
+2022-01-13 14:06:36 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 93ms
+2022-01-13 14:10:05 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:10:05 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:10:09 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 9916 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:10:09 INFO The following profiles are active: local
+2022-01-13 14:10:10 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:10:11 INFO Root WebApplicationContext: initialization completed in 1324 ms
+2022-01-13 14:10:11 INFO HikariPool-1 - Starting...
+2022-01-13 14:10:11 INFO HikariPool-1 - Start completed.
+2022-01-13 14:10:11 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:10:11 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:10:12 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:10:12 INFO Started EdcBatchApplication in 2.791 seconds (JVM running for 3.494)
+2022-01-13 14:10:12 INFO Running default command line with: []
+2022-01-13 14:10:12 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:10:12 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:10:12 INFO ####################################################
+2022-01-13 14:10:12 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:10:12 INFO ####################################################
+2022-01-13 14:10:12 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:10:12 INFO >> jobId: som001m
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\01\log4j2.xml
+2022-01-13 14:10:12 INFO deleteFolder: C:\dev\hdata\ht_log001m\backup\2021\11\01
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big001m_20211228_20211229132936.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big001m_20220103_20220104101157.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big001m_20220111_20220112113001.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big001m_20220111_20220112114545.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big001m_20220111_20220112114927.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big001m_20220111_20220112115157.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big001m_20220111_20220112115423.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big001m_20220111_20220112115723.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big002m_20211228_20211229132750.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big002m_20220103_20220104101005.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big002m_20220111_20220112112731.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big002m_20220111_20220112114454.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big002m_20220111_20220112114910.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big002m_20220111_20220112115145.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big002m_20220111_20220112115411.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big002m_20220111_20220112115712.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big003m_20211228_20211229132936.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big003m_20220103_20220104101157.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big003m_20220111_20220112113001.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big003m_20220111_20220112114545.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big003m_20220111_20220112114928.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big003m_20220111_20220112115158.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big003m_20220111_20220112115423.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big004m_20211228_20211229132936.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big004m_20220103_20220104101157.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big004m_20220111_20220112113001.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big004m_20220111_20220112114545.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big004m_20220111_20220112114928.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big004m_20220111_20220112115158.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_big004m_20220111_20220112115423.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_biz001m_20211228_20211229132446.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_biz001m_20220109_20220110100202.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20210101_20220113135810.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211229_20211230143048.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211229_20211230143132.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211229_20211230143817.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211229_20211230143931.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211229_20211230172559.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211229_20211230172701.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211229_20211230174135.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211229_20211230174919.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211229_20211230174950.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211230_20211231090916.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211230_20211231091009.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211230_20211231092136.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211230_20211231092819.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211230_20211231093849.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211230_20220103095243.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211230_20220104092851.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20211231_20220103095136.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20220102_20220103093654.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot001m_20220112_20220113135520.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20210101_20220113135810.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211229_20211230143048.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211229_20211230143132.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211229_20211230143817.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211229_20211230143931.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211229_20211230172559.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211229_20211230172701.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211229_20211230174135.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211229_20211230174919.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211229_20211230174950.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211230_20211231090916.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211230_20211231091009.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211230_20211231092136.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211230_20211231092819.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211230_20211231093849.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211230_20220103095243.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211230_20220104092851.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20211231_20220103095136.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20220102_20220103093654.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_kot002m_20220112_20220113135520.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_nav003m_20220107_20220111142026.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_nav003m_20220107_20220111142146.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_nav004m_20220107_20220111142027.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_nav004m_20220107_20220111142147.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_opd001m_20220112_20220113135726.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_opd002m_20220112_20220113135727.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_saf001l_20211230_20211231095027.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_saf001m_20211230_20211231093712.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_saf001m_20211230_20211231094845.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_saf002l_20211230_20211231095027.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_saf003l_20211230_20211231095027.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_saf004l_20211230_20211231095243.txt
+2022-01-13 14:10:12 INFO deleteFile: C:\dev\hdata\ht_log001m\backup\2021\11\02\ht_uct001m_202201_20220106153708.txt
+2022-01-13 14:10:12 INFO deleteFolder: C:\dev\hdata\ht_log001m\backup\2021\11\02
+2022-01-13 14:10:12 INFO >> jobId: som002m
+2022-01-13 14:10:12 INFO >> jobId: som003m
+2022-01-13 14:10:12 INFO >> jobId: som004m
+2022-01-13 14:10:12 INFO >> jobId: som005m
+2022-01-13 14:10:12 INFO >> jobId: big001m
+2022-01-13 14:10:12 INFO >> jobId: big002m
+2022-01-13 14:10:12 INFO >> jobId: big003m
+2022-01-13 14:10:12 INFO >> jobId: big004m
+2022-01-13 14:10:12 INFO >> jobId: kot001m
+2022-01-13 14:10:12 INFO >> jobId: kot002m
+2022-01-13 14:10:12 INFO >> jobId: biz001m
+2022-01-13 14:10:12 INFO >> jobId: nav003m
+2022-01-13 14:10:12 INFO >> jobId: nav004m
+2022-01-13 14:10:12 INFO >> jobId: nav001m
+2022-01-13 14:10:12 INFO >> jobId: nav002m
+2022-01-13 14:10:12 INFO >> jobId: eba001m
+2022-01-13 14:10:12 INFO >> jobId: opd001m
+2022-01-13 14:10:12 INFO >> jobId: opd002m
+2022-01-13 14:10:12 INFO >> jobId: uct001m
+2022-01-13 14:10:12 INFO >> jobId: saf001m
+2022-01-13 14:10:12 INFO >> jobId: saf001l
+2022-01-13 14:10:12 INFO >> jobId: saf002l
+2022-01-13 14:10:12 INFO >> jobId: saf003l
+2022-01-13 14:10:12 INFO >> jobId: saf004l
+2022-01-13 14:10:12 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:10:12 INFO Step: [comFileCleanStep] executed in 106ms
+2022-01-13 14:10:12 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 144ms
+2022-01-13 14:11:13 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:11:13 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:11:16 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 1932 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:11:16 INFO The following profiles are active: local
+2022-01-13 14:11:17 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:11:17 INFO Root WebApplicationContext: initialization completed in 1392 ms
+2022-01-13 14:11:18 INFO HikariPool-1 - Starting...
+2022-01-13 14:11:18 INFO HikariPool-1 - Start completed.
+2022-01-13 14:11:18 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:11:18 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:11:18 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:11:18 INFO Started EdcBatchApplication in 2.913 seconds (JVM running for 3.606)
+2022-01-13 14:11:18 INFO Running default command line with: []
+2022-01-13 14:11:18 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:11:18 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:11:18 INFO ####################################################
+2022-01-13 14:11:18 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:11:18 INFO ####################################################
+2022-01-13 14:11:18 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:11:18 INFO >> jobId: som001m
+2022-01-13 14:11:18 INFO >> jobId: som002m
+2022-01-13 14:11:18 INFO >> jobId: som003m
+2022-01-13 14:11:18 INFO >> jobId: som004m
+2022-01-13 14:11:18 INFO >> jobId: som005m
+2022-01-13 14:11:18 INFO >> jobId: big001m
+2022-01-13 14:11:18 INFO >> jobId: big002m
+2022-01-13 14:11:18 INFO >> jobId: big003m
+2022-01-13 14:11:18 INFO >> jobId: big004m
+2022-01-13 14:11:18 INFO >> jobId: kot001m
+2022-01-13 14:11:18 INFO >> jobId: kot002m
+2022-01-13 14:11:18 INFO >> jobId: biz001m
+2022-01-13 14:11:18 INFO >> jobId: nav003m
+2022-01-13 14:11:18 INFO >> jobId: nav004m
+2022-01-13 14:11:18 INFO >> jobId: nav001m
+2022-01-13 14:11:18 INFO >> jobId: nav002m
+2022-01-13 14:11:18 INFO >> jobId: eba001m
+2022-01-13 14:11:18 INFO >> jobId: opd001m
+2022-01-13 14:11:18 INFO >> jobId: opd002m
+2022-01-13 14:11:18 INFO >> jobId: uct001m
+2022-01-13 14:11:18 INFO >> jobId: saf001m
+2022-01-13 14:11:18 INFO >> jobId: saf001l
+2022-01-13 14:11:18 INFO >> jobId: saf002l
+2022-01-13 14:11:18 INFO >> jobId: saf003l
+2022-01-13 14:11:18 INFO >> jobId: saf004l
+2022-01-13 14:11:18 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:11:18 INFO Step: [comFileCleanStep] executed in 58ms
+2022-01-13 14:11:18 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 95ms
+2022-01-13 14:11:47 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:11:47 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:11:52 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 7000 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:11:52 INFO The following profiles are active: local
+2022-01-13 14:11:53 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:11:53 INFO Root WebApplicationContext: initialization completed in 1299 ms
+2022-01-13 14:11:54 INFO HikariPool-1 - Starting...
+2022-01-13 14:11:54 INFO HikariPool-1 - Start completed.
+2022-01-13 14:11:54 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:11:54 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:11:54 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:11:54 INFO Started EdcBatchApplication in 2.882 seconds (JVM running for 3.573)
+2022-01-13 14:11:54 INFO Running default command line with: []
+2022-01-13 14:11:54 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:11:54 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:11:54 INFO ####################################################
+2022-01-13 14:11:54 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:11:54 INFO ####################################################
+2022-01-13 14:11:54 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:11:54 INFO >> jobId: som001m
+2022-01-13 14:11:54 INFO >> jobId: som002m
+2022-01-13 14:11:54 INFO >> jobId: som003m
+2022-01-13 14:11:54 INFO >> jobId: som004m
+2022-01-13 14:11:54 INFO >> jobId: som005m
+2022-01-13 14:11:54 INFO >> jobId: big001m
+2022-01-13 14:11:54 INFO >> jobId: big002m
+2022-01-13 14:11:54 INFO >> jobId: big003m
+2022-01-13 14:11:54 INFO >> jobId: big004m
+2022-01-13 14:11:54 INFO >> jobId: kot001m
+2022-01-13 14:11:54 INFO >> jobId: kot002m
+2022-01-13 14:11:54 INFO >> jobId: biz001m
+2022-01-13 14:11:54 INFO >> jobId: nav003m
+2022-01-13 14:11:54 INFO >> jobId: nav004m
+2022-01-13 14:11:54 INFO >> jobId: nav001m
+2022-01-13 14:11:54 INFO >> jobId: nav002m
+2022-01-13 14:11:54 INFO >> jobId: eba001m
+2022-01-13 14:11:54 INFO >> jobId: opd001m
+2022-01-13 14:11:54 INFO >> jobId: opd002m
+2022-01-13 14:11:54 INFO >> jobId: uct001m
+2022-01-13 14:11:54 INFO >> jobId: saf001m
+2022-01-13 14:11:54 INFO >> jobId: saf001l
+2022-01-13 14:11:54 INFO >> jobId: saf002l
+2022-01-13 14:11:54 INFO >> jobId: saf003l
+2022-01-13 14:11:54 INFO >> jobId: saf004l
+2022-01-13 14:11:54 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:11:54 INFO Step: [comFileCleanStep] executed in 65ms
+2022-01-13 14:11:54 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 91ms
+2022-01-13 14:12:10 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:12:10 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:12:13 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 39052 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:12:13 INFO The following profiles are active: local
+2022-01-13 14:12:14 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:12:14 INFO Root WebApplicationContext: initialization completed in 1354 ms
+2022-01-13 14:12:15 INFO HikariPool-1 - Starting...
+2022-01-13 14:12:15 INFO HikariPool-1 - Start completed.
+2022-01-13 14:12:15 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:12:15 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:12:15 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:12:15 INFO Started EdcBatchApplication in 2.907 seconds (JVM running for 3.592)
+2022-01-13 14:12:15 INFO Running default command line with: []
+2022-01-13 14:12:15 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:12:15 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:12:15 INFO ####################################################
+2022-01-13 14:12:15 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:12:15 INFO ####################################################
+2022-01-13 14:12:15 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:12:15 INFO >> jobId: som001m
+2022-01-13 14:12:15 INFO >> jobId: som002m
+2022-01-13 14:12:15 INFO >> jobId: som003m
+2022-01-13 14:12:15 INFO >> jobId: som004m
+2022-01-13 14:12:15 INFO >> jobId: som005m
+2022-01-13 14:12:15 INFO >> jobId: big001m
+2022-01-13 14:12:15 INFO >> jobId: big002m
+2022-01-13 14:12:15 INFO >> jobId: big003m
+2022-01-13 14:12:15 INFO >> jobId: big004m
+2022-01-13 14:12:15 INFO >> jobId: kot001m
+2022-01-13 14:12:15 INFO >> jobId: kot002m
+2022-01-13 14:12:15 INFO >> jobId: biz001m
+2022-01-13 14:12:15 INFO >> jobId: nav003m
+2022-01-13 14:12:15 INFO >> jobId: nav004m
+2022-01-13 14:12:15 INFO >> jobId: nav001m
+2022-01-13 14:12:15 INFO >> jobId: nav002m
+2022-01-13 14:12:15 INFO >> jobId: eba001m
+2022-01-13 14:12:15 INFO >> jobId: opd001m
+2022-01-13 14:12:15 INFO >> jobId: opd002m
+2022-01-13 14:12:15 INFO >> jobId: uct001m
+2022-01-13 14:12:15 INFO >> jobId: saf001m
+2022-01-13 14:12:15 INFO >> jobId: saf001l
+2022-01-13 14:12:15 INFO >> jobId: saf002l
+2022-01-13 14:12:15 INFO >> jobId: saf003l
+2022-01-13 14:12:15 INFO >> jobId: saf004l
+2022-01-13 14:12:15 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:12:15 INFO Step: [comFileCleanStep] executed in 65ms
+2022-01-13 14:12:15 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 98ms
+2022-01-13 14:13:00 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:13:00 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:13:04 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 27120 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:13:04 INFO The following profiles are active: local
+2022-01-13 14:13:06 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:13:06 INFO Root WebApplicationContext: initialization completed in 1340 ms
+2022-01-13 14:13:06 INFO HikariPool-1 - Starting...
+2022-01-13 14:13:06 INFO HikariPool-1 - Start completed.
+2022-01-13 14:13:07 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:13:07 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:13:07 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:13:07 INFO Started EdcBatchApplication in 2.862 seconds (JVM running for 3.601)
+2022-01-13 14:13:07 INFO Running default command line with: []
+2022-01-13 14:13:07 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:13:07 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:13:07 INFO ####################################################
+2022-01-13 14:13:07 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:13:07 INFO ####################################################
+2022-01-13 14:13:07 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:13:07 INFO >> jobId: som001m
+2022-01-13 14:13:07 INFO >> jobId: som002m
+2022-01-13 14:13:07 INFO >> jobId: som003m
+2022-01-13 14:13:07 INFO >> jobId: som004m
+2022-01-13 14:13:07 INFO >> jobId: som005m
+2022-01-13 14:13:07 INFO >> jobId: big001m
+2022-01-13 14:13:07 INFO >> jobId: big002m
+2022-01-13 14:13:07 INFO >> jobId: big003m
+2022-01-13 14:13:07 INFO >> jobId: big004m
+2022-01-13 14:13:07 INFO >> jobId: kot001m
+2022-01-13 14:13:07 INFO >> jobId: kot002m
+2022-01-13 14:13:07 INFO >> jobId: biz001m
+2022-01-13 14:13:07 INFO >> jobId: nav003m
+2022-01-13 14:13:07 INFO >> jobId: nav004m
+2022-01-13 14:13:07 INFO >> jobId: nav001m
+2022-01-13 14:13:07 INFO >> jobId: nav002m
+2022-01-13 14:13:07 INFO >> jobId: eba001m
+2022-01-13 14:13:07 INFO >> jobId: opd001m
+2022-01-13 14:13:07 INFO >> jobId: opd002m
+2022-01-13 14:13:07 INFO >> jobId: uct001m
+2022-01-13 14:13:07 INFO >> jobId: saf001m
+2022-01-13 14:13:07 INFO >> jobId: saf001l
+2022-01-13 14:13:07 INFO >> jobId: saf002l
+2022-01-13 14:13:07 INFO >> jobId: saf003l
+2022-01-13 14:13:07 INFO >> jobId: saf004l
+2022-01-13 14:13:07 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:13:07 INFO Step: [comFileCleanStep] executed in 56ms
+2022-01-13 14:13:07 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 82ms
+2022-01-13 14:13:23 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:13:23 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:13:27 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 16260 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:13:27 INFO The following profiles are active: local
+2022-01-13 14:13:28 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:13:28 INFO Root WebApplicationContext: initialization completed in 1311 ms
+2022-01-13 14:13:29 INFO HikariPool-1 - Starting...
+2022-01-13 14:13:29 INFO HikariPool-1 - Start completed.
+2022-01-13 14:13:29 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:13:29 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:13:29 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:13:29 INFO Started EdcBatchApplication in 2.806 seconds (JVM running for 3.509)
+2022-01-13 14:13:29 INFO Running default command line with: []
+2022-01-13 14:13:29 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:13:29 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:13:29 INFO ####################################################
+2022-01-13 14:13:29 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:13:29 INFO ####################################################
+2022-01-13 14:13:29 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:13:29 INFO >> jobId: som001m
+2022-01-13 14:13:29 INFO >> jobId: som002m
+2022-01-13 14:13:29 INFO >> jobId: som003m
+2022-01-13 14:13:29 INFO >> jobId: som004m
+2022-01-13 14:13:29 INFO >> jobId: som005m
+2022-01-13 14:13:29 INFO >> jobId: big001m
+2022-01-13 14:13:29 INFO >> jobId: big002m
+2022-01-13 14:13:29 INFO >> jobId: big003m
+2022-01-13 14:13:29 INFO >> jobId: big004m
+2022-01-13 14:13:29 INFO >> jobId: kot001m
+2022-01-13 14:13:29 INFO >> jobId: kot002m
+2022-01-13 14:13:29 INFO >> jobId: biz001m
+2022-01-13 14:13:29 INFO >> jobId: nav003m
+2022-01-13 14:13:29 INFO >> jobId: nav004m
+2022-01-13 14:13:29 INFO >> jobId: nav001m
+2022-01-13 14:13:29 INFO >> jobId: nav002m
+2022-01-13 14:13:29 INFO >> jobId: eba001m
+2022-01-13 14:13:29 INFO >> jobId: opd001m
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1101/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1102/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1103/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1104/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1105/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1106/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1107/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1108/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1109/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1110/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1111/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1112/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1113/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1114/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1115/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1116/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1117/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1118/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1119/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1120/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1121/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1122/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1123/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1124/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1125/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1126/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1127/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1128/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1129/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1130/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1131/
+2022-01-13 14:13:29 INFO >> jobId: opd002m
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1101/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1102/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1103/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1104/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1105/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1106/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1107/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1108/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1109/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1110/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1111/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1112/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1113/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1114/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1115/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1116/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1117/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1118/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1119/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1120/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1121/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1122/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1123/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1124/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1125/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1126/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1127/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1128/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1129/
+2022-01-13 14:13:29 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1130/
+2022-01-13 14:13:30 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1131/
+2022-01-13 14:13:30 INFO >> jobId: uct001m
+2022-01-13 14:13:30 INFO >> jobId: saf001m
+2022-01-13 14:13:30 INFO >> jobId: saf001l
+2022-01-13 14:13:30 INFO >> jobId: saf002l
+2022-01-13 14:13:30 INFO >> jobId: saf003l
+2022-01-13 14:13:30 INFO >> jobId: saf004l
+2022-01-13 14:13:30 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:13:30 INFO Step: [comFileCleanStep] executed in 63ms
+2022-01-13 14:13:30 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 82ms
+2022-01-13 14:15:03 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:15:03 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:15:07 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 6408 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:15:07 INFO The following profiles are active: local
+2022-01-13 14:15:08 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:15:09 INFO Root WebApplicationContext: initialization completed in 1334 ms
+2022-01-13 14:15:09 INFO HikariPool-1 - Starting...
+2022-01-13 14:15:09 INFO HikariPool-1 - Start completed.
+2022-01-13 14:15:09 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:15:09 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:15:10 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:15:10 INFO Started EdcBatchApplication in 2.824 seconds (JVM running for 3.65)
+2022-01-13 14:15:10 INFO Running default command line with: []
+2022-01-13 14:15:10 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:15:10 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:15:10 INFO ####################################################
+2022-01-13 14:15:10 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:15:10 INFO ####################################################
+2022-01-13 14:15:10 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:15:10 INFO >> jobId: som001m
+2022-01-13 14:15:10 INFO >> jobId: som002m
+2022-01-13 14:15:10 INFO >> jobId: som003m
+2022-01-13 14:15:10 INFO >> jobId: som004m
+2022-01-13 14:15:10 INFO >> jobId: som005m
+2022-01-13 14:15:10 INFO >> jobId: big001m
+2022-01-13 14:15:10 INFO >> jobId: big002m
+2022-01-13 14:15:10 INFO >> jobId: big003m
+2022-01-13 14:15:10 INFO >> jobId: big004m
+2022-01-13 14:15:10 INFO >> jobId: kot001m
+2022-01-13 14:15:10 INFO >> jobId: kot002m
+2022-01-13 14:15:10 INFO >> jobId: biz001m
+2022-01-13 14:15:10 INFO >> jobId: nav003m
+2022-01-13 14:15:10 INFO >> jobId: nav004m
+2022-01-13 14:15:10 INFO >> jobId: nav001m
+2022-01-13 14:15:10 INFO >> jobId: nav002m
+2022-01-13 14:15:10 INFO >> jobId: eba001m
+2022-01-13 14:15:10 INFO >> jobId: opd001m
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1101/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1102/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1103/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1104/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1105/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1106/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1107/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1108/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1109/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1110/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1111/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1112/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1113/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1114/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1115/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1116/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1117/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1118/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1119/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1120/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1121/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1122/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1123/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1124/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1125/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1126/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1127/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1128/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1129/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1130/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1131/
+2022-01-13 14:15:10 INFO >> jobId: opd002m
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1101/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1102/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1103/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1104/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1105/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1106/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1107/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1108/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1109/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1110/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1111/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1112/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1113/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1114/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1115/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1116/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1117/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1118/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1119/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1120/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1121/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1122/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1123/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1124/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1125/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1126/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1127/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1128/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1129/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1130/
+2022-01-13 14:15:10 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/2021/1131/
+2022-01-13 14:15:10 INFO >> jobId: uct001m
+2022-01-13 14:15:10 INFO >> jobId: saf001m
+2022-01-13 14:15:10 INFO >> jobId: saf001l
+2022-01-13 14:15:10 INFO >> jobId: saf002l
+2022-01-13 14:15:10 INFO >> jobId: saf003l
+2022-01-13 14:15:10 INFO >> jobId: saf004l
+2022-01-13 14:15:10 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:15:10 INFO Step: [comFileCleanStep] executed in 61ms
+2022-01-13 14:15:10 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 79ms
+2022-01-13 14:15:18 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:15:18 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:15:22 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 24840 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:15:22 INFO The following profiles are active: local
+2022-01-13 14:15:23 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:15:23 INFO Root WebApplicationContext: initialization completed in 1320 ms
+2022-01-13 14:15:24 INFO HikariPool-1 - Starting...
+2022-01-13 14:15:24 INFO HikariPool-1 - Start completed.
+2022-01-13 14:15:24 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:15:24 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:15:24 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:15:24 INFO Started EdcBatchApplication in 2.83 seconds (JVM running for 3.582)
+2022-01-13 14:15:24 INFO Running default command line with: []
+2022-01-13 14:15:24 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:15:24 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:15:24 INFO ####################################################
+2022-01-13 14:15:24 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:15:24 INFO ####################################################
+2022-01-13 14:15:24 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:15:24 INFO >> jobId: som001m
+2022-01-13 14:15:24 INFO >> jobId: som002m
+2022-01-13 14:15:24 INFO >> jobId: som003m
+2022-01-13 14:15:24 INFO >> jobId: som004m
+2022-01-13 14:15:24 INFO >> jobId: som005m
+2022-01-13 14:15:24 INFO >> jobId: big001m
+2022-01-13 14:15:24 INFO >> jobId: big002m
+2022-01-13 14:15:24 INFO >> jobId: big003m
+2022-01-13 14:15:24 INFO >> jobId: big004m
+2022-01-13 14:15:24 INFO >> jobId: kot001m
+2022-01-13 14:15:24 INFO >> jobId: kot002m
+2022-01-13 14:15:24 INFO >> jobId: biz001m
+2022-01-13 14:15:24 INFO >> jobId: nav003m
+2022-01-13 14:15:24 INFO >> jobId: nav004m
+2022-01-13 14:15:24 INFO >> jobId: nav001m
+2022-01-13 14:15:24 INFO >> jobId: nav002m
+2022-01-13 14:15:24 INFO >> jobId: eba001m
+2022-01-13 14:15:24 INFO >> jobId: opd001m
+2022-01-13 14:15:24 ERROR Encountered an error executing step comFileCleanStep in job comJob
+java.text.ParseException: Unparseable date: "2022/01"
+	at java.text.DateFormat.parse(DateFormat.java:366) ~[?:1.8.0_251]
+	at kcs.edc.batch.cmmn.util.DateUtil.getOffsetMonth(DateUtil.java:80) ~[classes/:?]
+	at kcs.edc.batch.cmmn.service.FileService.cleanBackupFile(FileService.java:494) ~[classes/:?]
+	at kcs.edc.batch.cmmn.jobs.CmmnFileTasklet.execute(CmmnFileTasklet.java:77) ~[classes/:?]
+	at kcs.edc.batch.cmmn.jobs.CmmnFileTasklet$$FastClassBySpringCGLIB$$e1476f49.invoke(<generated>) ~[classes/:?]
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218) ~[spring-core-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:779) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:750) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.support.DelegatingIntroductionInterceptor.doProceed(DelegatingIntroductionInterceptor.java:137) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.support.DelegatingIntroductionInterceptor.invoke(DelegatingIntroductionInterceptor.java:124) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:750) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:692) ~[spring-aop-5.3.9.jar:5.3.9]
+	at kcs.edc.batch.cmmn.jobs.CmmnFileTasklet$$EnhancerBySpringCGLIB$$af895f13.execute(<generated>) ~[classes/:?]
+	at org.springframework.batch.core.step.tasklet.TaskletStep$ChunkTransactionCallback.doInTransaction(TaskletStep.java:407) ~[spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.step.tasklet.TaskletStep$ChunkTransactionCallback.doInTransaction(TaskletStep.java:331) ~[spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.transaction.support.TransactionTemplate.execute(TransactionTemplate.java:140) ~[spring-tx-5.3.9.jar:5.3.9]
+	at org.springframework.batch.core.step.tasklet.TaskletStep$2.doInChunkContext(TaskletStep.java:273) ~[spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.scope.context.StepContextRepeatCallback.doInIteration(StepContextRepeatCallback.java:82) ~[spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.repeat.support.RepeatTemplate.getNextResult(RepeatTemplate.java:375) ~[spring-batch-infrastructure-4.3.3.jar:4.3.3]
+	at org.springframework.batch.repeat.support.RepeatTemplate.executeInternal(RepeatTemplate.java:215) ~[spring-batch-infrastructure-4.3.3.jar:4.3.3]
+	at org.springframework.batch.repeat.support.RepeatTemplate.iterate(RepeatTemplate.java:145) ~[spring-batch-infrastructure-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.step.tasklet.TaskletStep.doExecute(TaskletStep.java:258) ~[spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.step.AbstractStep.execute(AbstractStep.java:208) [spring-batch-core-4.3.3.jar:4.3.3]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_251]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_251]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_251]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_251]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:344) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:198) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.support.DelegatingIntroductionInterceptor.doProceed(DelegatingIntroductionInterceptor.java:137) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.support.DelegatingIntroductionInterceptor.invoke(DelegatingIntroductionInterceptor.java:124) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:215) [spring-aop-5.3.9.jar:5.3.9]
+	at com.sun.proxy.$Proxy77.execute(Unknown Source) [?:?]
+	at org.springframework.batch.core.job.SimpleStepHandler.handleStep(SimpleStepHandler.java:152) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.job.AbstractJob.handleStep(AbstractJob.java:413) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.job.SimpleJob.doExecute(SimpleJob.java:136) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.job.AbstractJob.execute(AbstractJob.java:320) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.launch.support.SimpleJobLauncher$1.run(SimpleJobLauncher.java:149) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.core.task.SyncTaskExecutor.execute(SyncTaskExecutor.java:50) [spring-core-5.3.9.jar:5.3.9]
+	at org.springframework.batch.core.launch.support.SimpleJobLauncher.run(SimpleJobLauncher.java:140) [spring-batch-core-4.3.3.jar:4.3.3]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_251]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_251]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_251]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_251]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:344) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:198) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.batch.core.configuration.annotation.SimpleBatchConfiguration$PassthruAdvice.invoke(SimpleBatchConfiguration.java:128) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:215) [spring-aop-5.3.9.jar:5.3.9]
+	at com.sun.proxy.$Proxy74.run(Unknown Source) [?:?]
+	at org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner.execute(JobLauncherApplicationRunner.java:199) [spring-boot-autoconfigure-2.5.3.jar:2.5.3]
+	at org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner.executeLocalJobs(JobLauncherApplicationRunner.java:173) [spring-boot-autoconfigure-2.5.3.jar:2.5.3]
+	at org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner.launchJobFromProperties(JobLauncherApplicationRunner.java:160) [spring-boot-autoconfigure-2.5.3.jar:2.5.3]
+	at org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner.run(JobLauncherApplicationRunner.java:155) [spring-boot-autoconfigure-2.5.3.jar:2.5.3]
+	at org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner.run(JobLauncherApplicationRunner.java:150) [spring-boot-autoconfigure-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:782) [spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:772) [spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:345) [spring-boot-2.5.3.jar:2.5.3]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343) [spring-boot-2.5.3.jar:2.5.3]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1332) [spring-boot-2.5.3.jar:2.5.3]
 	at kcs.edc.batch.EdcBatchApplication.main(EdcBatchApplication.java:14) [classes/:?]
-Caused by: java.lang.IllegalStateException: Could not initialize Log4J2 logging from log4j2-local.xml
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:193) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:181) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.AbstractLoggingSystem.initializeWithSpecificConfig(AbstractLoggingSystem.java:66) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.AbstractLoggingSystem.initialize(AbstractLoggingSystem.java:57) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.initialize(Log4J2LoggingSystem.java:163) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:316) ~[spring-boot-2.5.3.jar:2.5.3]
-	... 18 more
-Caused by: java.io.FileNotFoundException: C:\dev\edc-batch\log4j2-local.xml (지정된 파일을 찾을 수 없습니다)
-	at java.io.FileInputStream.open0(Native Method) ~[?:1.8.0_251]
-	at java.io.FileInputStream.open(FileInputStream.java:195) ~[?:1.8.0_251]
-	at java.io.FileInputStream.<init>(FileInputStream.java:138) ~[?:1.8.0_251]
-	at java.io.FileInputStream.<init>(FileInputStream.java:93) ~[?:1.8.0_251]
-	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90) ~[?:1.8.0_251]
-	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188) ~[?:1.8.0_251]
-	at java.net.URL.openStream(URL.java:1067) ~[?:1.8.0_251]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.getConfigurationSource(Log4J2LoggingSystem.java:198) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:189) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:181) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.AbstractLoggingSystem.initializeWithSpecificConfig(AbstractLoggingSystem.java:66) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.AbstractLoggingSystem.initialize(AbstractLoggingSystem.java:57) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.initialize(Log4J2LoggingSystem.java:163) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:316) ~[spring-boot-2.5.3.jar:2.5.3]
-	... 18 more
-2022-01-10 10:00:50 ERROR Application run failed
-java.lang.IllegalStateException: java.lang.IllegalStateException: Could not initialize Log4J2 logging from /log4j2-local.xml
-	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:328) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.context.logging.LoggingApplicationListener.initialize(LoggingApplicationListener.java:282) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.context.logging.LoggingApplicationListener.onApplicationEnvironmentPreparedEvent(LoggingApplicationListener.java:240) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.context.logging.LoggingApplicationListener.onApplicationEvent(LoggingApplicationListener.java:216) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:176) ~[spring-context-5.3.9.jar:5.3.9]
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:169) ~[spring-context-5.3.9.jar:5.3.9]
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:143) ~[spring-context-5.3.9.jar:5.3.9]
-	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:131) ~[spring-context-5.3.9.jar:5.3.9]
-	at org.springframework.boot.context.event.EventPublishingRunListener.environmentPrepared(EventPublishingRunListener.java:82) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.SpringApplicationRunListeners.lambda$environmentPrepared$2(SpringApplicationRunListeners.java:63) ~[spring-boot-2.5.3.jar:2.5.3]
-	at java.util.ArrayList.forEach(ArrayList.java:1257) ~[?:1.8.0_251]
-	at org.springframework.boot.SpringApplicationRunListeners.doWithListeners(SpringApplicationRunListeners.java:117) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.SpringApplicationRunListeners.doWithListeners(SpringApplicationRunListeners.java:111) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.SpringApplicationRunListeners.environmentPrepared(SpringApplicationRunListeners.java:62) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.SpringApplication.prepareEnvironment(SpringApplication.java:374) [spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:332) [spring-boot-2.5.3.jar:2.5.3]
+2022-01-13 14:15:25 INFO Step: [comFileCleanStep] executed in 65ms
+2022-01-13 14:15:25 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [FAILED] in 89ms
+2022-01-13 14:16:46 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:16:46 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:16:50 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 15760 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:16:50 INFO The following profiles are active: local
+2022-01-13 14:16:52 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:16:52 INFO Root WebApplicationContext: initialization completed in 1315 ms
+2022-01-13 14:16:52 INFO HikariPool-1 - Starting...
+2022-01-13 14:16:52 INFO HikariPool-1 - Start completed.
+2022-01-13 14:16:53 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:16:53 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:16:53 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:16:53 INFO Started EdcBatchApplication in 2.771 seconds (JVM running for 3.476)
+2022-01-13 14:16:53 INFO Running default command line with: []
+2022-01-13 14:16:53 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:16:53 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:16:53 INFO ####################################################
+2022-01-13 14:16:53 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:16:53 INFO ####################################################
+2022-01-13 14:16:53 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:16:53 INFO >> jobId: som001m
+2022-01-13 14:16:53 INFO >> jobId: som002m
+2022-01-13 14:16:53 INFO >> jobId: som003m
+2022-01-13 14:16:53 INFO >> jobId: som004m
+2022-01-13 14:16:53 INFO >> jobId: som005m
+2022-01-13 14:16:53 INFO >> jobId: big001m
+2022-01-13 14:16:53 INFO >> jobId: big002m
+2022-01-13 14:16:53 INFO >> jobId: big003m
+2022-01-13 14:16:53 INFO >> jobId: big004m
+2022-01-13 14:16:53 INFO >> jobId: kot001m
+2022-01-13 14:16:53 INFO >> jobId: kot002m
+2022-01-13 14:16:53 INFO >> jobId: biz001m
+2022-01-13 14:16:53 INFO >> jobId: nav003m
+2022-01-13 14:16:53 INFO >> jobId: nav004m
+2022-01-13 14:16:53 INFO >> jobId: nav001m
+2022-01-13 14:16:53 INFO >> jobId: nav002m
+2022-01-13 14:16:53 INFO >> jobId: eba001m
+2022-01-13 14:16:53 INFO >> jobId: opd001m
+2022-01-13 14:16:53 ERROR Encountered an error executing step comFileCleanStep in job comJob
+java.lang.NullPointerException: null
+	at kcs.edc.batch.cmmn.service.FileService.cleanBackupFile(FileService.java:497) ~[classes/:?]
+	at kcs.edc.batch.cmmn.jobs.CmmnFileTasklet.execute(CmmnFileTasklet.java:77) ~[classes/:?]
+	at kcs.edc.batch.cmmn.jobs.CmmnFileTasklet$$FastClassBySpringCGLIB$$e1476f49.invoke(<generated>) ~[classes/:?]
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218) ~[spring-core-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:779) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:750) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.support.DelegatingIntroductionInterceptor.doProceed(DelegatingIntroductionInterceptor.java:137) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.support.DelegatingIntroductionInterceptor.invoke(DelegatingIntroductionInterceptor.java:124) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:750) ~[spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:692) ~[spring-aop-5.3.9.jar:5.3.9]
+	at kcs.edc.batch.cmmn.jobs.CmmnFileTasklet$$EnhancerBySpringCGLIB$$af895f13.execute(<generated>) ~[classes/:?]
+	at org.springframework.batch.core.step.tasklet.TaskletStep$ChunkTransactionCallback.doInTransaction(TaskletStep.java:407) ~[spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.step.tasklet.TaskletStep$ChunkTransactionCallback.doInTransaction(TaskletStep.java:331) ~[spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.transaction.support.TransactionTemplate.execute(TransactionTemplate.java:140) ~[spring-tx-5.3.9.jar:5.3.9]
+	at org.springframework.batch.core.step.tasklet.TaskletStep$2.doInChunkContext(TaskletStep.java:273) ~[spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.scope.context.StepContextRepeatCallback.doInIteration(StepContextRepeatCallback.java:82) ~[spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.repeat.support.RepeatTemplate.getNextResult(RepeatTemplate.java:375) ~[spring-batch-infrastructure-4.3.3.jar:4.3.3]
+	at org.springframework.batch.repeat.support.RepeatTemplate.executeInternal(RepeatTemplate.java:215) ~[spring-batch-infrastructure-4.3.3.jar:4.3.3]
+	at org.springframework.batch.repeat.support.RepeatTemplate.iterate(RepeatTemplate.java:145) ~[spring-batch-infrastructure-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.step.tasklet.TaskletStep.doExecute(TaskletStep.java:258) ~[spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.step.AbstractStep.execute(AbstractStep.java:208) [spring-batch-core-4.3.3.jar:4.3.3]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_251]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_251]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_251]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_251]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:344) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:198) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.support.DelegatingIntroductionInterceptor.doProceed(DelegatingIntroductionInterceptor.java:137) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.support.DelegatingIntroductionInterceptor.invoke(DelegatingIntroductionInterceptor.java:124) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:215) [spring-aop-5.3.9.jar:5.3.9]
+	at com.sun.proxy.$Proxy77.execute(Unknown Source) [?:?]
+	at org.springframework.batch.core.job.SimpleStepHandler.handleStep(SimpleStepHandler.java:152) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.job.AbstractJob.handleStep(AbstractJob.java:413) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.job.SimpleJob.doExecute(SimpleJob.java:136) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.job.AbstractJob.execute(AbstractJob.java:320) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.batch.core.launch.support.SimpleJobLauncher$1.run(SimpleJobLauncher.java:149) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.core.task.SyncTaskExecutor.execute(SyncTaskExecutor.java:50) [spring-core-5.3.9.jar:5.3.9]
+	at org.springframework.batch.core.launch.support.SimpleJobLauncher.run(SimpleJobLauncher.java:140) [spring-batch-core-4.3.3.jar:4.3.3]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_251]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_251]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_251]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_251]
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:344) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:198) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.batch.core.configuration.annotation.SimpleBatchConfiguration$PassthruAdvice.invoke(SimpleBatchConfiguration.java:128) [spring-batch-core-4.3.3.jar:4.3.3]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) [spring-aop-5.3.9.jar:5.3.9]
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:215) [spring-aop-5.3.9.jar:5.3.9]
+	at com.sun.proxy.$Proxy74.run(Unknown Source) [?:?]
+	at org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner.execute(JobLauncherApplicationRunner.java:199) [spring-boot-autoconfigure-2.5.3.jar:2.5.3]
+	at org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner.executeLocalJobs(JobLauncherApplicationRunner.java:173) [spring-boot-autoconfigure-2.5.3.jar:2.5.3]
+	at org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner.launchJobFromProperties(JobLauncherApplicationRunner.java:160) [spring-boot-autoconfigure-2.5.3.jar:2.5.3]
+	at org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner.run(JobLauncherApplicationRunner.java:155) [spring-boot-autoconfigure-2.5.3.jar:2.5.3]
+	at org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner.run(JobLauncherApplicationRunner.java:150) [spring-boot-autoconfigure-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:782) [spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:772) [spring-boot-2.5.3.jar:2.5.3]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:345) [spring-boot-2.5.3.jar:2.5.3]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343) [spring-boot-2.5.3.jar:2.5.3]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1332) [spring-boot-2.5.3.jar:2.5.3]
 	at kcs.edc.batch.EdcBatchApplication.main(EdcBatchApplication.java:14) [classes/:?]
-Caused by: java.lang.IllegalStateException: Could not initialize Log4J2 logging from /log4j2-local.xml
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:193) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:181) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.AbstractLoggingSystem.initializeWithSpecificConfig(AbstractLoggingSystem.java:66) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.AbstractLoggingSystem.initialize(AbstractLoggingSystem.java:57) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.initialize(Log4J2LoggingSystem.java:163) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:316) ~[spring-boot-2.5.3.jar:2.5.3]
-	... 18 more
-Caused by: java.io.FileNotFoundException: C:\log4j2-local.xml (지정된 파일을 찾을 수 없습니다)
-	at java.io.FileInputStream.open0(Native Method) ~[?:1.8.0_251]
-	at java.io.FileInputStream.open(FileInputStream.java:195) ~[?:1.8.0_251]
-	at java.io.FileInputStream.<init>(FileInputStream.java:138) ~[?:1.8.0_251]
-	at java.io.FileInputStream.<init>(FileInputStream.java:93) ~[?:1.8.0_251]
-	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90) ~[?:1.8.0_251]
-	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188) ~[?:1.8.0_251]
-	at java.net.URL.openStream(URL.java:1067) ~[?:1.8.0_251]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.getConfigurationSource(Log4J2LoggingSystem.java:198) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:189) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.loadConfiguration(Log4J2LoggingSystem.java:181) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.AbstractLoggingSystem.initializeWithSpecificConfig(AbstractLoggingSystem.java:66) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.AbstractLoggingSystem.initialize(AbstractLoggingSystem.java:57) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.logging.log4j2.Log4J2LoggingSystem.initialize(Log4J2LoggingSystem.java:163) ~[spring-boot-2.5.3.jar:2.5.3]
-	at org.springframework.boot.context.logging.LoggingApplicationListener.initializeSystem(LoggingApplicationListener.java:316) ~[spring-boot-2.5.3.jar:2.5.3]
-	... 18 more
-2022-01-10 10:01:42 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 23604 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
-2022-01-10 10:01:42 INFO The following profiles are active: local
-2022-01-10 10:01:44 INFO Tomcat initialized with port(s): 8082 (http)
-2022-01-10 10:01:44 INFO Root WebApplicationContext: initialization completed in 1416 ms
-2022-01-10 10:01:44 INFO HikariPool-1 - Starting...
-2022-01-10 10:01:44 INFO HikariPool-1 - Start completed.
-2022-01-10 10:01:45 INFO No database type set, using meta data indicating: H2
-2022-01-10 10:01:45 INFO No TaskExecutor has been set, defaulting to synchronous executor.
-2022-01-10 10:01:45 INFO Tomcat started on port(s): 8082 (http) with context path ''
-2022-01-10 10:01:45 INFO Started EdcBatchApplication in 2.951 seconds (JVM running for 3.696)
-2022-01-10 10:01:45 INFO Running default command line with: []
-2022-01-10 10:01:45 INFO Job: [SimpleJob: [name=bizJob]] launched with the following parameters: [{}]
-2022-01-10 10:01:45 INFO Executing step: [biz001mStep]
-2022-01-10 10:01:45 INFO JobService init() >> jobGroupId: biz
-2022-01-10 10:01:45 INFO ##########################################################################
-2022-01-10 10:01:45 INFO START JOB :::: biz001m 
-2022-01-10 10:01:45 INFO ##########################################################################
-2022-01-10 10:01:45 INFO baseDt: 20220109, startDt: 20220109, endDt: 20220109, period: 1
-2022-01-10 10:02:02 INFO ----------------------------------------------------------------------------
-2022-01-10 10:02:02 INFO makeDataFile: C:/dev/hdata/ht_biz001m/ht_biz001m_20220109.txt, listCnt: 595
-2022-01-10 10:02:02 INFO makeLogFile: C:/dev/hdata/ht_log001m/ht_biz001m_20220109_20220110100202.txt
-2022-01-10 10:02:02 INFO ----------------------------------------------------------------------------
-2022-01-10 10:02:02 INFO END JOB :::: biz001m
-2022-01-10 10:02:02 INFO Step: [biz001mStep] executed in 16s876ms
-2022-01-10 10:02:02 INFO Job: [SimpleJob: [name=bizJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 16s896ms
-2022-01-10 10:08:44 INFO HikariPool-1 - Shutdown initiated...
-2022-01-10 10:08:44 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:16:53 INFO Step: [comFileCleanStep] executed in 54ms
+2022-01-13 14:16:53 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [FAILED] in 71ms
+2022-01-13 14:17:05 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:17:05 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:17:09 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 13140 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:17:09 INFO The following profiles are active: local
+2022-01-13 14:17:10 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:17:10 INFO Root WebApplicationContext: initialization completed in 1322 ms
+2022-01-13 14:17:11 INFO HikariPool-1 - Starting...
+2022-01-13 14:17:11 INFO HikariPool-1 - Start completed.
+2022-01-13 14:17:11 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:17:11 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:17:11 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:17:11 INFO Started EdcBatchApplication in 2.877 seconds (JVM running for 3.567)
+2022-01-13 14:17:11 INFO Running default command line with: []
+2022-01-13 14:17:11 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:17:12 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:17:12 INFO ####################################################
+2022-01-13 14:17:12 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:17:12 INFO ####################################################
+2022-01-13 14:17:12 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:17:12 INFO >> jobId: som001m
+2022-01-13 14:17:12 INFO >> jobId: som002m
+2022-01-13 14:17:12 INFO >> jobId: som003m
+2022-01-13 14:17:12 INFO >> jobId: som004m
+2022-01-13 14:17:12 INFO >> jobId: som005m
+2022-01-13 14:17:12 INFO >> jobId: big001m
+2022-01-13 14:17:12 INFO >> jobId: big002m
+2022-01-13 14:17:12 INFO >> jobId: big003m
+2022-01-13 14:17:12 INFO >> jobId: big004m
+2022-01-13 14:17:12 INFO >> jobId: kot001m
+2022-01-13 14:17:12 INFO >> jobId: kot002m
+2022-01-13 14:17:12 INFO >> jobId: biz001m
+2022-01-13 14:17:12 INFO >> jobId: nav003m
+2022-01-13 14:17:12 INFO >> jobId: nav004m
+2022-01-13 14:17:12 INFO >> jobId: nav001m
+2022-01-13 14:17:12 INFO >> jobId: nav002m
+2022-01-13 14:17:12 INFO >> jobId: eba001m
+2022-01-13 14:17:12 INFO >> jobId: opd001m
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211101/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211102/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211103/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211104/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211105/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211106/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211107/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211108/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211109/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211110/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211111/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211112/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211113/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211114/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211115/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211116/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211117/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211118/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211119/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211120/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211121/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211122/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211123/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211124/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211125/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211126/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211127/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211128/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211129/
+2022-01-13 14:17:12 INFO deleteFile: C:\dev\app_nas\anl_data\BA204\opendart\20211130\20220112000332_A_A001.zip
+2022-01-13 14:17:12 INFO deleteFile: C:\dev\app_nas\anl_data\BA204\opendart\20211130\20220112000371_E_E001.zip
+2022-01-13 14:17:12 INFO deleteFile: C:\dev\app_nas\anl_data\BA204\opendart\20211130\backup\2021\12\01\log4j2.xml
+2022-01-13 14:17:12 INFO deleteFolder: C:\dev\app_nas\anl_data\BA204\opendart\20211130\backup\2021\12\01
+2022-01-13 14:17:12 INFO deleteFolder: C:\dev\app_nas\anl_data\BA204\opendart\20211130\backup\2021\12
+2022-01-13 14:17:12 INFO deleteFolder: C:\dev\app_nas\anl_data\BA204\opendart\20211130\backup\2021
+2022-01-13 14:17:12 INFO deleteFolder: C:\dev\app_nas\anl_data\BA204\opendart\20211130\backup
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211130/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211131/
+2022-01-13 14:17:12 INFO >> jobId: opd002m
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211101/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211102/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211103/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211104/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211105/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211106/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211107/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211108/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211109/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211110/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211111/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211112/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211113/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211114/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211115/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211116/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211117/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211118/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211119/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211120/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211121/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211122/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211123/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211124/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211125/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211126/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211127/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211128/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211129/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211130/
+2022-01-13 14:17:12 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211131/
+2022-01-13 14:17:12 INFO >> jobId: uct001m
+2022-01-13 14:17:12 INFO >> jobId: saf001m
+2022-01-13 14:17:12 INFO >> jobId: saf001l
+2022-01-13 14:17:12 INFO >> jobId: saf002l
+2022-01-13 14:17:12 INFO >> jobId: saf003l
+2022-01-13 14:17:12 INFO >> jobId: saf004l
+2022-01-13 14:17:12 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:17:12 INFO Step: [comFileCleanStep] executed in 71ms
+2022-01-13 14:17:12 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 106ms
+2022-01-13 14:18:01 INFO HikariPool-1 - Shutdown initiated...
+2022-01-13 14:18:01 INFO HikariPool-1 - Shutdown completed.
+2022-01-13 14:18:06 INFO Starting EdcBatchApplication using Java 1.8.0_251 on DESKTOP-0ICB4NK with PID 21144 (C:\dev\edc-batch\target\classes started by i2ucns in C:\dev\edc-batch)
+2022-01-13 14:18:06 INFO The following profiles are active: local
+2022-01-13 14:18:07 INFO Tomcat initialized with port(s): 8082 (http)
+2022-01-13 14:18:07 INFO Root WebApplicationContext: initialization completed in 1381 ms
+2022-01-13 14:18:07 INFO HikariPool-1 - Starting...
+2022-01-13 14:18:08 INFO HikariPool-1 - Start completed.
+2022-01-13 14:18:08 INFO No database type set, using meta data indicating: H2
+2022-01-13 14:18:08 INFO No TaskExecutor has been set, defaulting to synchronous executor.
+2022-01-13 14:18:08 INFO Tomcat started on port(s): 8082 (http) with context path ''
+2022-01-13 14:18:08 INFO Started EdcBatchApplication in 2.838 seconds (JVM running for 3.529)
+2022-01-13 14:18:08 INFO Running default command line with: []
+2022-01-13 14:18:08 INFO Job: [SimpleJob: [name=comJob]] launched with the following parameters: [{}]
+2022-01-13 14:18:08 INFO Executing step: [comFileCleanStep]
+2022-01-13 14:18:08 INFO ####################################################
+2022-01-13 14:18:08 INFO START JOB :::: CmmnFileTasklet 
+2022-01-13 14:18:08 INFO ####################################################
+2022-01-13 14:18:08 INFO actionType : FILE_BACKUP_CLEAN
+2022-01-13 14:18:08 INFO >> jobId: som001m
+2022-01-13 14:18:08 INFO >> jobId: som002m
+2022-01-13 14:18:08 INFO >> jobId: som003m
+2022-01-13 14:18:08 INFO >> jobId: som004m
+2022-01-13 14:18:08 INFO >> jobId: som005m
+2022-01-13 14:18:08 INFO >> jobId: big001m
+2022-01-13 14:18:08 INFO >> jobId: big002m
+2022-01-13 14:18:08 INFO >> jobId: big003m
+2022-01-13 14:18:08 INFO >> jobId: big004m
+2022-01-13 14:18:08 INFO >> jobId: kot001m
+2022-01-13 14:18:08 INFO >> jobId: kot002m
+2022-01-13 14:18:08 INFO >> jobId: biz001m
+2022-01-13 14:18:08 INFO >> jobId: nav003m
+2022-01-13 14:18:08 INFO >> jobId: nav004m
+2022-01-13 14:18:08 INFO >> jobId: nav001m
+2022-01-13 14:18:08 INFO >> jobId: nav002m
+2022-01-13 14:18:08 INFO >> jobId: eba001m
+2022-01-13 14:18:08 INFO >> jobId: opd001m
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211101/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211102/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211103/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211104/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211105/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211106/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211107/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211108/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211109/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211110/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211111/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211112/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211113/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211114/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211115/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211116/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211117/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211118/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211119/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211120/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211121/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211122/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211123/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211124/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211125/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211126/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211127/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211128/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211129/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211130/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211131/
+2022-01-13 14:18:08 INFO >> jobId: opd002m
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211101/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211102/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211103/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211104/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211105/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211106/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211107/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211108/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211109/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211110/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211111/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211112/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211113/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211114/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211115/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211116/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211117/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211118/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211119/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211120/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211121/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211122/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211123/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211124/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211125/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211126/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211127/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211128/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211129/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211130/
+2022-01-13 14:18:08 INFO backupPath: C:/dev/app_nas/anl_data/BA204/opendart/20211131/
+2022-01-13 14:18:08 INFO >> jobId: uct001m
+2022-01-13 14:18:08 INFO >> jobId: saf001m
+2022-01-13 14:18:08 INFO >> jobId: saf001l
+2022-01-13 14:18:08 INFO >> jobId: saf002l
+2022-01-13 14:18:08 INFO >> jobId: saf003l
+2022-01-13 14:18:08 INFO >> jobId: saf004l
+2022-01-13 14:18:08 INFO END JOB :::: CmmnFileTasklet
+2022-01-13 14:18:08 INFO Step: [comFileCleanStep] executed in 71ms
+2022-01-13 14:18:08 INFO Job: [SimpleJob: [name=comJob]] completed with the following parameters: [{}] and the following status: [COMPLETED] in 96ms
+2022-01-13 16:24:34 WARN HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h20m24s231ms540µs600ns).

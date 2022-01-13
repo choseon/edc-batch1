@@ -8,7 +8,6 @@ import kcs.edc.batch.cmmn.vo.FileVO;
 import kcs.edc.batch.cmmn.vo.Log001mVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -27,6 +26,11 @@ public class FileService {
     private FileProperty fileProperty;
 
     private int cleanBackupBaseDt;
+
+    /**
+     * 배치잡그룹ID
+     */
+    private String jobGroupId;
 
     /**
      * 배치잡ID ex) nav003m
@@ -64,9 +68,9 @@ public class FileService {
     private FileVO attachFileVO;
 
     /**
-     * 백업파일 VO
+     * 데이터 백업파일 VO
      */
-    private FileVO backupFileVO;
+    private FileVO dataBackupFileVO;
 
     /**
      * FileService 초기화
@@ -117,16 +121,16 @@ public class FileService {
         // 백업파일VO 생성
         String backupRootPath = this.dataFileVO.getFilePath();
         String backupDirName = this.fileProperty.getBackupDirName();
-        this.backupFileVO = new FileVO(backupRootPath, backupDirName);
+        this.dataBackupFileVO = new FileVO(backupRootPath, backupDirName);
 
         // 백업파일 제거 기준일
         this.cleanBackupBaseDt = this.fileProperty.getCleanBackupBaseDt();
 
         // 첨부파일VO 생성
-        String jobGroupId = jobId.substring(0, 3);
-        if (this.fileProperty.getAttachDirName().containsKey(jobGroupId)) {
+        this.jobGroupId = jobId.substring(0, 3);
+        if (this.fileProperty.getAttachDirName().containsKey(this.jobGroupId)) {
             String attachRootPath = this.fileProperty.getAttachRootPath();
-            String attachDirName = this.fileProperty.getAttachDirName().get(jobGroupId);
+            String attachDirName = this.fileProperty.getAttachDirName().get(this.jobGroupId);
             this.attachFileVO = new FileVO(attachRootPath, attachDirName);
         }
     }
@@ -463,11 +467,40 @@ public class FileService {
     public void cleanBackupFile() throws ParseException {
 
         String currentDate = DateUtil.getCurrentDate("yyyy/MM");
-        String baseDt = DateUtil.getOffsetMonth(currentDate, this.cleanBackupBaseDt, "yyyy/MM");
+        String yyyyMM = DateUtil.getOffsetMonth(currentDate, this.cleanBackupBaseDt, "yyyy/MM");
 
-        this.backupFileVO.setAppendingFilePath(baseDt);
-        FileUtil.deleteFile(this.backupFileVO.getFilePath());
+        // 데이터파일 삭제
+        this.dataBackupFileVO.setAppendingFilePath(yyyyMM);
+        FileUtil.deleteFile(this.dataBackupFileVO.getFilePath());
+        log.debug("dataBackupPath: {}", this.dataBackupFileVO.getFilePath());
 
-//        log.info("cleanBackupFile: {}", this.backupFileVO.getFilePath());
+        // 로그파일 삭제
+        this.logFileVO.setAppendingFilePath("backup/" + yyyyMM);
+        FileUtil.deleteFile(this.logFileVO.getFilePath());
+        log.debug("logBackupPath: {}", this.logFileVO.getFilePath());
+
+        // 첨부파일 삭제
+        if (!ObjectUtils.isEmpty(this.attachFileVO)) {
+            if (this.jobGroupId.equals(CmmnProperties.JOB_GRP_ID_KOT)) {
+                String htmlBackupPath = this.attachFileVO.getFilePath() + "html/backup/" + yyyyMM;
+                FileUtil.deleteFile(htmlBackupPath);
+                log.debug("htmlBackupPath: {}", htmlBackupPath);
+
+                String imageBackupPath = this.attachFileVO.getFilePath() + "image/backup/" + yyyyMM;
+                FileUtil.deleteFile(imageBackupPath);
+                log.debug("imageBackupPath: {}", imageBackupPath);
+
+            } else if (this.jobGroupId.equals(CmmnProperties.JOB_GRP_ID_OPD)) {
+
+                yyyyMM = yyyyMM.replace("/", "");
+
+                for (int i = 1; i <= 31; i++) {
+                    String dd = (i < 10) ? "0" + i : String.valueOf(i);
+                    String backupPath = this.attachFileVO.getFilePath() + yyyyMM + dd + "/";
+                    FileUtil.deleteFile(backupPath);
+                    log.info("backupPath: {}", backupPath);
+                }
+            }
+        }
     }
 }

@@ -15,8 +15,7 @@ logging:
 job:
   info:
     biz: # bizinfo.go.kr
-#      cron: "0 20 01 * * ?" # 매일 01:20
-      cron: "0 12 10 * * ?" # 매일 01:20
+      cron: "0 20 01 * * ?" # 매일 01:20
       isActive: true
       cycle: daily
       baseline: D-1
@@ -90,7 +89,7 @@ job:
         - opd002m # OpenDart 기업 공시내역 수집
     uct: # comtrade.un.org
       cron: "0 0 06 1 * ?" # 매월 1일 06:00
-      isActive: false
+      isActive: true
       cycle: monthly
       baseline: Y-1
       period: 2
@@ -98,7 +97,7 @@ job:
         - uct001m # UN Comtrade 수출데이터
     com: # 공통 배치 (파일관련)
       cron: "0 0 05 1 * ?" # 매월 1일 05:00
-      isActive: false
+      isActive: true
       cycle: monthly
       baseline: M-2
 #########################################################################################

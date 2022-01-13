@@ -28,7 +28,7 @@ job:
       isActive: true
       cycle: daily
       baseline: D-1
-      period: 1
+      period: 2
       nodes:
         - big001m # 빅카인즈 뉴스검색
         - big002m # 빅카인즈 이슈 랭킹

@@ -175,14 +175,14 @@ sftp:
     nav003m:
       host: 210.114.22.185
       port: 16001
-      user: root
+      user: sftp
       password: grunet2013!
       remoteFilePath: /opt/merge/HT_NAV003M/
       remoteFileName: HT_NAV003M
     nav004m:
       host: 210.114.22.185
       port: 16001
-      user: root
+      user: sftp
       password: grunet2013!
       remoteFilePath: /opt/merge/HT_NAV004M/
       remoteFileName: HT_NAV004M

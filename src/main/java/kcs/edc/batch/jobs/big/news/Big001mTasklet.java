@@ -55,9 +55,13 @@ public class Big001mTasklet extends CmmnJob implements Tasklet {
 
             if (!ObjectUtils.isEmpty(this.newsClusterList)) {
 
+//                queryVO.getArgument().getPublished_at().setFrom(DateUtil.getFormatDate("20220110"));
+//                queryVO.getArgument().getPublished_at().setUntil(DateUtil.getFormatDate("20220111"));
+
                 // 뉴스상세검색
-                for (List<String> nesClusters : this.newsClusterList) {
-                    queryVO.getArgument().setNewsIds(nesClusters);
+                for (List<String> newsCluster : this.newsClusterList) {
+                    queryVO.getArgument().setNewsIds(newsCluster);
+                    log.info("newsCluster: {}", newsCluster);
 
                     URI uri = this.apiService.getUriComponetsBuilder().build().toUri();
                     Big001mVO resultVO = this.apiService.sendApiPostForObject(uri, queryVO, Big001mVO.class);
